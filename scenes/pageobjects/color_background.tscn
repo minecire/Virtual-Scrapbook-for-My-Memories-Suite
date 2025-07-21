@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://c46je55cv4hei"]
+
+[node name="ColorBackground" type="ColorRect"]
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2

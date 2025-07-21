@@ -1,0 +1,38 @@
+[gd_scene load_steps=5 format=3 uid="uid://nxfavcysyqs8"]
+
+[ext_resource type="Script" uid="uid://lnh7v1f4wlp6" path="res://scripts/j_word_text.gd" id="1_75ujf"]
+[ext_resource type="Script" uid="uid://bcs3s6u7x2qa8" path="res://scripts/line_canvas.gd" id="2_1rppq"]
+[ext_resource type="Script" uid="uid://bg4mt7b5twr6t" path="res://scripts/text_box.gd" id="3_eav5y"]
+
+[sub_resource type="Theme" id="Theme_xs5kr"]
+
+[node name="JWordText" type="Panel"]
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 1
+script = ExtResource("1_75ujf")
+sampleCount = 20
+
+[node name="LineCanvas" type="Control" parent="."]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+script = ExtResource("2_1rppq")
+
+[node name="TextBox" type="RichTextLabel" parent="."]
+clip_contents = false
+layout_mode = 0
+offset_right = 1.0
+mouse_filter = 1
+mouse_force_pass_scroll_events = false
+theme = SubResource("Theme_xs5kr")
+bbcode_enabled = true
+scroll_active = false
+drag_and_drop_selection_enabled = false
+script = ExtResource("3_eav5y")
+
+[connection signal="gui_input" from="TextBox" to="." method="_on_text_box_gui_input"]
+[connection signal="meta_clicked" from="TextBox" to="." method="_on_text_box_meta_clicked"]
+[connection signal="meta_hover_ended" from="TextBox" to="." method="_on_text_box_meta_hover_ended"]
+[connection signal="meta_hover_started" from="TextBox" to="." method="_on_text_box_meta_hover_started"]

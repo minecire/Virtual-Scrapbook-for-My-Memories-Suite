@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=3 uid="uid://c8bixk4df7l83"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tecwl"]
+
+[node name="image_background" type="Node"]
+
+[node name="ColorRect" type="ColorRect" parent="."]
+visible = false
+z_index = -1000
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+
+[node name="Texture" type="TextureRect" parent="."]
+z_index = -1000
+texture_repeat = 2
+offset_right = 400.0
+offset_bottom = 400.0
+mouse_filter = 2
+texture = SubResource("AtlasTexture_tecwl")
+expand_mode = 1

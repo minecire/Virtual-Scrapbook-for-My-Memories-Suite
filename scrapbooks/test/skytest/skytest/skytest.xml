@@ -1,0 +1,725 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="skytest" enabled="true" overlay="true">
+  <canvasWidth>600</canvasWidth>
+  <version>9.0.4</version>
+  <bookHasNonPhotoCover>true</bookHasNonPhotoCover>
+  <projectType>BOOK</projectType>
+  <title>skytest</title>
+  <maxOutputWidth>3600</maxOutputWidth>
+  <maxOutputHeight>3600</maxOutputHeight>
+  <diskType>CD-ROM</diskType>
+  <category name="Pages" enabled="true" overlay="true">
+    <pageTransition>1</pageTransition>
+    <page name="Page 1" enabled="true" overlay="true">
+      <id>707425</id>
+      <pageimage>17535243b.png</pageimage>
+      <pageObject type="background">
+        <hiresFileName>57615675.jpg</hiresFileName>
+        <Colorization>-9649489</Colorization>
+        <mirror>false</mirror>
+        <fileName>54057540.png</fileName>
+        <sW>60</sW>
+        <originalFile>C:\Program Files\My Memories Suite\Components\Backgrounds\Theme\MM9\MM9 Sample-(MyMem)\2 Points With Basketballs Orange-(MyMem).jpg</originalFile>
+        <sX>-30</sX>
+        <sH>60</sH>
+        <sY>-30</sY>
+        <SubImage>true</SubImage>
+        <type>2</type>
+        <flip>false</flip>
+      </pageObject>
+      <pageObject type="jWordText">
+        <padding>0</padding>
+        <mirror>false</mirror>
+        <fileName>29121466.xml</fileName>
+        <shadow>true</shadow>
+        <shadowopacity>0.6499999761581421</shadowopacity>
+        <rotation>0</rotation>
+        <shadowblue>0</shadowblue>
+        <offsetx>1</offsetx>
+        <offsety>2</offsety>
+        <drawInside>false</drawInside>
+        <shadowgreen>0</shadowgreen>
+        <imageopacity>0.6000000238418579</imageopacity>
+        <width>514</width>
+        <outlineColor>-13679535</outlineColor>
+        <startY>45</startY>
+        <startX>43</startX>
+        <shadowred>0</shadowred>
+        <flip>false</flip>
+        <verticalAlignment>2</verticalAlignment>
+        <outlineThickness>7</outlineThickness>
+        <height>99</height>
+      </pageObject>
+      <pageObject type="embellishment">
+        <hiresFileName>23337440.png</hiresFileName>
+        <fileName>59949977.png</fileName>
+        <originalFile>C:\Program Files\My Memories Suite\Components\Embellishments\1-Designer Embellishments\MM9\MM9 Sample-(MyMem)\Anchor Felt Blue With White Rope-(MyMem).png</originalFile>
+        <width>208</width>
+        <startY>277</startY>
+        <startX>349</startX>
+        <height>163</height>
+      </pageObject>
+      <pageObject type="stamp">
+        <fileName>65487250.png</fileName>
+        <mirror>true</mirror>
+        <yOffset>-3</yOffset>
+        <xOffset>-8</xOffset>
+        <imageMaskFill>26722311.png</imageMaskFill>
+        <originalFile>C:\Program Files\My Memories Suite\Components\Imprints\Flourishes\Flourish 2.png</originalFile>
+        <rotation>33</rotation>
+        <wOffset>17</wOffset>
+        <fillColor>8601921</fillColor>
+        <width>100</width>
+        <startY>460</startY>
+        <startX>422</startX>
+        <height>100</height>
+        <hOffset>6</hOffset>
+      </pageObject>
+      <pageObject type="shape">
+        <originalFileName>Basics\Circle.svg</originalFileName>
+        <customShapeName>86776117.svg</customShapeName>
+        <yOffset>0</yOffset>
+        <xOffset>0</xOffset>
+        <originalFile>C:\Program Files\My Memories Suite\Components\Backgrounds\Theme\MM9\MM9 Sample-(MyMem)\Anchor Tan Cream Covered Backgro-(MyMem).jpg</originalFile>
+        <rotation>0</rotation>
+        <rotateImage>true</rotateImage>
+        <wOffset>0</wOffset>
+        <type>20</type>
+        <GradientDefinition>linearGradient~50.0`27.0~97.0`76.0~-1973792`-3413009~0.0`1.0~REFLECT~SRGB</GradientDefinition>
+        <fillColor>-1973792</fillColor>
+        <matteGradient>linearGradient~0.0`0.0~77.0`55.0~-16777216`-1~0.0`1.0~NO_CYCLE~SRGB</matteGradient>
+        <fillType>91</fillType>
+        <width>141</width>
+        <sides>5</sides>
+        <startY>137</startY>
+        <startX>396</startX>
+        <outlineThickness>6</outlineThickness>
+        <height>141</height>
+        <hOffset>0</hOffset>
+      </pageObject>
+      <pageObject type="jWordText">
+        <padding>0</padding>
+        <fileName>99608561.xml</fileName>
+        <shape>4</shape>
+        <drawInside>true</drawInside>
+        <width>133</width>
+        <imageopacity>1.0</imageopacity>
+        <outlineColor>-16777216</outlineColor>
+        <startY>235</startY>
+        <startX>233</startX>
+        <verticalAlignment>1</verticalAlignment>
+        <height>133</height>
+      </pageObject>
+      <pageObject type="textArt">
+        <strokeWidth>3.0</strokeWidth>
+        <fileName>46121543.srw</fileName>
+        <strokeNeonEdgeFill>-16711936</strokeNeonEdgeFill>
+        <fillOpacity>1.0</fillOpacity>
+        <bevelShape>NORMAL</bevelShape>
+        <shapeArcDown>true</shapeArcDown>
+        <fillType>GRADIENTFILL</fillType>
+        <shapeArcAngle>1.0</shapeArcAngle>
+        <gradientFill>linearGradient~0.0`0.0~0.0`125.0~-1`-16777216~0.0`1.0~NO_CYCLE~SRGB</gradientFill>
+        <fillEnabled>true</fillEnabled>
+        <height>125</height>
+        <strokeOpacity>1.0</strokeOpacity>
+        <bevelSoftness>5.0</bevelSoftness>
+        <shapeWaveHeight>-31</shapeWaveHeight>
+        <bevelHeight>1.0</bevelHeight>
+        <strokeFillType>GLOWSTROKE</strokeFillType>
+        <strokeEnabled>true</strokeEnabled>
+        <strokeNeonCenterFill>-1</strokeNeonCenterFill>
+        <strokeGlowFill>-8355712</strokeGlowFill>
+        <shapeType>SHEAR</shapeType>
+        <strokeSolidFill>-16777216</strokeSolidFill>
+        <width>400</width>
+        <shapeEnabled>true</shapeEnabled>
+        <startY>411</startY>
+        <startX>12</startX>
+        <bevelEnabled>false</bevelEnabled>
+        <shapeShearX>0.0</shapeShearX>
+        <shapeShearY>0.2</shapeShearY>
+      </pageObject>
+      <pageObject type="jWordText">
+        <padding>5</padding>
+        <fileName>769330.xml</fileName>
+        <width>182</width>
+        <imageopacity>1.0</imageopacity>
+        <outlineColor>-16777216</outlineColor>
+        <startY>83</startY>
+        <startX>50</startX>
+        <verticalAlignment>1</verticalAlignment>
+        <outlineThickness>3</outlineThickness>
+        <height>82</height>
+      </pageObject>
+      <pageObject type="shape">
+        <fileName>67832142.png</fileName>
+        <yOffset>-4</yOffset>
+        <sW>157</sW>
+        <originalFile>C:\Users\cubec\OneDrive\Desktop\sky photos\sky photos-20250619T140355Z-1-001\sky photos\20250612212357_1.jpg</originalFile>
+        <sX>20</sX>
+        <sY>29</sY>
+        <wOffset>256</wOffset>
+        <type>20</type>
+        <fillColor>-65794</fillColor>
+        <fillType>92</fillType>
+        <outlineThickness>2</outlineThickness>
+        <height>211</height>
+        <originalFileName>Basics\Diamond.svg</originalFileName>
+        <hiresFileName>25996903.jpg</hiresFileName>
+        <customShapeName>69690251.svg</customShapeName>
+        <xOffset>94</xOffset>
+        <rotation>0</rotation>
+        <rotateImage>true</rotateImage>
+        <sH>138</sH>
+        <SubImage>true</SubImage>
+        <outlineColor>-16777216</outlineColor>
+        <width>211</width>
+        <startY>288</startY>
+        <startX>372</startX>
+        <hOffset>133</hOffset>
+      </pageObject>
+      <pageObject type="embellishment">
+        <fileName>37657031.png</fileName>
+        <yOffset>-556</yOffset>
+        <shadow>true</shadow>
+        <imageMaskFill>71428523.png</imageMaskFill>
+        <sW>143</sW>
+        <originalFile>C:\Program Files\My Memories Suite\Components\Embellishments\1-Designer Embellishments\MM9\MM9 Wedding-(MyMem)\Arrow With Heart Tip Brown-(MyMem).png</originalFile>
+        <shadowopacity>1.0</shadowopacity>
+        <sX>28</sX>
+        <sY>46</sY>
+        <blur>0.05999999865889549</blur>
+        <shadowblue>0</shadowblue>
+        <wOffset>1602</wOffset>
+        <shadowgreen>0</shadowgreen>
+        <shadowred>0</shadowred>
+        <height>343</height>
+        <hiresFileName>29263752.png</hiresFileName>
+        <dropShadow>true</dropShadow>
+        <xOffset>-360</xOffset>
+        <offsetx>3</offsetx>
+        <offsety>4</offsety>
+        <sH>442</sH>
+        <SubImage>true</SubImage>
+        <width>111</width>
+        <startY>215</startY>
+        <startX>36</startX>
+        <hOffset>902</hOffset>
+      </pageObject>
+      <pageObject type="image">
+        <mattered>255</mattered>
+        <RipJagged>70</RipJagged>
+        <fileName>6772672.png</fileName>
+        <ripSetBottom>1</ripSetBottom>
+        <shadow>true</shadow>
+        <sW>454</sW>
+        <originalFile>C:\Users\cubec\OneDrive\Desktop\sky photos\sky photos-20250619T140355Z-1-001\sky photos\20250422012602_1.jpg</originalFile>
+        <shadowopacity>1.0</shadowopacity>
+        <sX>223</sX>
+        <sY>128</sY>
+        <RipRight_Percent>0.0</RipRight_Percent>
+        <blur>0.05000000074505806</blur>
+        <cornerRounding>65</cornerRounding>
+        <shadowblue>0</shadowblue>
+        <type>7</type>
+        <RipBottom_Percent>-0.002994012087583542</RipBottom_Percent>
+        <cornersRounded>15</cornersRounded>
+        <shadowgreen>0</shadowgreen>
+        <mattegreen>255</mattegreen>
+        <matteblue>255</matteblue>
+        <shadowred>0</shadowred>
+        <height>308</height>
+        <dropShadow>true</dropShadow>
+        <hiresFileName>62207205.png</hiresFileName>
+        <hires_Height>1440</hires_Height>
+        <RipTop_Percent>0.002994012087583542</RipTop_Percent>
+        <rotation>0</rotation>
+        <CornerType>0</CornerType>
+        <offsetx>7</offsetx>
+        <mattewidth>4</mattewidth>
+        <offsety>5</offsety>
+        <RipEdges>7</RipEdges>
+        <sH>252</sH>
+        <ripSetRight>1</ripSetRight>
+        <SubImage>true</SubImage>
+        <width>489</width>
+        <sides>5</sides>
+        <startY>0</startY>
+        <hires_Width>2560</hires_Width>
+        <ripSetTop>1</ripSetTop>
+        <startX>190</startX>
+        <matte>true</matte>
+      </pageObject>
+      <pageObject type="jWordText">
+        <padding>0</padding>
+        <fileName>2599356.xml</fileName>
+        <width>133</width>
+        <imageopacity>1.0</imageopacity>
+        <outlineColor>-16777216</outlineColor>
+        <startY>233</startY>
+        <startX>233</startX>
+        <verticalAlignment>1</verticalAlignment>
+        <height>133</height>
+      </pageObject>
+      <pageObject type="image">
+        <RipJagged>50</RipJagged>
+        <fileName>34158806.png</fileName>
+        <shadow>true</shadow>
+        <originalFile>C:\Program Files (x86)\Steam\userdata\241760503\760\remote\2325290\screenshots\20250614170756_1.jpg</originalFile>
+        <shadowopacity>1.0</shadowopacity>
+        <RipRight_Percent>0.0</RipRight_Percent>
+        <blur>0.07000000029802322</blur>
+        <cornerRounding>65</cornerRounding>
+        <shadowblue>159</shadowblue>
+        <type>7</type>
+        <HSBAdjustment_Hue>50</HSBAdjustment_Hue>
+        <matteGradient>linearGradient~24.0`25.0~114.0`102.0~-6394448`-5644827`-16777216`-1~0.0`0.2`0.41847825`1.0~REFLECT~SRGB</matteGradient>
+        <cornersRounded>13</cornersRounded>
+        <HSBValue_Saturation>100</HSBValue_Saturation>
+        <shadowgreen>149</shadowgreen>
+        <shadowred>0</shadowred>
+        <height>256</height>
+        <hiresFileName>24376705.png</hiresFileName>
+        <dropShadow>true</dropShadow>
+        <hires_Height>1080</hires_Height>
+        <rotation>0</rotation>
+        <CornerType>0</CornerType>
+        <offsetx>8</offsetx>
+        <offsety>9</offsety>
+        <mattewidth>20</mattewidth>
+        <HSBValue_Brightness>100</HSBValue_Brightness>
+        <RipEdges>2</RipEdges>
+        <ripSetRight>0</ripSetRight>
+        <width>418</width>
+        <imageopacity>1.0</imageopacity>
+        <sides>5</sides>
+        <hires_Width>1920</hires_Width>
+        <startY>-4</startY>
+        <startX>195</startX>
+        <matte>true</matte>
+      </pageObject>
+      <pageObject type="image">
+        <fileName>94396437.png</fileName>
+        <sW>639</sW>
+        <shadow>true</shadow>
+        <sX>216</sX>
+        <originalFile>C:\Program Files (x86)\Steam\userdata\241760503\760\remote\2325290\screenshots\20250614170650_1.jpg</originalFile>
+        <shadowopacity>0.8600000143051147</shadowopacity>
+        <sY>0</sY>
+        <blur>0.12999999523162842</blur>
+        <shadowblue>0</shadowblue>
+        <type>20</type>
+        <matteGradient>linearGradient~56.0`44.0~121.0`119.0~-4608565`-16777216`-9386028~0.0`0.8532609`1.0~REPEAT~SRGB</matteGradient>
+        <shadowgreen>0</shadowgreen>
+        <shadowred>0</shadowred>
+        <height>246</height>
+        <hiresFileName>304561.jpg</hiresFileName>
+        <dropShadow>true</dropShadow>
+        <customShapeName>Scalloped Mat-Circle.svg</customShapeName>
+        <hires_Height>1080</hires_Height>
+        <rotation>0</rotation>
+        <offsetx>18</offsetx>
+        <mattewidth>6</mattewidth>
+        <offsety>20</offsety>
+        <sH>506</sH>
+        <SubImage>true</SubImage>
+        <width>307</width>
+        <sides>5</sides>
+        <hires_Width>1920</hires_Width>
+        <startY>35</startY>
+        <startX>49</startX>
+        <matte>true</matte>
+      </pageObject>
+      <pageObject type="line">
+        <fillColor>1761607680</fillColor>
+        <svgPathData> M 0.0 0.0 L 300.0 0.0</svgPathData>
+        <rotation>67</rotation>
+        <width>300</width>
+        <startY>382</startY>
+        <startX>30</startX>
+        <outlineThickness>2</outlineThickness>
+        <height>10</height>
+      </pageObject>
+      <pageObject type="jWordText" locked="true">
+        <padding>7</padding>
+        <fileName>60183749.xml</fileName>
+        <width>133</width>
+        <imageopacity>1.0</imageopacity>
+        <outlineColor>-16777216</outlineColor>
+        <startY>369</startY>
+        <startX>145</startX>
+        <id>994391</id>
+        <verticalAlignment>1</verticalAlignment>
+        <height>178</height>
+      </pageObject>
+      <pageObject type="shape">
+        <originalFileName>Scallops\Scalloped Mat-Circle.svg</originalFileName>
+        <customShapeName>59073772.svg</customShapeName>
+        <rotation>0</rotation>
+        <type>20</type>
+        <fillColor>-1973792</fillColor>
+        <fillType>90</fillType>
+        <outlineColor>-16777216</outlineColor>
+        <width>233</width>
+        <sides>5</sides>
+        <startY>115</startY>
+        <startX>240</startX>
+        <id>994391</id>
+        <outlineThickness>0</outlineThickness>
+        <height>231</height>
+      </pageObject>
+    </page>
+    <page name="Page 2" enabled="true" overlay="true">
+      <id>219551</id>
+      <pageimage>32850143b.png</pageimage>
+      <pageObject type="image">
+        <hiresFileName>94560877.jpg</hiresFileName>
+        <customShapeName>Hexagon.svg</customShapeName>
+        <fileName>64033424.png</fileName>
+        <originalFile>C:\Users\cubec\OneDrive\Desktop\sky photos\sky photos-20250619T140355Z-1-001\sky photos\20250612210545_1.jpg</originalFile>
+        <hires_Height>1440</hires_Height>
+        <type>4</type>
+        <SubImage>false</SubImage>
+        <width>545</width>
+        <sides>5</sides>
+        <startY>36</startY>
+        <hires_Width>2560</hires_Width>
+        <startX>294</startX>
+        <spannerId>585677</spannerId>
+        <height>305</height>
+      </pageObject>
+      <pageObject type="shape">
+        <originalFileName>Basics\Circle.svg</originalFileName>
+        <customShapeName>44169295.svg</customShapeName>
+        <rotation>0</rotation>
+        <type>20</type>
+        <GradientDefinition>linearGradient~0.0`0.0~121.0`117.0~-14937784`-1~0.0`1.0~NO_CYCLE~SRGB</GradientDefinition>
+        <fillColor>-14937784</fillColor>
+        <fillType>91</fillType>
+        <outlineColor>-16777216</outlineColor>
+        <width>294</width>
+        <sides>5</sides>
+        <startY>329</startY>
+        <startX>24</startX>
+        <id>312853</id>
+        <outlineThickness>0</outlineThickness>
+        <height>219</height>
+      </pageObject>
+      <pageObject type="textArt">
+        <strokeWidth>3.0</strokeWidth>
+        <fileName>96379410.srw</fileName>
+        <fillOpacity>1.0</fillOpacity>
+        <shadow>true</shadow>
+        <shadowopacity>0.6399999856948853</shadowopacity>
+        <threeDEnabled>true</threeDEnabled>
+        <blur>15</blur>
+        <bevelShape>NORMAL</bevelShape>
+        <fillType>GRADIENTFILL</fillType>
+        <shapeArcAngle>1.0</shapeArcAngle>
+        <threeDYTranslation>3</threeDYTranslation>
+        <threeDEdgeColor>-1153362</threeDEdgeColor>
+        <gradientFill>linearGradient~144.0`-21.0~0.0`125.0~-4608565`-8610879~0.0`1.0~NO_CYCLE~SRGB</gradientFill>
+        <fillEnabled>true</fillEnabled>
+        <height>125</height>
+        <strokeOpacity>1.0</strokeOpacity>
+        <bevelSoftness>42.0</bevelSoftness>
+        <shapeWaveHeight>-100</shapeWaveHeight>
+        <bevelHeight>120.0</bevelHeight>
+        <strokeFillType>SOLIDSTROKE</strokeFillType>
+        <strokeEnabled>true</strokeEnabled>
+        <threeDXTranslation>8</threeDXTranslation>
+        <offsetx>11</offsetx>
+        <shapeType>ARC</shapeType>
+        <offsety>11</offsety>
+        <strokeSolidFill>-7125189</strokeSolidFill>
+        <width>400</width>
+        <imageopacity>0.8500000238418579</imageopacity>
+        <shapeEnabled>true</shapeEnabled>
+        <startY>102</startY>
+        <startX>56</startX>
+        <bevelEnabled>true</bevelEnabled>
+        <shapeShearX>0.0</shapeShearX>
+        <shapeShearY>0.0</shapeShearY>
+      </pageObject>
+      <pageObject type="jWordText">
+        <padding>0</padding>
+        <fileName>13513870.xml</fileName>
+        <width>133</width>
+        <imageopacity>1.0</imageopacity>
+        <outlineColor>-16777216</outlineColor>
+        <startY>341</startY>
+        <startX>312</startX>
+        <verticalAlignment>1</verticalAlignment>
+        <height>133</height>
+      </pageObject>
+      <pageObject type="jWordText" locked="true">
+        <padding>0</padding>
+        <fileName>35419308.xml</fileName>
+        <width>133</width>
+        <imageopacity>1.0</imageopacity>
+        <outlineColor>-16777216</outlineColor>
+        <startY>142</startY>
+        <startX>225</startX>
+        <id>312853</id>
+        <verticalAlignment>1</verticalAlignment>
+        <height>193</height>
+      </pageObject>
+    </page>
+    <page name="Page 3" enabled="true" overlay="true">
+      <id>81242</id>
+      <pageimage>44474959b.png</pageimage>
+      <pageObject type="spanner">
+        <rotation>0</rotation>
+        <width>545</width>
+        <startY>75</startY>
+        <startX>894</startX>
+        <spannerId>59299</spannerId>
+        <height>305</height>
+      </pageObject>
+      <pageObject type="jWordText" locked="true">
+        <padding>0</padding>
+        <fileName>13558301.xml</fileName>
+        <width>118</width>
+        <imageopacity>1.0</imageopacity>
+        <outlineColor>-16777216</outlineColor>
+        <startY>46</startY>
+        <startX>310</startX>
+        <id>604260</id>
+        <verticalAlignment>1</verticalAlignment>
+        <height>129</height>
+      </pageObject>
+      <pageObject type="line">
+        <fillColor>-3101079</fillColor>
+        <svgPathData> M 0.0 150.0 C 50.0 300.0 121.0 109.0 150.0 150.0 C 179.0 195.0 250.0 0.0 300.0 150.0</svgPathData>
+        <fillType>91</fillType>
+        <width>300</width>
+        <startY>316</startY>
+        <startX>238</startX>
+        <id>604260</id>
+        <GradientDefinition>linearGradient~0.0`0.0~130.0`133.0~-5644827`-1~0.0`1.0~NO_CYCLE~SRGB</GradientDefinition>
+        <outlineThickness>2</outlineThickness>
+        <height>300</height>
+      </pageObject>
+      <pageObject type="spanner">
+        <rotation>0</rotation>
+        <width>545</width>
+        <startY>36</startY>
+        <startX>-306</startX>
+        <spannerId>585677</spannerId>
+        <height>305</height>
+      </pageObject>
+      <pageObject type="shape">
+        <fileName>34793774.png</fileName>
+        <mirror>false</mirror>
+        <shadow>true</shadow>
+        <shadowopacity>0.6499999761581421</shadowopacity>
+        <originalFile>C:\Users\cubec\OneDrive\Desktop\sky photos\sky photos-20250619T140355Z-1-001\sky photos\20250612210545_1.jpg</originalFile>
+        <blur>0.05000000074505806</blur>
+        <shadowblue>0</shadowblue>
+        <type>20</type>
+        <fillColor>-65794</fillColor>
+        <fillType>90</fillType>
+        <shadowgreen>0</shadowgreen>
+        <shadowred>0</shadowred>
+        <flip>false</flip>
+        <outlineThickness>2</outlineThickness>
+        <height>230</height>
+        <originalFileName>Basics\Circle.svg</originalFileName>
+        <hiresFileName>94793463.jpg</hiresFileName>
+        <customShapeName>82229468.svg</customShapeName>
+        <rotation>0</rotation>
+        <offsetx>3</offsetx>
+        <offsety>4</offsety>
+        <outlineColor>-16777216</outlineColor>
+        <width>230</width>
+        <blurExtraWidth>0</blurExtraWidth>
+        <sides>5</sides>
+        <startY>23</startY>
+        <startX>210</startX>
+      </pageObject>
+      <pageObject type="shape">
+        <hiresFileName>75826746.jpg</hiresFileName>
+        <customShapeName>93096476.svg</customShapeName>
+        <fileName>72166369.png</fileName>
+        <originalFile>C:\Users\cubec\OneDrive\Desktop\sky photos\sky photos-20250619T140355Z-1-001\sky photos\20250614152653_1.jpg</originalFile>
+        <type>20</type>
+        <GradientDefinition>linearGradient~0.0`0.0~50.0`50.0~-5644827`-1153362~0.0`1.0~NO_CYCLE~SRGB</GradientDefinition>
+        <fillColor>-65794</fillColor>
+        <fillType>91</fillType>
+        <width>551</width>
+        <outlineColor>-16777216</outlineColor>
+        <startY>243</startY>
+        <startX>23</startX>
+        <outlineThickness>1</outlineThickness>
+        <height>244</height>
+      </pageObject>
+    </page>
+    <page name="Page 4" enabled="true" overlay="true">
+      <id>515268</id>
+      <pageimage>60418419b.png</pageimage>
+      <pageObject type="line">
+        <fillColor>-3825428</fillColor>
+        <svgPathData> M 150.0 16.0 C 66.0 15.0 0.0 81.0 0.0 165.0 C 0.0 247.0 66.0 315.0 150.0 315.0 C 232.0 315.0 300.0 247.0 300.0 165.0 C 252.0 253.0 138.0 149.0 112.0 237.0 C 330.0 99.0 228.0 179.0 256.0 112.5 L 212.0 60.0 C 79.0 151.0 241.0 0.0 150.0 15.0</svgPathData>
+        <fillType>91</fillType>
+        <rotation>0</rotation>
+        <width>448</width>
+        <startY>97</startY>
+        <startX>84</startX>
+        <id>305095</id>
+        <GradientDefinition>linearGradient~0.0`0.0~84.0`69.0~-3413009`-1~0.0`1.0~NO_CYCLE~SRGB</GradientDefinition>
+        <outlineThickness>2</outlineThickness>
+        <height>397</height>
+      </pageObject>
+      <pageObject type="jWordText" locked="true">
+        <padding>13</padding>
+        <fileName>65742011.xml</fileName>
+        <width>134</width>
+        <imageopacity>1.0</imageopacity>
+        <outlineColor>-16777216</outlineColor>
+        <startY>402</startY>
+        <startX>23</startX>
+        <id>305095</id>
+        <verticalAlignment>1</verticalAlignment>
+        <outlineThickness>3</outlineThickness>
+        <height>138</height>
+      </pageObject>
+      <pageObject type="background">
+        <type>4</type>
+        <GradientDefinition>linearGradient~0.0`0.0~130.0`130.0~-2301465`-4014729~0.0`1.0~NO_CYCLE~SRGB</GradientDefinition>
+      </pageObject>
+    </page>
+    <page name="Page 5" enabled="true" overlay="true">
+      <id>776497</id>
+      <pageimage>29539307b.png</pageimage>
+      <pageObject type="jWordText">
+        <padding>0</padding>
+        <fileName>28118984.xml</fileName>
+        <shape>0</shape>
+        <rotation>0</rotation>
+        <width>38</width>
+        <imageopacity>1.0</imageopacity>
+        <outlineColor>-16777216</outlineColor>
+        <startY>197</startY>
+        <startX>205</startX>
+        <verticalAlignment>1</verticalAlignment>
+        <height>235</height>
+      </pageObject>
+    </page>
+    <page name="Page 6" enabled="true" overlay="true">
+      <id>120261</id>
+      <pageimage>19251884b.png</pageimage>
+      <pageObject type="jWordText" locked="true">
+        <padding>0</padding>
+        <fileName>38922176.xml</fileName>
+        <width>133</width>
+        <imageopacity>1.0</imageopacity>
+        <outlineColor>-16777216</outlineColor>
+        <startY>234</startY>
+        <startX>234</startX>
+        <id>103862</id>
+        <verticalAlignment>1</verticalAlignment>
+        <height>138</height>
+      </pageObject>
+      <pageObject type="line">
+        <fillColor>-16777216</fillColor>
+        <svgPathData> M 0.0 29.0 C 50.0 179.0 180.0 108.0 150.0 29.0 Q 133.25 0.0 106.0 28.0 C 83.0 58.0 81.0 133.0 288.0 108.0</svgPathData>
+        <width>288</width>
+        <startY>294</startY>
+        <startX>179</startX>
+        <id>103862</id>
+        <outlineThickness>2</outlineThickness>
+        <height>179</height>
+      </pageObject>
+    </page>
+    <page name="Page 7" enabled="true" overlay="true">
+      <id>791608</id>
+      <pageimage>89395432b.png</pageimage>
+    </page>
+    <page name="Page 8" enabled="true" overlay="true">
+      <id>225383</id>
+      <pageimage>3767932b.png</pageimage>
+    </page>
+    <page name="Page 9" enabled="true" overlay="true">
+      <id>389436</id>
+      <pageimage>30367613b.png</pageimage>
+    </page>
+    <page name="Page 10" enabled="true" overlay="true">
+      <id>419170</id>
+      <pageimage>45459875b.png</pageimage>
+    </page>
+    <page name="Page 11" enabled="true" overlay="true">
+      <id>175515</id>
+      <pageimage>29913830b.png</pageimage>
+    </page>
+    <page name="Page 12" enabled="true" overlay="true">
+      <id>899520</id>
+      <pageimage>17316872b.png</pageimage>
+    </page>
+    <page name="Page 13" enabled="true" overlay="true">
+      <id>216725</id>
+      <pageimage>9158984b.png</pageimage>
+    </page>
+    <page name="Page 14" enabled="true" overlay="true">
+      <id>378393</id>
+      <pageimage>54479009b.png</pageimage>
+    </page>
+    <page name="Page 15" enabled="true" overlay="true">
+      <id>936630</id>
+      <pageimage>96109402b.png</pageimage>
+    </page>
+    <page name="Page 16" enabled="true" overlay="true">
+      <id>7091</id>
+      <pageimage>35373314b.png</pageimage>
+    </page>
+    <page name="Page 17" enabled="true" overlay="true">
+      <id>150753</id>
+      <pageimage>62459396b.png</pageimage>
+    </page>
+    <page name="Page 18" enabled="true" overlay="true">
+      <id>466765</id>
+      <pageimage>33141686b.png</pageimage>
+    </page>
+    <page name="Page 19" enabled="true" overlay="true">
+      <id>544858</id>
+      <pageimage>49922994b.png</pageimage>
+    </page>
+    <page name="Page 20" enabled="true" overlay="true">
+      <id>91646</id>
+      <pageimage>26875461b.png</pageimage>
+    </page>
+    <page name="Page 21" enabled="true" overlay="true">
+      <id>734018</id>
+      <pageimage>11070310b.png</pageimage>
+    </page>
+    <page name="Page 22" enabled="true" overlay="true">
+      <id>790118</id>
+      <pageimage>18207685b.png</pageimage>
+    </page>
+    <page name="Page 23" enabled="true" overlay="true">
+      <id>404076</id>
+      <pageimage>629041b.png</pageimage>
+    </page>
+    <page name="Page 24" enabled="true" overlay="true">
+      <id>842515</id>
+      <pageimage>90012669b.png</pageimage>
+    </page>
+    <page name="Page 25" enabled="true" overlay="true">
+      <id>569500</id>
+      <pageimage>35713113b.png</pageimage>
+    </page>
+    <page name="Page 26" enabled="true" overlay="true">
+      <id>389126</id>
+      <pageimage>82600895b.png</pageimage>
+    </page>
+    <page name="Page 27" enabled="true" overlay="true">
+      <id>20953</id>
+      <pageimage>39919257b.png</pageimage>
+    </page>
+    <page name="Page 28" enabled="true" overlay="true">
+      <id>114714</id>
+      <pageimage>16606967b.png</pageimage>
+    </page>
+  </category>
+</project>
+

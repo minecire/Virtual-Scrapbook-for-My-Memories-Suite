@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=3 uid="uid://byut5eobjs3qd"]
+
+[ext_resource type="Script" uid="uid://u4lswv72p7xn" path="res://scripts/page.gd" id="1_kkqxg"]
+[ext_resource type="PackedScene" uid="uid://c8bixk4df7l83" path="res://scenes/pageobjects/image_background.tscn" id="2_5g3ik"]
+[ext_resource type="PackedScene" uid="uid://c46je55cv4hei" path="res://scenes/pageobjects/color_background.tscn" id="3_tecwl"]
+[ext_resource type="PackedScene" uid="uid://dqx5g1c42nps4" path="res://scenes/pageobjects/image.tscn" id="4_kwiik"]
+
+[node name="Page" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_kkqxg")
+path = "res://scrapbooks/test/skytest/skytest.mms"
+pageName = "Page 1"
+
+[node name="ImageBackground" parent="." instance=ExtResource("2_5g3ik")]
+layout_mode = 0
+
+[node name="ColorBackground" parent="." instance=ExtResource("3_tecwl")]
+layout_mode = 0
+
+[node name="Image" parent="." instance=ExtResource("4_kwiik")]
+layout_mode = 0

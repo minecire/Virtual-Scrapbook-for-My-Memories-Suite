@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=3 uid="uid://bb1yuoa0e4pal"]
+
+[ext_resource type="Script" uid="uid://c0vrpbvt7cg74" path="res://scenes/book.gd" id="1_3wpgy"]
+[ext_resource type="PackedScene" uid="uid://byut5eobjs3qd" path="res://scenes/page.tscn" id="1_ble1a"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_3wpgy"]
+viewport_path = NodePath("LeftPage")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_8uccb"]
+viewport_path = NodePath("RightPage")
+
+[node name="Book" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_3wpgy")
+bookPath = "C:\\Users\\cubec\\OneDrive\\Documents\\scrapbooks\\sky\\"
+currentSection = "sky_1"
+currentLeftPage = -1
+currentRightPage = 1
+borderSize = 25
+
+[node name="LeftPage" parent="." instance=ExtResource("1_ble1a")]
+
+[node name="RightPage" parent="." instance=ExtResource("1_ble1a")]
+
+[node name="LeftPageTexture" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = SubResource("ViewportTexture_3wpgy")
+
+[node name="RightPageTexture" type="TextureRect" parent="."]
+offset_right = 512.0
+offset_bottom = 512.0
+texture = SubResource("ViewportTexture_8uccb")
+
+[connection signal="page_update" from="." to="LeftPage" method="_on_book_page_update"]
+[connection signal="page_update" from="." to="RightPage" method="_on_book_page_update"]

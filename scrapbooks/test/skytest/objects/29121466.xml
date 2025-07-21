@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:document xmlns:tns="http://www.pilotltd.com/jword" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.pilotltd.com/jword /com/pilot/jword/jword.xsd ">
+<tns:styletable>
+<tns:style name="default" type="para" basedon="default" follower="default" halign="left" linespacemode="multiple" linespace="1.0" font="Arial" fs="200" />
+</tns:styletable>
+<tns:listtable>
+<tns:list id="0" defaultindent="360" defaulthanging="360" issimple="true">
+<tns:level level="0" numbertype="bullet" bulletcode="&#9679;" startat="1" indent="360" hanging="360" text="#0" follower="tab"/>
+<tns:level level="1" numbertype="arabic" startat="1" indent="720" hanging="360" text="#1." follower="tab"/>
+<tns:level level="2" numbertype="arabic" startat="1" indent="1080" hanging="360" text="#2." follower="tab"/>
+<tns:level level="3" numbertype="arabic" startat="1" indent="1440" hanging="360" text="#3." follower="tab"/>
+<tns:level level="4" numbertype="arabic" startat="1" indent="1800" hanging="360" text="#4." follower="tab"/>
+<tns:level level="5" numbertype="arabic" startat="1" indent="2160" hanging="360" text="#5." follower="tab"/>
+<tns:level level="6" numbertype="arabic" startat="1" indent="2520" hanging="360" text="#6." follower="tab"/>
+<tns:level level="7" numbertype="arabic" startat="1" indent="2880" hanging="360" text="#7." follower="tab"/>
+<tns:level level="8" numbertype="arabic" startat="1" indent="3240" hanging="360" text="#8." follower="tab"/>
+</tns:list>
+<tns:list id="1" defaultindent="360" defaulthanging="360" issimple="true">
+<tns:level level="0" numbertype="bullet" bulletcode="&#9679;" startat="1" indent="0" hanging="0" text="#0" follower="tab"/>
+<tns:level level="1" numbertype="arabic" startat="1" indent="0" hanging="0" text="#1." follower="tab"/>
+<tns:level level="2" numbertype="arabic" startat="1" indent="0" hanging="0" text="#2." follower="tab"/>
+<tns:level level="3" numbertype="arabic" startat="1" indent="0" hanging="0" text="#3." follower="tab"/>
+<tns:level level="4" numbertype="arabic" startat="1" indent="0" hanging="0" text="#4." follower="tab"/>
+<tns:level level="5" numbertype="arabic" startat="1" indent="0" hanging="0" text="#5." follower="tab"/>
+<tns:level level="6" numbertype="arabic" startat="1" indent="0" hanging="0" text="#6." follower="tab"/>
+<tns:level level="7" numbertype="arabic" startat="1" indent="0" hanging="0" text="#7." follower="tab"/>
+<tns:level level="8" numbertype="arabic" startat="1" indent="0" hanging="0" text="#8." follower="tab"/>
+</tns:list>
+<tns:list id="2" defaultindent="360" defaulthanging="360" issimple="true">
+<tns:level level="0" numbertype="bullet" bulletcode="&#9679;" startat="1" indent="0" hanging="0" text="#0" follower="tab"/>
+<tns:level level="1" numbertype="arabic" startat="1" indent="0" hanging="0" text="#1." follower="tab"/>
+<tns:level level="2" numbertype="arabic" startat="1" indent="0" hanging="0" text="#2." follower="tab"/>
+<tns:level level="3" numbertype="arabic" startat="1" indent="0" hanging="0" text="#3." follower="tab"/>
+<tns:level level="4" numbertype="arabic" startat="1" indent="0" hanging="0" text="#4." follower="tab"/>
+<tns:level level="5" numbertype="arabic" startat="1" indent="0" hanging="0" text="#5." follower="tab"/>
+<tns:level level="6" numbertype="arabic" startat="1" indent="0" hanging="0" text="#6." follower="tab"/>
+<tns:level level="7" numbertype="arabic" startat="1" indent="0" hanging="0" text="#7." follower="tab"/>
+<tns:level level="8" numbertype="arabic" startat="1" indent="0" hanging="0" text="#8." follower="tab"/>
+</tns:list>
+<tns:list id="3" defaultindent="360" defaulthanging="360" issimple="true">
+<tns:level level="0" numbertype="bullet" bulletcode="&#9679;" startat="1" indent="0" hanging="0" text="#0" follower="tab"/>
+<tns:level level="1" numbertype="arabic" startat="1" indent="0" hanging="0" text="#1." follower="tab"/>
+<tns:level level="2" numbertype="arabic" startat="1" indent="0" hanging="0" text="#2." follower="tab"/>
+<tns:level level="3" numbertype="arabic" startat="1" indent="0" hanging="0" text="#3." follower="tab"/>
+<tns:level level="4" numbertype="arabic" startat="1" indent="0" hanging="0" text="#4." follower="tab"/>
+<tns:level level="5" numbertype="arabic" startat="1" indent="0" hanging="0" text="#5." follower="tab"/>
+<tns:level level="6" numbertype="arabic" startat="1" indent="0" hanging="0" text="#6." follower="tab"/>
+<tns:level level="7" numbertype="arabic" startat="1" indent="0" hanging="0" text="#7." follower="tab"/>
+<tns:level level="8" numbertype="arabic" startat="1" indent="0" hanging="0" text="#8." follower="tab"/>
+</tns:list>
+</tns:listtable>
+<tns:section pagesize="Custom" pagewidth="7402" pageheight="1426" margl="100" margr="100" margt="100" margb="100" headerfromtop="0" footerfrombottom="0" orientation="portrait" ncolumns="1" columngap="0" defaulttab="720" >
+<tns:content type="body">
+<tns:p style="default" halign="left" linespacemode="multiple" linespace="0.7999999523162842" >
+<tns:tabs>
+</tns:tabs>
+<tns:txt font="Candara" fs="360" color="#662942" expnd="30" >wi</tns:txt>
+<tns:txt font="Candara" fs="360" fstyle="iu" color="#662942" expnd="30" >sp</tns:txt>
+<tns:txt font="Candara" fs="360" color="#662942" expnd="30" >s of energy </tns:txt>
+<tns:txt font="Courier New" fs="288" color="#662942" expnd="30" >emanate</tns:txt>
+<tns:txt font="Courier New" fs="288" color="#662942" expnd="30" > from</tns:txt>
+<tns:txt font="Candara" fs="360" color="#662942" expnd="30" > a</tns:txt>
+<tns:txt font="Candara" fs="360" color="#662942" ></tns:txt>
+</tns:p>
+<tns:p style="default" halign="left" linespacemode="multiple" linespace="0.7999999523162842" list="3" level="0" >
+<tns:tabs>
+</tns:tabs>
+<tns:txt font="Candara" fs="360" color="#662942" expnd="30" >plane</tns:txt>
+<tns:txt font="Candara" fs="360" color="#662942" ></tns:txt>
+</tns:p>
+</tns:content>
+</tns:section>
+</tns:document>

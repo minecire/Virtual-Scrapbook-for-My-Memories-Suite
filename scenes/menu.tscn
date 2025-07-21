@@ -1,0 +1,88 @@
+[gd_scene load_steps=10 format=3 uid="uid://c7mnsqgs1g7tf"]
+
+[ext_resource type="Texture2D" uid="uid://bxr7i81ohunjs" path="res://palette_art.png" id="1_con2f"]
+[ext_resource type="Script" uid="uid://ysxmlrf8ei1u" path="res://scripts/button.gd" id="1_yqeox"]
+[ext_resource type="Script" uid="uid://vch07g6bbhn5" path="res://scripts/page_objects/background.gd" id="2_con2f"]
+
+[sub_resource type="SystemFont" id="SystemFont_con2f"]
+font_names = PackedStringArray("Segoe Print")
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_con2f"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4ytvr"]
+bg_color = Color(0.294, 0.408, 0.231, 0.486)
+border_width_left = 10
+border_width_top = 10
+border_width_right = 10
+border_width_bottom = 10
+border_color = Color(0.486275, 0.572549, 0.443137, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mhnvy"]
+bg_color = Color(0.295852, 0.409031, 0.232166, 0.299)
+border_width_left = 10
+border_width_top = 10
+border_width_right = 10
+border_width_bottom = 10
+border_color = Color(0.486275, 0.572549, 0.443137, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g3eks"]
+bg_color = Color(0.294, 0.408, 0.231, 0.486)
+border_width_left = 10
+border_width_top = 10
+border_width_right = 10
+border_width_bottom = 10
+border_color = Color(0.486275, 0.572549, 0.443137, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_con2f"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_width_left = 10
+border_width_top = 10
+border_width_right = 10
+border_width_bottom = 10
+border_color = Color(0.488086, 0.571558, 0.444776, 1)
+
+[node name="Menu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="TextureRect" parent="."]
+self_modulate = Color(0.217484, 0.203726, 0.281992, 1)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("1_con2f")
+expand_mode = 2
+stretch_mode = 6
+script = ExtResource("2_con2f")
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 345.0
+offset_top = 618.0
+offset_right = 812.0
+offset_bottom = 803.0
+theme_override_fonts/font = SubResource("SystemFont_con2f")
+theme_override_font_sizes/font_size = 45
+theme_override_styles/focus = SubResource("StyleBoxEmpty_con2f")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_4ytvr")
+theme_override_styles/hover = SubResource("StyleBoxFlat_mhnvy")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_g3eks")
+theme_override_styles/normal = SubResource("StyleBoxFlat_con2f")
+text = "Load Book"
+script = ExtResource("1_yqeox")
+
+[node name="FileDialog" type="FileDialog" parent="Button"]
+title = "Open a Directory"
+initial_position = 1
+ok_button_text = "Select Current Folder"
+file_mode = 2
+access = 2
+show_hidden_files = true
+use_native_dialog = true
+
+[connection signal="button_up" from="Button" to="Button" method="_on_button_up"]
+[connection signal="dir_selected" from="Button/FileDialog" to="Button" method="_on_file_dialog_dir_selected"]

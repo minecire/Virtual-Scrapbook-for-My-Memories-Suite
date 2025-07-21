@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:document xmlns:tns="http://www.pilotltd.com/jword" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.pilotltd.com/jword /com/pilot/jword/jword.xsd ">
+<tns:styletable>
+<tns:style name="default" type="para" basedon="default" follower="default" halign="left" linespacemode="multiple" linespace="1.0" font="Arial" fs="200" />
+</tns:styletable>
+<tns:listtable>
+</tns:listtable>
+<tns:section pagesize="Custom" pagewidth="1915" pageheight="2779" margl="100" margr="100" margt="100" margb="100" headerfromtop="0" footerfrombottom="0" orientation="portrait" ncolumns="1" columngap="0" defaulttab="720" >
+<tns:content type="body">
+<tns:p style="default" halign="left" linespacemode="multiple" linespace="1.0" >
+<tns:tabs>
+</tns:tabs>
+<tns:txt font="Arial" fs="173" color="#000000" >the quick brown fox jumps over a lazy dog</tns:txt>
+<tns:txt font="Arial" fs="173" color="#000000" ></tns:txt>
+</tns:p>
+</tns:content>
+</tns:section>
+</tns:document>

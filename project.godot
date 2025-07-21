@@ -1,0 +1,74 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="scrapbook"
+run/main_scene="uid://c7mnsqgs1g7tf"
+config/features=PackedStringArray("4.4", "Forward Plus")
+run/delta_smoothing=false
+boot_splash/bg_color=Color(0.197362, 0.273724, 0.263637, 1)
+config/icon="res://icon.svg"
+
+[autoload]
+
+util_SvgProcessing="*res://scripts/util/svg_processing.gd"
+util_Preloader="*res://scripts/util/preloader.gd"
+util_Enums="*res://scripts/util/enums.gd"
+PageTurn="*res://scripts/page_turn.gd"
+
+[display]
+
+window/size/viewport_height=900
+window/vsync/vsync_mode=0
+mouse_cursor/custom_image="uid://b8kag3jsisfkr"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godot-svg/plugin.cfg")
+
+[gui]
+
+common/snap_controls_to_pixels=false
+
+[input]
+
+reload_pages={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":82,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+start_of_section={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":true,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194319,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+next_section={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":true,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194321,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+start_of_book={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":true,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194319,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+end_of_book={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":true,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194321,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+
+[rendering]
+
+anti_aliasing/quality/msaa_2d=2
+limits/global_shader_variables/buffer_size=131072
+environment/defaults/default_clear_color=Color(0.276689, 0.386816, 0.306732, 1)
+anti_aliasing/quality/screen_space_aa=1

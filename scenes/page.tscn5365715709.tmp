@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://byut5eobjs3qd"]
+
+[ext_resource type="Script" uid="uid://u4lswv72p7xn" path="res://scripts/page.gd" id="1_kkqxg"]
+
+[node name="Page" type="SubViewport"]
+script = ExtResource("1_kkqxg")
+path = "res://scrapbooks/test/skytest/"
+file = "skytest.mms"
+pageName = "Page 1"
+pageSize = Vector2(550, 850)

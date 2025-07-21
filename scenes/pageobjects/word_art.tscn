@@ -1,0 +1,31 @@
+[gd_scene load_steps=5 format=3 uid="uid://0xy0ifljc75g"]
+
+[ext_resource type="Shader" uid="uid://cb37vk0hd0bug" path="res://shaders/word_art.gdshader" id="1_4skvc"]
+[ext_resource type="Script" uid="uid://djxffeji21vul" path="res://scenes/pageobjects/word_art.gd" id="1_a06q8"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_a06q8"]
+shader = ExtResource("1_4skvc")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_2dm3i"]
+viewport_path = NodePath("TextViewport")
+
+[node name="WordArt" type="Node"]
+script = ExtResource("1_a06q8")
+
+[node name="TextViewport" type="SubViewport" parent="."]
+transparent_bg = true
+
+[node name="Text" type="RichTextLabel" parent="TextViewport"]
+clip_contents = false
+offset_right = 40.0
+offset_bottom = 40.0
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="TextTexture" type="TextureRect" parent="."]
+material = SubResource("ShaderMaterial_a06q8")
+offset_right = 40.0
+offset_bottom = 40.0
+texture = SubResource("ViewportTexture_2dm3i")
+expand_mode = 1

@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://babstq8arpeb6"]
+
+[node name="Line" type="TextureRect"]
+offset_right = 40.0
+offset_bottom = 40.0
+expand_mode = 1
