@@ -1,4 +1,4 @@
-[gd_scene load_steps=69 format=3 uid="uid://bb1yuoa0e4pal"]
+[gd_scene load_steps=70 format=3 uid="uid://bb1yuoa0e4pal"]
 
 [ext_resource type="Script" uid="uid://c0vrpbvt7cg74" path="res://scripts/book.gd" id="1_3wpgy"]
 [ext_resource type="PackedScene" uid="uid://byut5eobjs3qd" path="res://scenes/page.tscn" id="1_ble1a"]
@@ -8,6 +8,7 @@
 [ext_resource type="Shader" uid="uid://bfrr7t7ixvr1s" path="res://shaders/left_page_shader.tres" id="3_sm5br"]
 [ext_resource type="Shader" uid="uid://c8vvyu3ty2g3r" path="res://shaders/turning_page.tres" id="5_01hes"]
 [ext_resource type="Shader" uid="uid://5tycrtepnri4" path="res://shaders/outsideCover.tres" id="6_dm1x1"]
+[ext_resource type="Script" uid="uid://bsk4600q1jht" path="res://swipe_detecter.gd" id="9_4lhog"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4lhog"]
 shader = ExtResource("2_cgkwt")
@@ -26,6 +27,7 @@ viewport_path = NodePath(".")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_cgkwt"]
 shader = ExtResource("5_01hes")
+shader_parameter/time = 0.3
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_ih1ba"]
 viewport_path = NodePath(".")
@@ -54,9 +56,8 @@ operator = 3
 
 [sub_resource type="VisualShaderNodeFloatParameter" id="VisualShaderNodeFloatParameter_xlr38"]
 parameter_name = "time"
-qualifier = 2
 default_value_enabled = true
-default_value = 0.6
+default_value = 0.577
 
 [sub_resource type="VisualShaderNodeFloatOp" id="VisualShaderNodeFloatOp_1xgku"]
 default_input_values = [0, 0.0, 1, 1.0]
@@ -202,7 +203,7 @@ function = 9
 code = "shader_type canvas_item;
 render_mode blend_mix;
 
-instance uniform float time = 0.60000002384186;
+uniform float time = 0.57700002193451;
 
 
 
@@ -537,6 +538,7 @@ nodes/fragment/connections = PackedInt32Array(4, 0, 3, 2, 5, 1, 7, 1, 6, 0, 11, 
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dm1x1"]
 shader = SubResource("VisualShader_6lerw")
+shader_parameter/time = 0.577
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_cgkwt"]
 viewport_path = NodePath(".")
@@ -630,7 +632,6 @@ stretch_mode = 2
 
 [node name="TurningPageRightTexture" type="TextureRect" parent="."]
 material = SubResource("ShaderMaterial_cgkwt")
-instance_shader_parameters/time = 0.0
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
@@ -640,7 +641,6 @@ stretch_mode = 2
 
 [node name="TurningPageLeftTexture" type="TextureRect" parent="."]
 material = SubResource("ShaderMaterial_dm1x1")
-instance_shader_parameters/time = 0.0
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
@@ -670,6 +670,21 @@ render_target_update_mode = 0
 
 [node name="ClickablesHolder" type="Node" parent="."]
 
+[node name="SwipeDetecter" type="ScrollContainer" parent="."]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_right = 4000.0
+offset_bottom = 10008.0
+vertical_scroll_mode = 0
+script = ExtResource("9_4lhog")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="SwipeDetecter"]
+self_modulate = Color(1, 1, 1, 0)
+custom_minimum_size = Vector2(10000, 10000)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
 [connection signal="add_pages_below" from="." to="." method="_on_add_pages_below"]
 [connection signal="page_update" from="." to="TurningPageLeft" method="_on_book_page_update"]
 [connection signal="page_update" from="." to="TurningPageRight" method="_on_book_page_update"]
@@ -677,3 +692,4 @@ render_target_update_mode = 0
 [connection signal="page_update" from="." to="LeftPage" method="_on_book_page_update"]
 [connection signal="go_to_section" from="RightPage" to="." method="_on_go_to_section"]
 [connection signal="go_to_section" from="LeftPage" to="." method="_on_go_to_section"]
+[connection signal="scroll_ended" from="SwipeDetecter" to="." method="_on_swipe_detecter_scroll_ended"]

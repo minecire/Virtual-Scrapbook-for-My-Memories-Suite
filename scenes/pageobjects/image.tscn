@@ -1,38 +1,14 @@
-[gd_scene load_steps=19 format=3 uid="uid://dqx5g1c42nps4"]
+[gd_scene load_steps=4 format=3 uid="uid://dqx5g1c42nps4"]
 
 [ext_resource type="Script" uid="uid://bcym3ld28ns2v" path="res://scripts/page_objects/image.gd" id="1_237c1"]
-[ext_resource type="Shader" uid="uid://d10l2cnv5gpnl" path="res://shaders/matte_svg_texture.gdshader" id="1_ifxiq"]
-[ext_resource type="Shader" uid="uid://dn68gp4n5k00e" path="res://shaders/image.gdshader" id="1_yo6jt"]
-[ext_resource type="Texture2D" uid="uid://deitnbqkqdsir" path="res://Shapes/Heart2.svg" id="2_n6tfk"]
-[ext_resource type="Texture2D" uid="uid://c3theote3hkyc" path="res://Shapes/Corners/Button.svg" id="3_fuyb8"]
-[ext_resource type="Texture2D" uid="uid://qd0cr5fcmo7a" path="res://Shapes/Corners/Cloud.svg" id="4_kehn4"]
-[ext_resource type="Texture2D" uid="uid://c0tr7p5bqfwj8" path="res://Shapes/Rips/rip-00.png" id="5_ptb0x"]
-[ext_resource type="Texture2D" uid="uid://c25d5hwmjb0i8" path="res://Shapes/Rips/rip-01.png" id="6_237c1"]
-[ext_resource type="Texture2D" uid="uid://pq5mxuge2sh3" path="res://Shapes/Rips/rip-02.png" id="7_8aavx"]
-[ext_resource type="Texture2D" uid="uid://dbvrd5gc4eemu" path="res://Shapes/Rips/rip-03.png" id="8_dwril"]
-[ext_resource type="Texture2D" uid="uid://b4mit3wjl26of" path="res://Shapes/Rips/rip-04.png" id="9_vycf4"]
-[ext_resource type="Texture2D" uid="uid://b0rvmfql0pngi" path="res://Shapes/Rips/rip-05.png" id="10_is226"]
-[ext_resource type="Texture2D" uid="uid://ijh5fwj121l" path="res://Shapes/Rips/rip-06.png" id="11_7lktx"]
-[ext_resource type="Texture2D" uid="uid://dek38cpdb1uet" path="res://Shapes/Rips/rip-07.png" id="12_8b8n7"]
-[ext_resource type="Texture2D" uid="uid://doxk3uwn0lr4d" path="res://Shapes/Rips/rip-08.png" id="13_jtmrb"]
-[ext_resource type="Texture2D" uid="uid://cpq7sm73wj373" path="res://Shapes/Rips/rip-09.png" id="14_hvjj0"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ujagd"]
-shader = ExtResource("1_ifxiq")
-shader_parameter/gradient_textures = null
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_n6tfk"]
-shader = ExtResource("1_yo6jt")
-shader_parameter/shape_textures = Array[Texture2D]([ExtResource("2_n6tfk")])
-shader_parameter/corner_textures = Array[Texture2D]([ExtResource("3_fuyb8"), ExtResource("4_kehn4")])
-shader_parameter/rip_textures = Array[Texture2D]([ExtResource("5_ptb0x"), ExtResource("6_237c1"), ExtResource("7_8aavx"), ExtResource("8_dwril"), ExtResource("9_vycf4"), ExtResource("10_is226"), ExtResource("11_7lktx"), ExtResource("12_8b8n7"), ExtResource("13_jtmrb"), ExtResource("14_hvjj0")])
-shader_parameter/gradient_textures = Array[Texture2D]([])
+[ext_resource type="Material" uid="uid://5771ersyd56u" path="res://shaders/image_matte_material_web.tres" id="2_ifxiq"]
+[ext_resource type="Material" uid="uid://b0hf34ub671o3" path="res://shaders/image_material_web.tres" id="3_ujagd"]
 
 [node name="Image" type="Node"]
 script = ExtResource("1_237c1")
 
 [node name="MatteSvgTexture" type="TextureRect" parent="."]
-material = SubResource("ShaderMaterial_ujagd")
+material = ExtResource("2_ifxiq")
 clip_contents = true
 offset_right = 40.0
 offset_bottom = 40.0
@@ -40,7 +16,7 @@ expand_mode = 1
 
 [node name="Texture" type="TextureRect" parent="."]
 texture_filter = 2
-material = SubResource("ShaderMaterial_n6tfk")
+material = ExtResource("3_ujagd")
 instance_shader_parameters/corner_rounding = Vector4(0, 0, 0, 0)
 instance_shader_parameters/recolor_value = Vector4(0, 0, 0, 0)
 instance_shader_parameters/textureIndex = -1

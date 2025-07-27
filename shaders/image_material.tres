@@ -1,0 +1,22 @@
+[gd_resource type="ShaderMaterial" load_steps=14 format=3 uid="uid://b1bar84dqsfw0"]
+
+[ext_resource type="Shader" uid="uid://cnr7c2puc3m3r" path="res://shaders/image.gdshader" id="1_q31pn"]
+[ext_resource type="Texture2D" uid="uid://c3theote3hkyc" path="res://Shapes/Corners/Button.svg" id="2_km3ln"]
+[ext_resource type="Texture2D" uid="uid://qd0cr5fcmo7a" path="res://Shapes/Corners/Cloud.svg" id="3_y8hgr"]
+[ext_resource type="Texture2D" uid="uid://c0tr7p5bqfwj8" path="res://Shapes/Rips/rip-00.png" id="4_gp7t1"]
+[ext_resource type="Texture2D" uid="uid://c25d5hwmjb0i8" path="res://Shapes/Rips/rip-01.png" id="5_n3lia"]
+[ext_resource type="Texture2D" uid="uid://pq5mxuge2sh3" path="res://Shapes/Rips/rip-02.png" id="6_64jpm"]
+[ext_resource type="Texture2D" uid="uid://dbvrd5gc4eemu" path="res://Shapes/Rips/rip-03.png" id="7_bqh2t"]
+[ext_resource type="Texture2D" uid="uid://b4mit3wjl26of" path="res://Shapes/Rips/rip-04.png" id="8_vt51g"]
+[ext_resource type="Texture2D" uid="uid://b0rvmfql0pngi" path="res://Shapes/Rips/rip-05.png" id="9_kimv0"]
+[ext_resource type="Texture2D" uid="uid://ijh5fwj121l" path="res://Shapes/Rips/rip-06.png" id="10_fn2m7"]
+[ext_resource type="Texture2D" uid="uid://dek38cpdb1uet" path="res://Shapes/Rips/rip-07.png" id="11_bnqm2"]
+[ext_resource type="Texture2D" uid="uid://doxk3uwn0lr4d" path="res://Shapes/Rips/rip-08.png" id="12_vipqx"]
+[ext_resource type="Texture2D" uid="uid://cpq7sm73wj373" path="res://Shapes/Rips/rip-09.png" id="13_centr"]
+
+[resource]
+shader = ExtResource("1_q31pn")
+shader_parameter/shape_textures = Array[Texture2D]([])
+shader_parameter/corner_textures = Array[Texture2D]([ExtResource("2_km3ln"), ExtResource("3_y8hgr")])
+shader_parameter/rip_textures = Array[Texture2D]([])
+shader_parameter/gradient_textures = Array[Texture2D]([ExtResource("4_gp7t1"), ExtResource("5_n3lia"), ExtResource("6_64jpm"), ExtResource("7_bqh2t"), ExtResource("8_vt51g"), ExtResource("9_kimv0"), ExtResource("10_fn2m7"), ExtResource("11_bnqm2"), ExtResource("12_vipqx"), ExtResource("13_centr")])

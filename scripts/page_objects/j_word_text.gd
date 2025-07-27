@@ -160,7 +160,7 @@ func parse_text():
 	$ShapeCanvas.size = pageSize
 	$ShapeCanvas.top_level = true
 	
-	set_text_from_file($TextBox, path + "/objects/" + data["fileName"])
+	set_text_from_file($TextBox,data["fileName"])
 
 
 func set_text_from_file(box, filepath):
@@ -254,7 +254,7 @@ func parse_blip(blip, box, scaleFactor, currentFontSize):
 
 func parse_text_content(filepath):
 	var parser = XMLParser.new()
-	parser.open(filepath)
+	parser.open_buffer(util_Preloader.textsDict[filepath].to_utf8_buffer())
 	var textData = {}
 	var text = []
 	while parser.read() != ERR_FILE_EOF:

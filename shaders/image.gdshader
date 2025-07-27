@@ -1,9 +1,9 @@
 shader_type canvas_item;
 
-uniform sampler2D shape_textures[100];
+uniform sampler2D shape_textures[30];
 uniform sampler2D corner_textures[2];
 uniform sampler2D rip_textures[10];
-uniform sampler2D gradient_textures[100];
+uniform sampler2D gradient_textures[30];
 
 instance uniform vec4 recolor_value = vec4(0.000000, 0.000000, 0.000000, 0.000000);
 instance uniform vec4 corner_rounding = vec4(0.100000, 0.100000, 0.100000, 0.100000);
@@ -19,12 +19,24 @@ instance uniform int cornerType = 1;
 instance uniform vec4 edgeRip = vec4(0.1, 0.1, 0.1, 0.1);
 instance uniform vec4 edgeRipTextures = vec4(1., 3., 3., 7.);
 
-instance uniform int gradientIndex = 1;
+instance uniform int gradientIndex = -1;
 instance uniform vec4 transformationMatrix;
 instance uniform vec2 translation;
 
 float rip_check(vec2 uv, int tex){
 	return texture(rip_textures[tex], uv).r;
+}
+
+float corner_texture_check(vec2 uv, int tex){
+	return texture(corner_textures[tex], uv).a;
+}
+
+vec4 shape_texture_check(vec2 uv, int tex){
+	return texture(shape_textures[tex], uv);
+}
+
+vec4 gradient_texture_check(vec2 uv, int tex){
+	return texture(gradient_textures[tex], uv);
 }
 
 float check_all_rips(vec2 uv, vec4 rips, vec4 textures){
@@ -58,7 +70,7 @@ float corner_check(vec2 uv, float val, float ar, int type){
 		if(scaledUV.x < 0. || scaledUV.x > 1. || scaledUV.y < 0. || scaledUV.y > 1.){
 			return 1.;
 		}
-		outbool = texture(corner_textures[type - 2], scaledUV).a > 0.;
+		outbool = corner_texture_check(scaledUV, type - 2) > 0.;
 	}
 	if(outbool) {
 		return 1.;
@@ -96,9 +108,6 @@ float check_all_corners_matte(vec2 uv, vec4 vals, float ar, int type, vec4 rips,
 	return check_all_corners(uv, vals, ar, type, rips, altrips);
 }
 
-void vertex() {
-	// Called for every vertex the material is visible on.
-}
 
 void fragment() {
 	float aspect_ratio = assorted_data.x;
@@ -130,15 +139,15 @@ void fragment() {
 		vec4 recolor = texture(TEXTURE, unscaledModUV) + recolor_value;
 		float matteOnly = allCornersMatte - allCorners;
 		float shadowAlpha = 0.;
-		float colA;
+		float colA = 1.;
 		if(textureIndex != -1){
-			COLOR = vec4(recolor.xyz, COLOR.w * texture(shape_textures[textureIndex], rescaledShapeUV).a);
-			colA = COLOR.w * texture(shape_textures[textureIndex], rescaledShapeUV).a;
+			COLOR = vec4(recolor.xyz, COLOR.w * shape_texture_check(rescaledShapeUV, textureIndex).a);
+			colA = COLOR.w * shape_texture_check(rescaledShapeUV, textureIndex).a;
 			if(scaledUV.x < 0. || scaledUV.x > 1. || scaledUV.y < 0. || scaledUV.y > 1.){
 				COLOR.a = 0.;
 				colA = 0.;
 			}
-			shadowAlpha = texture(shape_textures[textureIndex], rescaledShapeShadowUV).a;
+			shadowAlpha = shape_texture_check(rescaledShapeShadowUV, textureIndex).a;
 			if(shadowUV.x < 0. || shadowUV.x > 1. || shadowUV.y < 0. || shadowUV.y > 1.){
 				shadowAlpha = 0.;
 			}
@@ -149,9 +158,9 @@ void fragment() {
 				colA = matte_color.a;
 			}
 			else{
-				COLOR = texture(gradient_textures[gradientIndex], globalUV);
-				COLOR.a = matte_color.a * texture(gradient_textures[gradientIndex], globalUV).a;
-				colA = matte_color.a * texture(gradient_textures[gradientIndex], globalUV).a;
+				COLOR = gradient_texture_check(globalUV, gradientIndex);
+				COLOR.a = matte_color.a * gradient_texture_check(globalUV, gradientIndex).a;
+				colA = matte_color.a * gradient_texture_check(globalUV, gradientIndex).a;
 			}
 		}
 		else{
@@ -168,10 +177,10 @@ void fragment() {
 				float dist = length(shadowTransform);
 				float moddist = dist / 2.;
 				if(textureIndex != -1){
-					for(int i = 0; i < 10; i++){
+					for(int i = 0; i < 4; i++){
 						vec2 tfuv = rescaledShapeModUV - dist * shadowTransform / length(shadowTransform);
 						vec2 tfuv2 = modUV - dist * shadowTransform / length(shadowTransform);
-						if(texture(shape_textures[textureIndex],tfuv).w == 1. && !(
+						if(shape_texture_check(tfuv, textureIndex).w == 1. && !(
 						tfuv2.x < 0. || tfuv2.x > 1. || tfuv2.y < 0. || tfuv2.y > 1.)){
 							dist -= moddist;
 						}
@@ -182,7 +191,7 @@ void fragment() {
 					}
 				}
 				else{
-					for(int i = 0; i < 10; i++){
+					for(int i = 0; i < 4; i++){
 						if(texture(TEXTURE, unscaledModUV - dist * shadowTransform / length(shadowTransform)).w == 1. &&
 							max(check_all_corners(modUV - dist * shadowTransform / length(shadowTransform),
 								corner_rounding, aspect_ratio, cornerType, edgeRip, edgeRipTextures),

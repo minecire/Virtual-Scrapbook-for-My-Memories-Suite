@@ -1,6 +1,6 @@
 shader_type canvas_item;
 
-uniform sampler2D gradient_textures[100];
+uniform sampler2D gradient_textures[30];
 
 instance uniform vec4 subtexture = vec4(0., 0., 1., 1.);
 instance uniform vec4 shadowColor = vec4(0., 0., 0., 1.);
@@ -12,10 +12,10 @@ instance uniform int gradientIndex = 1;
 instance uniform vec4 transformationMatrix;
 instance uniform vec2 translation;
 
-
-void vertex() {
-	// Called for every vertex the material is visible on.
+vec4 gradient_texture_check(vec2 uv, int tex){
+	return texture(gradient_textures[tex], uv);
 }
+
 
 void fragment() {
 	vec2 scaledUV = vec2(UV.x * subtexture.z + subtexture.x, UV.y * subtexture.w + subtexture.y);
@@ -24,8 +24,8 @@ void fragment() {
 	float shadowAlpha = 0.;
 	float colA;
 	if(gradientIndex != -1){
-		colA = COLOR.a * texture(gradient_textures[gradientIndex], globalUV).a;
-		COLOR = vec4(texture(gradient_textures[gradientIndex], globalUV).rgb, COLOR.a * texture(gradient_textures[gradientIndex], globalUV).a);
+		colA = COLOR.a * gradient_texture_check(globalUV, gradientIndex).a;
+		COLOR = vec4(gradient_texture_check(globalUV, gradientIndex).rgb, COLOR.a * gradient_texture_check(globalUV, gradientIndex).a);
 	}
 	else{
 		COLOR = texture(TEXTURE, scaledUV);
@@ -59,5 +59,5 @@ void fragment() {
 			COLOR = vec4(shadowColor.rgb, shadowColor.a * shadowAlpha);
 		}
 	}
-	
+
 }

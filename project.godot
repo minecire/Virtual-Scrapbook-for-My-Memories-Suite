@@ -15,13 +15,16 @@ run/main_scene="uid://c7mnsqgs1g7tf"
 config/features=PackedStringArray("4.4", "Forward Plus")
 run/delta_smoothing=false
 boot_splash/bg_color=Color(0.197362, 0.273724, 0.263637, 1)
-config/icon="res://icon.svg"
+boot_splash/use_filter=false
+boot_splash/image="uid://b3uoo24r1ymbp"
+config/icon="uid://b3uoo24r1ymbp"
 
 [autoload]
 
 util_SvgProcessing="*res://scripts/util/svg_processing.gd"
 util_Preloader="*res://scripts/util/preloader.gd"
 util_Enums="*res://scripts/util/enums.gd"
+util_ClearTemp="*res://scripts/util/clear_temp.gd"
 PageTurn="*res://scripts/page_turn.gd"
 
 [display]
@@ -30,9 +33,13 @@ window/size/viewport_height=900
 window/vsync/vsync_mode=0
 mouse_cursor/custom_image="uid://b8kag3jsisfkr"
 
+[dotnet]
+
+project/assembly_name="scrapbook"
+
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/godot-svg/plugin.cfg")
+enabled=PackedStringArray()
 
 [gui]
 
@@ -66,9 +73,38 @@ end_of_book={
 ]
 }
 
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
+
 [rendering]
 
-anti_aliasing/quality/msaa_2d=2
-limits/global_shader_variables/buffer_size=131072
+rendering_device/staging_buffer/max_size_mb=256
+textures/vram_compression/import_etc2_astc=true
+textures/lossless_compression/force_png=true
+textures/webp_compression/compression_method=6
+textures/webp_compression/lossless_compression_factor=25.0
+gl_compatibility/item_buffer_size=8192
+shader_compiler/shader_cache/compress=false
+shader_compiler/shader_cache/use_zstd_compression=false
+limits/opengl/max_renderable_elements=32768
 environment/defaults/default_clear_color=Color(0.276689, 0.386816, 0.306732, 1)
-anti_aliasing/quality/screen_space_aa=1
+
+[shader_globals]
+
+corner_textures={
+"type": "sampler2DArray",
+"value": ""
+}
+shape_textures={
+"type": "sampler2DArray",
+"value": ""
+}
+rip_textures={
+"type": "sampler2DArray",
+"value": ""
+}
+gradient_textures={
+"type": "sampler2DArray",
+"value": ""
+}

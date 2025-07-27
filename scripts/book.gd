@@ -11,7 +11,6 @@ var escapeTimer = 0
 var time: float = 1.0
 
 signal page_update
-signal page_update_off_buffer
 signal add_pages_below
 signal get_has_background
 
@@ -40,6 +39,9 @@ var turningPageRightTexture
 var leftPageSection
 var rightPageSection
 
+var cantExit = false
+
+var isZip
 
 func _ready():
 	$LeftPage.pageType = util_Enums.pageType.LEFT
@@ -64,7 +66,8 @@ func _ready():
 		PageTurn.hasCover = false
 	PageTurn.CoverInsideLeft = $CoverInsideLeft
 	PageTurn.CoverOutside = $CoverOutside
-	util_Preloader.reload_stuff(sectionsList, bookPath)
+	util_Preloader.reload_stuff(sectionsList, bookPath, isZip)
+	bookPath = util_Preloader.bookPath
 	update_pages()
 	get_tree().get_root().size_changed.connect(delayed_page_update)
 	save_page()
@@ -207,28 +210,41 @@ func update_pages():
 		emit_signal("add_pages_below", rightPage, rightPageTexture.position, rightPageTexture.size, PageTurn.rightPageSectionIndex, PageTurn.currentRightPage, true)
 	if(PageTurn.currentLeftPage != -1):
 		emit_signal("add_pages_below", leftPage, leftPageTexture.position, leftPageTexture.size, PageTurn.leftPageSectionIndex, PageTurn.currentLeftPage, false)
-	
+	if(OS.has_feature("web")):
+		isi.shapes = {}
+		isi.shapesarr = []
+		isi.gradients = {}
+		isi.gradientsarr = []
 	emit_signal("page_update")
 	
 	if($ClickablesHolder.get_children().size() > 0):
 		for node in $ClickablesHolder.get_children():
 			node.get_node("TextBox").meta_hover_started.connect(_on_text_box_meta_hover_started)
 			node.get_node("TextBox").meta_hover_ended.connect(_on_text_box_meta_hover_ended)
-	if(isi.shapesarr.size() > 100 || isi.gradientsarr.size() > 100):
-		isi.shapes = {}
-		isi.shapesarr = []
-		isi.gradients = {}
-		isi.gradientsarr = []
-		emit_signal("page_update")
+	if(OS.has_feature("web")):
+		isi.imageMaterialWeb.set("shader_parameter/shape_textures", isi.shapesarr)
+		isi.imageMaterialWeb.set("shader_parameter/gradient_textures", isi.gradientsarr)
+		isi.imageMatteMaterialWeb.set("shader_parameter/gradient_textures", isi.gradientsarr)
+	else:
+		if(isi.shapesarr.size() > 30 || isi.gradientsarr.size() > 30):
+			isi.shapes = {}
+			isi.shapesarr = []
+			isi.gradients = {}
+			isi.gradientsarr = []
+			emit_signal("page_update")
 	
-	isi.get_node("Texture").material.set("shader_parameter/shape_textures", isi.shapesarr)
-	isi.get_node("Texture").material.set("shader_parameter/gradient_textures", isi.gradientsarr)
-	isi.get_node("MatteSvgTexture").material.set("shader_parameter/gradient_textures", isi.gradientsarr)
+		isi.imageMaterial.set("shader_parameter/shape_textures", isi.shapesarr)
+		isi.imageMaterial.set("shader_parameter/gradient_textures", isi.gradientsarr)
+		isi.imageMatteMaterial.set("shader_parameter/gradient_textures", isi.gradientsarr)
 	isi.free()
 
 
 func quit_to_menu():
+	if(cantExit):
+		return
+	PageTurn.reset_values()
 	save_menu()
+	util_ClearTemp.clear_temp()
 	get_tree().change_scene_to_file("res://scenes/menu.tscn")
 	get_tree().get_root().remove_child(get_tree().get_root().get_node("Book"))
 
@@ -266,7 +282,7 @@ func _input(event: InputEvent):
 			time = PageTurn.turn_page_right()
 			update_pages()
 	elif(event.is_action_pressed("reload_pages")):
-		util_Preloader.reload_stuff(sectionsList, bookPath)
+		util_Preloader.reload_stuff(sectionsList, bookPath, isZip)
 		update_pages()
 	
 	if(event.is_action_pressed("start_of_section")):
@@ -296,8 +312,8 @@ func _process(deltaTime):
 			$CoverOutside.set_instance_shader_parameter("time", time)
 			$CoverInsideLeft.set_instance_shader_parameter("time", time)
 		else:
-			$TurningPageLeftTexture.set_instance_shader_parameter("time", time)
-			$TurningPageRightTexture.set_instance_shader_parameter("time", time)
+			$TurningPageLeftTexture.material.set("shader_parameter/time", time)
+			$TurningPageRightTexture.material.set("shader_parameter/time", time)
 		if(time >= 1):
 			time = 1
 			PageTurn.finish_turn_right()
@@ -309,8 +325,8 @@ func _process(deltaTime):
 			$CoverOutside.set_instance_shader_parameter("time", time)
 			$CoverInsideLeft.set_instance_shader_parameter("time", time)
 		else:
-			$TurningPageLeftTexture.set_instance_shader_parameter("time", time)
-			$TurningPageRightTexture.set_instance_shader_parameter("time", time)
+			$TurningPageLeftTexture.material.set("shader_parameter/time", time)
+			$TurningPageRightTexture.material.set("shader_parameter/time", time)
 		if(time <= 0):
 			time = 0
 			PageTurn.finish_turn_left()
@@ -320,13 +336,14 @@ func _process(deltaTime):
 func save_page():
 	var savefile = FileAccess.open("user://save", FileAccess.WRITE)
 	var savedata = {
-		"bookPath": bookPath,
+		"bookPath": util_Preloader.zipPath if isZip else util_Preloader.bookPath,
 		"sectionsList": sectionsList,
 		"leftPageSectionIndex": PageTurn.leftPageSectionIndex,
 		"rightPageSectionIndex": PageTurn.rightPageSectionIndex,
 		"currentLeftPage": PageTurn.currentLeftPage,
 		"currentRightPage": PageTurn.currentRightPage,
-		"bookOpen": PageTurn.bookOpen
+		"bookOpen": PageTurn.bookOpen,
+		"isZip": isZip
 		}
 	var json_string = JSON.stringify(savedata)
 	savefile.store_line(json_string)
@@ -425,3 +442,32 @@ func _on_text_box_meta_hover_ended(_meta):
 	for node in $ClickablesHolder.get_children():
 		node.mouse_default_cursor_shape = Control.CURSOR_CROSS
 	pass
+
+func _notification(what):
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		util_ClearTemp.clear_temp()
+		get_tree().quit() # default behavior
+
+func _on_swipe_detecter_scroll_ended() -> void:
+	var scrollPos = $SwipeDetecter.get_h_scroll()
+	if(scrollPos == 500):
+		return
+	if(scrollPos > 510):
+		if(time < 1 && PageTurn.turningRight):
+			time = 0.999
+		elif(time > 0 && !PageTurn.turningRight):
+			time = 0.999
+			PageTurn.turningRight = true
+		else:
+			time = PageTurn.turn_page_right()
+			update_pages()
+	elif(scrollPos < 490):
+		if(time < 1 && PageTurn.turningRight):
+			time = 0.001
+			PageTurn.turningRight = false
+		elif(time > 0 && !PageTurn.turningRight):
+			time = 0.001
+		else:
+			time = PageTurn.turn_page_left()
+			update_pages()
+	$SwipeDetecter.set_deferred("scroll_horizontal", 500)

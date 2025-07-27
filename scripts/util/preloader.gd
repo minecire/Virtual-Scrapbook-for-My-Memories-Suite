@@ -3,11 +3,14 @@ extends Node
 const stepSize = 10
 
 var bookPath
+var zipPath
 var sectionsList
+var isZip
 var scrapbookData
 var iddshapes = {}
 var spanners = {}
 var imagesDict = {}
+var textsDict = {}
 var systemFontsDict = {}
 
 var currentTextData
@@ -42,7 +45,10 @@ func preload_xmls():
 
 func preload_section(path):
 	var filepath
+	print(bookPath + "/" + path)
 	var dir = DirAccess.open(bookPath + "/" + path)
+	if(dir == null):
+		return
 	for file: String in dir.get_files():
 		var extension = file.split(".")[file.split(".").size() - 1]
 		if(extension == "mms"):
@@ -479,42 +485,111 @@ func get_text_contents(parser):
 		return ""
 
 func generate_images_dict():
+	print("------------------BITCH-----------------------")
 	for section in sectionsList:
 		var sectionObjectsPath = bookPath + "/" + section + "/objects/"
+		print(sectionObjectsPath)
 		var diracc = DirAccess.open(sectionObjectsPath)
+		if(diracc == null):
+			print("poo")
+			continue
 		diracc.list_dir_begin()
 		var filename = diracc.get_next()
 		while filename != "":
 			if !diracc.current_is_dir():
 				var extension = filename.split(".")[filename.split(".").size() - 1]
 				if(extension == "png"):
-					var image = ImageTexture.create_from_image(Image.load_from_file(sectionObjectsPath + filename))
+					var image
+					if((sectionObjectsPath + filename).begins_with("res://")):
+						image = load(sectionObjectsPath + filename)
+					else:
+						image = ImageTexture.create_from_image(Image.load_from_file(sectionObjectsPath + filename))
 					imagesDict[filename] = image
 				elif(extension == "svg"):
+					if((sectionObjectsPath + filename).begins_with("res://")):
+						filename += ".import"
 					var fileacc = FileAccess.open(sectionObjectsPath + filename, FileAccess.READ)
 					var svgdata = fileacc.get_as_text()
 					imagesDict[filename] = svgdata
 			filename = diracc.get_next()
-	var diracc = DirAccess.open("res://Shapes/Basics/")
-	var filename = diracc.get_next()
-	while filename != "":
-		if !diracc.current_is_dir():
-			var extension = filename.split(".")[filename.split(".").size() - 1]
-			if(extension == "svg"):
-				var fileacc = FileAccess.open("res://Shapes/Basics/" + filename, FileAccess.READ)
-				var svgdata = fileacc.get_as_text()
-				imagesDict[filename] = svgdata
+	var basicsZip = ZIPReader.new()
+	basicsZip.open("res://Shapes/Basics.zip")
+	for filename in basicsZip.get_files():
+		var extension = filename.split(".")[filename.split(".").size() - 1]
+		if(extension == "svg"):
+			var svgdata = basicsZip.read_file(filename).get_string_from_utf8()
+			imagesDict[filename] = svgdata
+	print(imagesDict)
+	print("------------------MEOW-----------------------")
 
+func generate_texts_dict():
+	for section in sectionsList:
+		var sectionObjectsPath = bookPath + "/" + section + "/objects/"
+		print(sectionObjectsPath)
+		var diracc = DirAccess.open(sectionObjectsPath)
+		if(diracc == null):
+			print("poo")
+			continue
+		diracc.list_dir_begin()
+		var filename = diracc.get_next()
+		while filename != "":
+			if !diracc.current_is_dir():
+				var extension = filename.split(".")[filename.split(".").size() - 1]
+				if(extension == "xml" || extension == "srw"):
+					var fileacc = FileAccess.open(sectionObjectsPath + filename, FileAccess.READ)
+					var xmldata = fileacc.get_as_text()
+					textsDict[filename] = xmldata
+			filename = diracc.get_next()
+	
 
-func reload_stuff(sList, bPath):
+func extract_all_from_zip(path):
+	var reader = ZIPReader.new()
+	reader.open(path)
+
+	# Destination directory for the extracted files (this folder must exist before extraction).
+	# Not all ZIP archives put everything in a single root folder,
+	# which means several files/folders may be created in `root_dir` after extraction.
+	var id = str(int(floor(randf() * 1000000000)))
+	
+	var root_dir = DirAccess.open("user://")
+	root_dir.make_dir_recursive("temp/" + id + "/")
+	root_dir = DirAccess.open("user://temp/" + id + "/")
+
+	var files = reader.get_files()
+	for file_path in files:
+		# If the current entry is a directory.
+		if file_path.ends_with("/"):
+			root_dir.make_dir_recursive(file_path)
+			continue
+
+		# Write file contents, creating folders automatically when needed.
+		# Not all ZIP archives are strictly ordered, so we need to do this in case
+		# the file entry comes before the folder entry.
+		root_dir.make_dir_recursive(root_dir.get_current_dir().path_join(file_path).get_base_dir())
+		var file = FileAccess.open(root_dir.get_current_dir().path_join(file_path), FileAccess.WRITE)
+		var buffer = reader.read_file(file_path)
+		file.store_buffer(buffer)
+	return id
+
+func reload_stuff(sList, bPath, iZip):
+	isZip = iZip
+	if(iZip):
+		zipPath = bPath
+		var id = extract_all_from_zip(bPath)
+		bookPath = "user://temp/" + id + "/"
+	else:
+		bookPath = bPath
+	print(bookPath)
 	sectionsList = sList
-	bookPath = bPath
 	scrapbookData = []
 	imagesDict = {}
 	spanners = {}
 	iddshapes = {}
 	generate_images_dict()
+	generate_texts_dict()
 	preload_xmls()
+	util_ClearTemp.clear_temp()
+	print("preloaded!")
 
 func preparse_text_for_shape(filepath, width):
 	var parsedData = parse_text_content(filepath)

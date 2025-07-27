@@ -20,6 +20,14 @@ var rightPageSectionIndex = 0
 
 var bookOpen: bool
 
+func reset_values():
+	leftPageSectionIndex = 0
+	rightPageSectionIndex = 0
+	currentLeftPage = -1
+	currentRightPage = 1
+	currentLeftTurningPage = -1
+	currentRightTurningPage = -1
+
 func turn_page_right():
 	var time = 1
 	if(!bookOpen):

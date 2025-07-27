@@ -1,0 +1,3 @@
+true
+res://scrapbooks/test.zip
+true

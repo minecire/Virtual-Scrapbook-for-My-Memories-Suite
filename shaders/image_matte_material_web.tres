@@ -1,0 +1,7 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://5771ersyd56u"]
+
+[ext_resource type="Shader" uid="uid://h3sltsw2n3q5" path="res://shaders/matte_svg_texture_web.gdshader" id="1_8ystn"]
+
+[resource]
+shader = ExtResource("1_8ystn")
+shader_parameter/gradient_textures = Array[Texture2D]([])

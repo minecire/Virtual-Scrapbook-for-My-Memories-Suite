@@ -32,7 +32,18 @@ var type
 var region
 var region2
 
+var imageMatteMaterialWeb = preload("res://shaders/image_matte_material_web.tres") as ShaderMaterial
+var imageMaterialWeb = preload("res://shaders/image_material_web.tres") as ShaderMaterial
+var imageMatteMaterial = preload("res://shaders/image_matte_material.tres") as ShaderMaterial
+var imageMaterial = preload("res://shaders/image_material.tres") as ShaderMaterial
+
 func _ready():
+	if(OS.has_feature("web")):
+		$MatteSvgTexture.set_material(imageMatteMaterialWeb)
+		$Texture.set_material(imageMaterialWeb)
+	else:
+		$MatteSvgTexture.set_material(imageMatteMaterial)
+		$Texture.set_material(imageMaterial)
 	parseImage()
 func find_xml_attribute(xmldata, attr):
 	if(xmldata.find(attr + "=\"") == -1):
@@ -130,6 +141,7 @@ func parseShapeMatte():
 				shapeFile = "res://Shapes/Basics/" + data["customShapeName"]
 		else:
 			shapeFile = "res://Shapes/Basics/" + numberedShapesDict[data["type"].to_int()]
+		
 		var shapefile = FileAccess.open(shapeFile, FileAccess.READ)
 		shapefileContent = shapefile.get_as_text()
 	var matteColor
@@ -372,7 +384,11 @@ func parseImage():
 		if(util_Preloader.imagesDict.has(filename)):
 			imageTexture = util_Preloader.imagesDict[filename]
 		else:
-			imageTexture = ImageTexture.create_from_image(Image.load_from_file(imagePath))
+			print(imagePath)
+			if(imagePath.begins_with("res://")):
+				imageTexture = load(imagePath)
+			else:
+				imageTexture = ImageTexture.create_from_image(Image.load_from_file(imagePath))
 	elif(data.has("GradientDefinition")):
 		if(!gradients.has(data["GradientDefinition"])):
 			addGradient(data["GradientDefinition"], imageSize.x / 4., imageSize.y / 4.)
@@ -406,7 +422,11 @@ func parseImage():
 		if(util_Preloader.imagesDict.has(filename)):
 			imageTexture = util_Preloader.imagesDict[filename]
 		else:
-			imageTexture = ImageTexture.create_from_image(Image.load_from_file(imagePath))
+			print(imagePath)
+			if(imagePath.begins_with("res://")):
+				imageTexture = load(imagePath)
+			else:
+				imageTexture = ImageTexture.create_from_image(Image.load_from_file(imagePath))
 		region = Rect2()
 		var defaultWidth
 		var defaultHeight

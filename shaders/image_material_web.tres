@@ -1,0 +1,31 @@
+[gd_resource type="ShaderMaterial" load_steps=15 format=3 uid="uid://b0hf34ub671o3"]
+
+[ext_resource type="Shader" uid="uid://dn68gp4n5k00e" path="res://shaders/image_web.gdshader" id="1_t0es5"]
+[ext_resource type="Texture2D" uid="uid://c3theote3hkyc" path="res://Shapes/Corners/Button.svg" id="2_q2rbk"]
+[ext_resource type="Texture2D" uid="uid://qd0cr5fcmo7a" path="res://Shapes/Corners/Cloud.svg" id="3_fv8gk"]
+[ext_resource type="Texture2D" uid="uid://c0tr7p5bqfwj8" path="res://Shapes/Rips/rip-00.png" id="4_rbkow"]
+[ext_resource type="Texture2D" uid="uid://c25d5hwmjb0i8" path="res://Shapes/Rips/rip-01.png" id="5_dnl24"]
+[ext_resource type="Texture2D" uid="uid://pq5mxuge2sh3" path="res://Shapes/Rips/rip-02.png" id="6_5umo8"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_ax6fi"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_b6c2c"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_t7xah"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_faxig"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_qwo15"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_bbov8"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_yqvbi"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_ptb0x"]
+
+[resource]
+shader = ExtResource("1_t0es5")
+shader_parameter/shape_textures = Array[Texture2D]([SubResource("PlaceholderTexture2D_faxig"), SubResource("PlaceholderTexture2D_qwo15"), SubResource("PlaceholderTexture2D_bbov8"), SubResource("PlaceholderTexture2D_yqvbi"), SubResource("PlaceholderTexture2D_ptb0x")])
+shader_parameter/corner_textures = Array[Texture2D]([ExtResource("2_q2rbk"), ExtResource("3_fv8gk")])
+shader_parameter/rip_textures = Array[Texture2D]([ExtResource("4_rbkow"), ExtResource("5_dnl24"), ExtResource("6_5umo8")])
+shader_parameter/gradient_textures = Array[Texture2D]([SubResource("PlaceholderTexture2D_ax6fi"), SubResource("PlaceholderTexture2D_b6c2c"), SubResource("PlaceholderTexture2D_t7xah")])

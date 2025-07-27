@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://0xy0ifljc75g"]
 
 [ext_resource type="Shader" uid="uid://cb37vk0hd0bug" path="res://shaders/word_art.gdshader" id="1_4skvc"]
-[ext_resource type="Script" uid="uid://djxffeji21vul" path="res://scenes/pageobjects/word_art.gd" id="1_a06q8"]
+[ext_resource type="Script" uid="uid://djxffeji21vul" path="res://scripts/page_objects/word_art.gd" id="1_a06q8"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_a06q8"]
 shader = ExtResource("1_4skvc")
@@ -14,6 +14,7 @@ script = ExtResource("1_a06q8")
 
 [node name="TextViewport" type="SubViewport" parent="."]
 transparent_bg = true
+render_target_update_mode = 4
 
 [node name="Text" type="RichTextLabel" parent="TextViewport"]
 clip_contents = false

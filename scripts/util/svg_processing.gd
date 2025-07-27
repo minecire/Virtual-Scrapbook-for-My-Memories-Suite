@@ -529,7 +529,6 @@ func parse_shape_object(name, data_, transforms):
 		apply_transformations_to_curve(curve_, transforms)
 	shapeCurves.append_array(curves)
 	return shapeCurves
-	pass
 func convert_polygon_to_path(data_):
 	return "M " + data_["points"] + " Z"
 func convert_ellipse_to_path(data_):
