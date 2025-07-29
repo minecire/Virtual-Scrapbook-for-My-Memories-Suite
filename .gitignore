@@ -20,3 +20,4 @@ scrapbooks/
 release/
 
 *.exe
+*.tmp
