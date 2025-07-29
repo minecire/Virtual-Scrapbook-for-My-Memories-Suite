@@ -384,7 +384,6 @@ func parseImage():
 		if(util_Preloader.imagesDict.has(filename)):
 			imageTexture = util_Preloader.imagesDict[filename]
 		else:
-			print(imagePath)
 			if(imagePath.begins_with("res://")):
 				imageTexture = load(imagePath)
 			else:
@@ -422,7 +421,6 @@ func parseImage():
 		if(util_Preloader.imagesDict.has(filename)):
 			imageTexture = util_Preloader.imagesDict[filename]
 		else:
-			print(imagePath)
 			if(imagePath.begins_with("res://")):
 				imageTexture = load(imagePath)
 			else:

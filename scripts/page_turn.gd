@@ -18,7 +18,7 @@ var turningPageRightSectionSide: bool
 var leftPageSectionIndex = 0
 var rightPageSectionIndex = 0
 
-var bookOpen: bool
+var bookOpen: bool = false
 
 func reset_values():
 	leftPageSectionIndex = 0
@@ -189,9 +189,9 @@ func turn_to_end_of_book():
 				currentRightPage = -1
 	return time
 
-func turn_left_to_section(section):
+func turn_left_to_section(section, page):
 	var time = 0
-	while(util_Preloader.sectionsList[rightPageSectionIndex] != section && rightPageSectionIndex > 0):
+	while(!check_nowhitespace(util_Preloader.sectionsList[rightPageSectionIndex], section) && rightPageSectionIndex > 0):
 		time = turn_page_left()
 		currentRightTurningPage = 2 if currentLeftPage % 2 == 1 else 1
 		if(leftPageSectionIndex < rightPageSectionIndex):
@@ -206,14 +206,27 @@ func turn_left_to_section(section):
 				currentLeftPage = util_Preloader.scrapbookData[leftPageSectionIndex]["numPages"]
 			else:
 				currentLeftPage = -1
+	if(page > 1):
+		leftPageSectionIndex = rightPageSectionIndex
+	if(currentLeftPage % 2 == page % 2):
+		currentLeftPage = page
+		if(page < util_Preloader.scrapbookData[leftPageSectionIndex]["numPages"]):
+			currentRightTurningPage = page + 1
+		else:
+			currentRightTurningPage = 1
+			rightPageSectionIndex += 1
+	elif(page > 1):
+		currentLeftPage = page - 1
+		currentRightTurningPage = page
+		
 	return time
 
-func turn_right_to_section(section):
+func turn_right_to_section(section, page):
 	var time = 1
-	while(util_Preloader.sectionsList[rightPageSectionIndex] != section && rightPageSectionIndex < util_Preloader.sectionsList.size() - 1):
+	while(!check_nowhitespace(util_Preloader.sectionsList[rightPageSectionIndex], section) && rightPageSectionIndex < util_Preloader.sectionsList.size() - 1):
 		time = turn_page_right()
-		if(util_Preloader.sectionsList[rightPageSectionIndex] == section || rightPageSectionIndex >= util_Preloader.sectionsList.size() - 1):
-			return time
+		if(check_nowhitespace(util_Preloader.sectionsList[rightPageSectionIndex], section) || rightPageSectionIndex >= util_Preloader.sectionsList.size() - 1):
+			break
 		if(rightPageSectionIndex != leftPageSectionIndex):
 			leftPageSectionIndex += 1
 		if(rightPageSectionIndex < util_Preloader.sectionsList.size() - 1):
@@ -234,8 +247,31 @@ func turn_right_to_section(section):
 			else:
 				currentLeftTurningPage = util_Preloader.scrapbookData[rightPageSectionIndex]["numPages"]
 				currentRightPage = -1
+	if(page > 1):
+		leftPageSectionIndex = rightPageSectionIndex
+	if(currentRightPage % 2 == page % 2):
+		currentRightPage = page
+		if(page != 1):
+			currentLeftTurningPage = page - 1
+	elif(page < util_Preloader.scrapbookData[rightPageSectionIndex]["numPages"]):
+		currentRightPage = page + 1
+		currentLeftTurningPage = page
+	else:
+		rightPageSectionIndex += 1
+		currentRightPage = 1
+		currentLeftTurningPage = page
 	return time
-	
+
+
+func check_nowhitespace(a, b):
+	var newa = a.replace(" ", "").replace("\n", "").replace("\r", "").replace("\t", "").to_lower()
+	var newb = b.replace(" ", "").replace("\n", "").replace("\r", "").replace("\t", "").to_lower()
+	if(newa.length() > 0 && newa[0] == "/"):
+		newa = newa.substr(1, newa.length())
+	if(newb.length() > 0 && newb[0] == "/"):
+		newb = newb.substr(1, newb.length())
+	return newa == newb
+
 func finish_turn_right():
 	if(openingBook):
 		bookOpen = true

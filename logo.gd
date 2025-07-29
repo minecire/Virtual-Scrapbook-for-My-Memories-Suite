@@ -7,6 +7,6 @@ func _ready():
 	resize()
 
 func resize():
-	if(get_viewport() != null):
+	if(get_viewport() != null && is_inside_tree()):
 		size = get_viewport().get_visible_rect().size * Vector2(1, 0.6)
 		position = get_viewport().get_visible_rect().size * Vector2(0, 0.4)

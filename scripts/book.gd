@@ -18,12 +18,11 @@ signal get_has_background
 
 var imageScene = preload("res://scenes/pageobjects/image.tscn")
 
-
-
-
 var updateDelayTimer = -1
 var swapBuffersTimer = -1
 var cursor_timer = 0
+
+var display_info_timer = 5.
 
 
 var pagesUnder
@@ -41,9 +40,15 @@ var rightPageSection
 
 var cantExit = false
 
+var isFirstPageTurn = true
+
 var isZip
 
 func _ready():
+	isFirstPageTurn = true
+	display_info_timer = 5.
+	$CoverOutside.material.set("shader_parameter/time", 0)
+	$CoverInsideLeft.material.set("shader_parameter/time", 0)
 	$LeftPage.pageType = util_Enums.pageType.LEFT
 	$RightPage.pageType = util_Enums.pageType.RIGHT
 	$TurningPageLeft.pageType = util_Enums.pageType.TURNING
@@ -56,17 +61,29 @@ func _ready():
 	$TurningPageRightTexture.texture.set_viewport_path_in_scene("TurningPageRight")
 	leftPageSection = sectionsList[PageTurn.leftPageSectionIndex]
 	rightPageSection = sectionsList[PageTurn.rightPageSectionIndex]
-	if(FileAccess.file_exists(bookPath + "cover_outside.png")):
-		$CoverInsideLeft.texture = ImageTexture.create_from_image(Image.load_from_file(bookPath + "cover_inside_left.png"))
-		$CoverInsideRight.texture = ImageTexture.create_from_image(Image.load_from_file(bookPath + "cover_inside_right.png"))
-		$CoverOutside.texture = ImageTexture.create_from_image(Image.load_from_file(bookPath + "cover_outside.png"))
-		PageTurn.hasCover = true
-	else:
-		PageTurn.bookOpen = true
-		PageTurn.hasCover = false
+	
 	PageTurn.CoverInsideLeft = $CoverInsideLeft
 	PageTurn.CoverOutside = $CoverOutside
 	util_Preloader.reload_stuff(sectionsList, bookPath, isZip)
+	
+	if(util_Preloader.imagesDict["coverOutside"] != null):
+		$CoverInsideLeft.texture = util_Preloader.imagesDict["coverInsideLeft"]
+		$CoverInsideRight.texture = util_Preloader.imagesDict["coverInsideRight"]
+		$CoverOutside.texture = util_Preloader.imagesDict["coverOutside"]
+		PageTurn.hasCover = true
+		if(PageTurn.bookOpen):
+			$CoverInsideRight.visible = true
+			$CoverInsideLeft.visible = true
+			$CoverOutside.visible = false
+			$CoverInsideLeft.material.set("shader_parameter/time", 1.0)
+		else:
+			$CoverOutside.visible = true
+			$CoverInsideRight.visible = true
+			$CoverInsideLeft.visible = false
+	else:
+		PageTurn.bookOpen = true
+		PageTurn.hasCover = false
+	
 	bookPath = util_Preloader.bookPath
 	update_pages()
 	get_tree().get_root().size_changed.connect(delayed_page_update)
@@ -264,6 +281,7 @@ func _input(event: InputEvent):
 		else:
 			escapeTimer = 0.3
 	if(event.is_action_pressed("ui_left")):
+		display_info_timer = -1
 		if(time < 1 && PageTurn.turningRight):
 			time = 0.001
 			PageTurn.turningRight = false
@@ -272,7 +290,11 @@ func _input(event: InputEvent):
 		else:
 			time = PageTurn.turn_page_left()
 			update_pages()
+			if(isFirstPageTurn):
+				display_first_page_turn_info()
+				isFirstPageTurn = false
 	elif(event.is_action_pressed("ui_right")):
+		display_info_timer = -1
 		if(time < 1 && PageTurn.turningRight):
 			time = 0.999
 		elif(time > 0 && !PageTurn.turningRight):
@@ -281,6 +303,9 @@ func _input(event: InputEvent):
 		else:
 			time = PageTurn.turn_page_right()
 			update_pages()
+			if(isFirstPageTurn):
+				display_first_page_turn_info()
+				isFirstPageTurn = false
 	elif(event.is_action_pressed("reload_pages")):
 		util_Preloader.reload_stuff(sectionsList, bookPath, isZip)
 		update_pages()
@@ -306,11 +331,15 @@ func _process(deltaTime):
 		updateDelayTimer -= deltaTime
 		if(updateDelayTimer <= 0.):
 			update_pages()
+	if(display_info_timer > 0):
+		display_info_timer -= deltaTime
+		if(display_info_timer <= 0):
+			display_basic_info()
 	if(time < 1 && PageTurn.turningRight):
 		time += deltaTime / turnTime
 		if(PageTurn.openingBook):
-			$CoverOutside.set_instance_shader_parameter("time", time)
-			$CoverInsideLeft.set_instance_shader_parameter("time", time)
+			$CoverOutside.material.set("shader_parameter/time", time)
+			$CoverInsideLeft.material.set("shader_parameter/time", time)
 		else:
 			$TurningPageLeftTexture.material.set("shader_parameter/time", time)
 			$TurningPageRightTexture.material.set("shader_parameter/time", time)
@@ -322,8 +351,8 @@ func _process(deltaTime):
 	if(time > 0 && !PageTurn.turningRight):
 		time -= deltaTime / turnTime
 		if(PageTurn.openingBook):
-			$CoverOutside.set_instance_shader_parameter("time", time)
-			$CoverInsideLeft.set_instance_shader_parameter("time", time)
+			$CoverOutside.material.set("shader_parameter/time", time)
+			$CoverInsideLeft.material.set("shader_parameter/time", time)
 		else:
 			$TurningPageLeftTexture.material.set("shader_parameter/time", time)
 			$TurningPageRightTexture.material.set("shader_parameter/time", time)
@@ -332,7 +361,18 @@ func _process(deltaTime):
 			PageTurn.finish_turn_left()
 			update_pages()
 			save_page()
-	
+
+func display_basic_info():
+	if(OS.has_feature("mobile") || OS.has_feature("web_android") || OS.has_feature("web_ios")):
+		$Info.display_text("Swipe left or right to turn page", 4.)
+	else:
+		$Info.display_text("Press left or right arrow keys to turn page", 4.)
+
+func display_first_page_turn_info():
+	if(OS.has_feature("mobile") || OS.has_feature("web_android") || OS.has_feature("web_ios")):
+		$Info.display_text("Double tap the left or right side of the screen to move between sections", 4.)
+	else:
+		$Info.display_text("Hold shift and press left or right to move between sections", 4.)
 func save_page():
 	var savefile = FileAccess.open("user://save", FileAccess.WRITE)
 	var savedata = {
@@ -423,12 +463,24 @@ func _on_add_pages_below(page, position, size, sectionIndex, pageNumber, increas
 		else:
 			$UnderLeftPage.visible = false
 
-func _on_go_to_section(section) -> void:
-	if(sectionsList.find(section) > PageTurn.rightPageSectionIndex):
-		time = PageTurn.turn_right_to_section(section)
+func _on_go_to_section(section, page) -> void:
+	currentSectionToCheck = section
+	if(sectionsList.find_custom(check_nowhitespace) > PageTurn.rightPageSectionIndex || (sectionsList.find_custom(check_nowhitespace) == PageTurn.rightPageSectionIndex && page > PageTurn.currentRightPage)):
+		time = PageTurn.turn_right_to_section(section, page)
 	else:
-		time = PageTurn.turn_left_to_section(section)
+		time = PageTurn.turn_left_to_section(section, page)
 	update_pages()
+
+var currentSectionToCheck = ""
+func check_nowhitespace(a):
+	var b = currentSectionToCheck
+	var newa = a.replace(" ", "").replace("\n", "").replace("\r", "").replace("\t", "").to_lower()
+	var newb = b.replace(" ", "").replace("\n", "").replace("\r", "").replace("\t", "").to_lower()
+	if(newa.length() > 0 && newa[0] == "/"):
+		newa = newa.substr(1, newa.length())
+	if(newb.length() > 0 && newb[0] == "/"):
+		newb = newb.substr(1, newb.length())
+	return newa == newb
 
 func _on_text_box_meta_hover_started(_meta):
 	cursor_timer = 60
@@ -448,11 +500,12 @@ func _notification(what):
 		util_ClearTemp.clear_temp()
 		get_tree().quit() # default behavior
 
-func _on_swipe_detecter_scroll_ended() -> void:
-	var scrollPos = $SwipeDetecter.get_h_scroll()
+func _on_swipe_detecter_scroll_ended(movement = 0) -> void:
+	var scrollPos = 500 + movement
 	if(scrollPos == 500):
 		return
 	if(scrollPos > 510):
+		display_info_timer = -1
 		if(time < 1 && PageTurn.turningRight):
 			time = 0.999
 		elif(time > 0 && !PageTurn.turningRight):
@@ -461,7 +514,11 @@ func _on_swipe_detecter_scroll_ended() -> void:
 		else:
 			time = PageTurn.turn_page_right()
 			update_pages()
+			if(isFirstPageTurn):
+				display_first_page_turn_info()
+				isFirstPageTurn = false
 	elif(scrollPos < 490):
+		display_info_timer = -1
 		if(time < 1 && PageTurn.turningRight):
 			time = 0.001
 			PageTurn.turningRight = false
@@ -470,4 +527,33 @@ func _on_swipe_detecter_scroll_ended() -> void:
 		else:
 			time = PageTurn.turn_page_left()
 			update_pages()
+			if(isFirstPageTurn):
+				display_first_page_turn_info()
+				isFirstPageTurn = false
 	$SwipeDetecter.set_deferred("scroll_horizontal", 500)
+
+
+func _on_swipe_detecter_next_section() -> void:
+	if(time < 1 && PageTurn.turningRight):
+		time = 0.999
+	elif(time > 0 && !PageTurn.turningRight):
+		time = 0.999
+		PageTurn.turningRight = true
+	else:
+		time = PageTurn.turn_page_right()
+		update_pages()
+	PageTurn.turn_to_next_section()
+	update_pages()
+
+
+func _on_swipe_detecter_previous_section() -> void:
+	if(time < 1 && PageTurn.turningRight):
+		time = 0.001
+		PageTurn.turningRight = false
+	elif(time > 0 && !PageTurn.turningRight):
+		time = 0.001
+	else:
+		time = PageTurn.turn_page_left()
+		update_pages()
+	PageTurn.turn_to_section_start()
+	update_pages()

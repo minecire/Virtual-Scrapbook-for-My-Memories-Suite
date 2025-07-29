@@ -21,12 +21,11 @@ func populateFiles():
 			$Box/Middle/Files.add_item(DirAccess.get_drive_name(i) + "//", driveIcon)
 			itemsAreFolders.append(true)
 		return
-	var folderIcon = load("res://folder_icon.png")
-	var zipIcon = load("res://zip_icon.png")
+	var folderIcon = load("res://icons/folder_icon.png")
+	var zipIcon = load("res://icons/zip_icon.png")
 	
 	var diracc = DirAccess.open(current_dir)
 	$Box/Middle/Files.add_item("..", folderIcon)
-	print(current_dir)
 	diracc.list_dir_begin()
 	for file_name in diracc.get_directories():
 		$Box/Middle/Files.add_item(file_name, folderIcon)
@@ -42,22 +41,24 @@ func populateFiles():
 					$Box/Middle/Files.add_item(file_name)
 				itemsAreFolders.append(false)
 		file_name = diracc.get_next()
+	current_file = ""
 
 func _ready():
 	populateFiles()
 	size_changed.connect(resize)
 	resize()
 func resize():
-	$Box.position = size * 0.025
-	$Box.size = size * 0.95
-	$Box/Path.custom_minimum_size.y = 40
-	$Box/Middle/FolderSelect.custom_minimum_size.x = size.x * 0.4
-	$Box/Middle/FolderSelect/SystemFolders.custom_minimum_size.x = size.x * 0.4
-	$Box/Bottom.custom_minimum_size.y = 40
-	$Box/Bottom/FileName.custom_minimum_size.y = 40
-	$Box/Bottom/SelectButton.custom_minimum_size.y = 40
-	$Box/Bottom/EnterFolderButton.custom_minimum_size.y = 40
-	$Box/Bottom/FileName.custom_minimum_size.x = size.x * 0.4
+	if(is_inside_tree()):
+		$Box.position = size * 0.025
+		$Box.size = size * 0.95
+		$Box/Path.custom_minimum_size.y = 40
+		$Box/Middle/FolderSelect.custom_minimum_size.x = size.x * 0.4
+		$Box/Middle/FolderSelect/SystemFolders.custom_minimum_size.x = size.x * 0.4
+		$Box/Bottom.custom_minimum_size.y = 40
+		$Box/Bottom/FileName.custom_minimum_size.y = 40
+		$Box/Bottom/SelectButton.custom_minimum_size.y = 40
+		$Box/Bottom/EnterFolderButton.custom_minimum_size.y = 40
+		$Box/Bottom/FileName.custom_minimum_size.x = size.x * 0.4
 
 
 func _on_files_item_clicked(index: int, at_position: Vector2, mouse_button_index: int) -> void:
@@ -161,5 +162,4 @@ func _input(event):
 				current_dir = newPath
 				populateFiles()
 		else:
-			print("hello")
 			pass

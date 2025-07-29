@@ -247,7 +247,7 @@ func parse_text(data):
 		#util_Preloader.heldTextInstances[data["id"]] = textInstance
 	else:
 		add_child(textInstance)
-	if(textInstance.isContents && pageType != util_Enums.pageType.TURNING && pageType != util_Enums.pageType.UNDER):
+	if(textInstance.hasLinks && pageType != util_Enums.pageType.TURNING && pageType != util_Enums.pageType.UNDER):
 		var textInstance2 = textScene.instantiate()
 		textInstance2.pageSize = pageSize
 		textInstance2.canvasWidth = canvasWidth
@@ -260,6 +260,8 @@ func parse_text(data):
 		textInstance2.data = data
 		textInstance2.get_node("TextBox").sectionIndex = sectionIndex
 		textInstance2.go_to_section.connect(_on_text_go_to_section)
+		textInstance2.go_to_page.connect(_on_text_go_to_page)
+		textInstance2.get_node("TextBox").input.connect(get_tree().get_root().get_node("Book/SwipeDetecter")._input)
 		textInstance2.get_node("TextBox").set_modulate(Color(1., 1., 1., 0.))
 		get_tree().get_root().get_node("Book/ClickablesHolder").add_child(textInstance2)
 
@@ -347,5 +349,10 @@ func _on_book_page_update() -> void:
 
 
 func _on_text_go_to_section(section):
-	print("go to section " + section)
-	emit_signal("go_to_section", section)
+	print("go to section \"" + section + "\"")
+	emit_signal("go_to_section", section, 1)
+
+
+func _on_text_go_to_page(section, page):
+	print("go to section \"" + section + "\", page " + str(page))
+	emit_signal("go_to_section", section, page)

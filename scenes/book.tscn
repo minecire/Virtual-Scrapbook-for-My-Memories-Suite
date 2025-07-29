@@ -1,4 +1,4 @@
-[gd_scene load_steps=70 format=3 uid="uid://bb1yuoa0e4pal"]
+[gd_scene load_steps=74 format=3 uid="uid://bb1yuoa0e4pal"]
 
 [ext_resource type="Script" uid="uid://c0vrpbvt7cg74" path="res://scripts/book.gd" id="1_3wpgy"]
 [ext_resource type="PackedScene" uid="uid://byut5eobjs3qd" path="res://scenes/page.tscn" id="1_ble1a"]
@@ -9,9 +9,11 @@
 [ext_resource type="Shader" uid="uid://c8vvyu3ty2g3r" path="res://shaders/turning_page.tres" id="5_01hes"]
 [ext_resource type="Shader" uid="uid://5tycrtepnri4" path="res://shaders/outsideCover.tres" id="6_dm1x1"]
 [ext_resource type="Script" uid="uid://bsk4600q1jht" path="res://swipe_detecter.gd" id="9_4lhog"]
+[ext_resource type="Script" uid="uid://0mqb81h010tj" path="res://scenes/info.gd" id="10_h6yvl"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4lhog"]
 shader = ExtResource("2_cgkwt")
+shader_parameter/time = 0.6
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_01hes"]
 shader = ExtResource("3_sm5br")
@@ -545,6 +547,27 @@ viewport_path = NodePath(".")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ih1ba"]
 shader = ExtResource("6_dm1x1")
+shader_parameter/time = 0.45
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h6yvl"]
+bg_color = Color(0.203922, 0.254902, 0.247059, 0.356863)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.737255, 0.619608, 0.603922, 0.662745)
+expand_margin_left = 10.0
+expand_margin_top = 4.0
+expand_margin_right = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="SystemFont" id="SystemFont_h6yvl"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_4lhog"]
+font = SubResource("SystemFont_h6yvl")
+font_size = 24
+outline_size = 5
+outline_color = Color(0.153718, 0.212287, 0.293287, 1)
 
 [node name="Book" type="Control"]
 layout_mode = 3
@@ -581,7 +604,6 @@ expand_mode = 1
 [node name="CoverInsideLeft" type="TextureRect" parent="."]
 z_index = -2000
 material = SubResource("ShaderMaterial_4lhog")
-instance_shader_parameters/time = 0.0
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
@@ -650,7 +672,6 @@ stretch_mode = 2
 
 [node name="CoverOutside" type="TextureRect" parent="."]
 material = SubResource("ShaderMaterial_ih1ba")
-instance_shader_parameters/time = 0.0
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
@@ -668,22 +689,27 @@ physics_object_picking = true
 gui_disable_input = false
 render_target_update_mode = 0
 
-[node name="ClickablesHolder" type="Node" parent="."]
-
-[node name="SwipeDetecter" type="ScrollContainer" parent="."]
+[node name="SwipeDetecter" type="Control" parent="."]
 self_modulate = Color(1, 1, 1, 0)
-layout_mode = 0
+top_level = true
+anchors_preset = 0
+offset_top = -1.0
 offset_right = 4000.0
-offset_bottom = 10008.0
-vertical_scroll_mode = 0
+offset_bottom = 10007.0
+mouse_force_pass_scroll_events = false
 script = ExtResource("9_4lhog")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="SwipeDetecter"]
-self_modulate = Color(1, 1, 1, 0)
-custom_minimum_size = Vector2(10000, 10000)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
+[node name="ClickablesHolder" type="Node" parent="."]
+
+[node name="Info" type="Label" parent="."]
+visible = false
+layout_mode = 0
+offset_right = 7.0
+offset_bottom = 40.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_h6yvl")
+label_settings = SubResource("LabelSettings_4lhog")
+horizontal_alignment = 1
+script = ExtResource("10_h6yvl")
 
 [connection signal="add_pages_below" from="." to="." method="_on_add_pages_below"]
 [connection signal="page_update" from="." to="TurningPageLeft" method="_on_book_page_update"]
@@ -692,4 +718,6 @@ size_flags_vertical = 3
 [connection signal="page_update" from="." to="LeftPage" method="_on_book_page_update"]
 [connection signal="go_to_section" from="RightPage" to="." method="_on_go_to_section"]
 [connection signal="go_to_section" from="LeftPage" to="." method="_on_go_to_section"]
-[connection signal="scroll_ended" from="SwipeDetecter" to="." method="_on_swipe_detecter_scroll_ended"]
+[connection signal="next_section" from="SwipeDetecter" to="." method="_on_swipe_detecter_next_section"]
+[connection signal="previous_section" from="SwipeDetecter" to="." method="_on_swipe_detecter_previous_section"]
+[connection signal="scroll_ended_2" from="SwipeDetecter" to="." method="_on_swipe_detecter_scroll_ended"]

@@ -8,14 +8,15 @@ var pageSize
 var canvasWidth
 var canvasHeight
 var systemFontsDict = {}
-var isContents = false
+var hasLinks = false
 var specialFontsDict = {
 	"Scrap Casual": "igscas.TTF",
 	"LD Glorious": "LDGLORIO.TTF",
 	"LDJ What Up": "ldjwhatu.ttf",
 	"LD Keri": "ldkeri.ttf",
 	"LD Shelly Print": "LDSHELPR.TTF",
-	"TXT Abrasive": "txtabras.ttf"
+	"TXT Abrasive": "txtabras.ttf",
+	"Symbola": "Symbola-AjYx.ttf"
 }
 var systemDefaultFontsDict = {
 	"Dialog" : "sans-serif",
@@ -45,6 +46,7 @@ var currentTextData = {}
 var pageType : util_Enums.pageType;
 
 signal go_to_section
+signal go_to_page
 
 func _has_point(_point):
 	if(_point.x < get_viewport().get_visible_rect().size.x / 2 && $TextBox.pageType == util_Enums.pageType.LEFT):
@@ -188,7 +190,7 @@ func parse_line(line, box, scaleFactor):
 	var currentFontSize = float(lineText[0][0]["fs"].to_int()) * scaleFactor
 	if(lineData.has("linespace")):
 		var linespace = lineData["linespace"].to_float()
-		box.add_theme_constant_override("line_separation",linespace)
+		box.add_theme_constant_override("line_separation",currentFontSize * linespace - currentFontSize)
 	if(lineData.has("list") && lineData["list"].to_int() > 0):
 		parse_blip(lineText[0], box, scaleFactor, currentFontSize)
 		box.push_list(lineData["level"].to_int(), RichTextLabel.LIST_DOTS, false)
@@ -216,7 +218,7 @@ func parse_blip(blip, box, scaleFactor, currentFontSize):
 	currentFontSize = round(float(blipData["fs"].to_int()) * scaleFactor)
 	currentTextData["fontSize"] = currentFontSize
 	box.push_font_size(currentFontSize)
-	if(blipData.has("font")):
+	if(blipData.has("font") && blipData["font"] != "none"):
 		var fontName = blipData["font"] + (" Bold" if bold else "") + (" Italic" if italics else "")
 		var font;
 		if(specialFontsDict.has(blipData["font"])):
@@ -236,19 +238,34 @@ func parse_blip(blip, box, scaleFactor, currentFontSize):
 				else:
 					fontNames.append(blipData["font"])
 					fontNames.append(fontName)
-				newfont.set_font_names(fontNames)
-				systemFontsDict[fontName] = newfont
+					fontNames.append(fontName + " Regular")
+				if(fontName.ends_with("Light")):
+					fontNames.append(fontName.substr(0, fontName.length() - 6))
+					newfont.font_weight = 200
+				var dictHas = false
+				for fn in fontNames:
+					if(util_Preloader.preloadedFontsDict.has(fn)):
+						systemFontsDict[fontName] = util_Preloader.preloadedFontsDict[fn]
+						dictHas = true
+				if(!dictHas):
+					#newfont.set_font_names(fontNames)
+					systemFontsDict[fontName] = newfont
 			font = systemFontsDict[fontName]
 		var fv = FontVariation.new()
 		fv.base_font = font
 		if(blipData.has("expnd")):
-			var expandFactor = float(blipData["expnd"])/(currentFontSize) * 9/5
+			var expandFactor = float(blipData["expnd"])/(currentFontSize) * pageSize.x / canvasWidth * pageSize.x / canvasWidth
 			fv.set_spacing(TextServer.SPACING_GLYPH, expandFactor)
 		currentTextData["font"] = fv
 		box.push_font(fv)
 	if(blipData.has("color")):
-		box.push_color(Color(blipData["color"]))
-		currentTextData["color"] = Color(blipData["color"])
+		var col = Color(blipData["color"])
+		if(blipData.has("alpha")):
+			col.a = blipData["alpha"]
+		box.push_color(col)
+		currentTextData["color"] = col
+	if(blipData.has("link")):
+		box.push_meta(blipData["link"], 0)
 	if(underline):
 		box.push_underline()
 
@@ -264,32 +281,143 @@ func parse_text_content(filepath):
 			if(parser.get_node_name() == "tns:p"):
 				text.append(parse_text_line(parser))
 	if(check_for_contents(text)):
-		isContents = true
-		var linestyleinfo = text[0][0]
-		var blipstyleinfo = text[0][1][0][0]
-		var blipstyleinfo_major_section = blipstyleinfo.duplicate()
-		var blipstyleinfo_minor_section = blipstyleinfo.duplicate()
-		var blipstyleinfo_subminor_section = blipstyleinfo.duplicate()
-		blipstyleinfo_major_section["fs"] = str(blipstyleinfo["fs"].to_float() * 0.8)
-		blipstyleinfo_minor_section["fs"] = str(blipstyleinfo["fs"].to_float() * 0.64)
-		blipstyleinfo_subminor_section["fs"] = str(blipstyleinfo["fs"].to_float() * 0.4)
-		text = []
-		text.append([linestyleinfo, [[blipstyleinfo, "Contents:"]]])
-		for section in util_Preloader.sectionsList:
-			if(section != ""):
-				var lsi = linestyleinfo.duplicate()
-				lsi["link"] = section
-				var split = section.split("/")
-				var depth = split.size()
-				var last = split[depth - 1]
-				var string = ""
-				if(depth > 1):
-					for i in range(depth - 1):
-						string += "    "
-				string += last
-				var bsi = blipstyleinfo_major_section if depth == 1 else blipstyleinfo_minor_section if depth == 2 else blipstyleinfo_subminor_section
-				text.append([lsi, [[bsi, string]]])
+		hasLinks = true
+		text = generate_contents(text)
+	text = split_by_bracket(text)
+	text = parse_brackets(text)
 	return [textData, text]
+
+func generate_contents(text):
+	var linestyleinfo = text[0][0]
+	var blipstyleinfo = text[0][1][0][0]
+	var blipstyleinfo_major_section = blipstyleinfo.duplicate()
+	var blipstyleinfo_minor_section = blipstyleinfo.duplicate()
+	var blipstyleinfo_subminor_section = blipstyleinfo.duplicate()
+	var blipstyleinfo_subsubminor_section = blipstyleinfo.duplicate()
+	blipstyleinfo_major_section["fs"] = str(blipstyleinfo["fs"].to_float() * 0.8)
+	blipstyleinfo_minor_section["fs"] = str(blipstyleinfo["fs"].to_float() * 0.4)
+	blipstyleinfo_minor_section["alpha"] = 0.8
+	blipstyleinfo_subminor_section["fs"] = str(blipstyleinfo["fs"].to_float() * 0.2)
+	blipstyleinfo_subminor_section["alpha"] = 0.5
+	var newtext = []
+	var contentslinestyleinfo = linestyleinfo.duplicate()
+	contentslinestyleinfo["halign"] = "center"
+	var sillybitsstyleinfo = blipstyleinfo.duplicate()
+	sillybitsstyleinfo["color"] = "#5f917d"
+	sillybitsstyleinfo["expnd"] = -0.4 * sillybitsstyleinfo["fs"].to_float()
+	sillybitsstyleinfo["fs"] = str(sillybitsstyleinfo["fs"].to_float() * 1.1)
+	sillybitsstyleinfo["font"] = "Symbola"
+	var sillybitsedgehandlestyleinfo = blipstyleinfo.duplicate()
+	sillybitsedgehandlestyleinfo["font"] = "Symbola"
+	sillybitsedgehandlestyleinfo["color"] = "#5f917d"
+	sillybitsedgehandlestyleinfo["fs"] = str(sillybitsedgehandlestyleinfo["fs"].to_float() * 1.1)
+	var undertitlestyle = blipstyleinfo.duplicate()
+	undertitlestyle["fs"] = str(undertitlestyle["fs"].to_float() * 0.5)
+	undertitlestyle["font"] = "Symbola"
+	
+	newtext.append([contentslinestyleinfo, [[sillybitsstyleinfo, "❀"], [sillybitsstyleinfo, "🙞"], [sillybitsedgehandlestyleinfo, "⋟"], [blipstyleinfo, "Contents"], [sillybitsstyleinfo, "⋞"], [sillybitsstyleinfo, "🙜"],[sillybitsstyleinfo, "❀"], [undertitlestyle, "\r❧🙘🙙🙛🙚☙"]]])
+	#newtext.append()
+	#newtext.append([contentslinestyleinfo, [[blipstyleinfo, "Contents"]]])
+	for section in util_Preloader.sectionsList:
+		if(section != ""):
+			var lsi = linestyleinfo.duplicate()
+			lsi["link"] = section
+			if(section[0] == "/"):
+				section = section.substr(1, section.length())
+			var split = section.split("/")
+			var depth = split.size()
+			var last = split[depth - 1]
+			var string1 = ""
+			if(depth > 1):
+				for i in range(depth - 1):
+					string1 += "           "
+			if(depth == 1):
+				string1 += "❧ "
+			if(depth == 2):
+				string1 += "🙘 "
+			if(depth == 3):
+				string1 += "."
+			var bsi = blipstyleinfo_major_section if depth == 1 else blipstyleinfo_minor_section if depth == 2 else blipstyleinfo_subminor_section
+			bsi = bsi.duplicate()
+			bsi["color"] = "#5f917d"
+			bsi["font"] = "Symbola"
+			var bsi2 = bsi.duplicate()
+			bsi2["color"] = "#637d91"
+			if(bsi2.has("fstyle")):
+				bsi2["fstyle"].append("u")
+			else:
+				bsi2["fstyle"] = "u"
+			newtext.append([lsi, [[bsi, string1], [bsi2, last]]])
+	return newtext
+
+func parse_brackets(text):
+	var currentBracketedItem = ""
+	var insideBrackets = false
+	var finalText = []
+	var tagStack = []
+	for line in text:
+		var newline = []
+		for blip in line[1]:
+			if(blip[1].length() > 0 && blip[1][0] == '['):
+				insideBrackets = true
+				currentBracketedItem = blip[1].replace("[", "")
+				if(blip[1][blip[1].length()-1] == ']'):
+					currentBracketedItem = currentBracketedItem.replace("]", "")
+					if(currentBracketedItem[0] == "/"):
+						tagStack.pop_back()
+					else:
+						tagStack.append(currentBracketedItem)
+						hasLinks = true
+					insideBrackets = false
+			elif(blip[1].length() > 0 && blip[1][blip[1].length()-1] == ']'):
+				currentBracketedItem += blip[1].replace("]", "")
+				if(currentBracketedItem[0] == "/"):
+					tagStack.pop_back()
+				else:
+					tagStack.append(currentBracketedItem)
+					hasLinks = true
+				insideBrackets = false
+			else:
+				var newblip = blip.duplicate()
+				if(tagStack.size() > 0):
+					newblip[0]["link"] = tagStack.duplicate()
+				newline.append(newblip)
+		finalText.append([line[0], newline])
+	return finalText
+
+func split_by_bracket(text):
+	var newtext = []
+	for line in text:
+		var newline = []
+		for blip in line[1]:
+			if(blip[1].contains("[")):
+				var split = blip[1].split("[")
+				for i in range(split.size()):
+					var newstring = ""
+					if(i != 0):
+						newstring += "["
+					newstring += split[i]
+					if(newstring.contains("]")):
+						var newsplit = newstring.split("]")
+						for j in range(newsplit.size()):
+							var newsubstring = newsplit[j]
+							if(j != newsplit.size() - 1):
+								newsubstring += "]"
+							newline.append([blip[0], newsubstring])
+					else:
+						newline.append([blip[0], newstring])
+			elif(blip[1].contains("]")):
+				var split = blip[1].split("]")
+				for j in range(split.size()):
+					var substring = split[j]
+					if(j != split.size() - 1):
+						substring += "]"
+					newline.append([blip[0], substring])
+			else:
+				newline.append(blip)
+		newtext.append([line[0], newline])
+	return newtext
+	pass
 
 func check_for_contents(text):
 	var textString = ""
@@ -331,8 +459,25 @@ func add_text_to_line(text):
 var clickTimer = 0.
 func _on_text_box_meta_clicked(meta: Variant) -> void:
 	if(clickTimer <= 0.):
-		clickTimer = 1.
-		emit_signal("go_to_section", meta)
+		clickTimer = 0.2
+		if(meta is String):
+			emit_signal("go_to_section", meta)
+		else:
+			for tag in meta:
+				parse_meta_tag(tag)
+
+func parse_meta_tag(tag):
+	if(tag.begins_with("WEBLINK")):
+		var weblink = tag.substr(8, tag.length())
+		util_Web.open_link(weblink)
+	elif(tag.begins_with("PAGELINK")):
+		var pagelink = tag.substr(9, tag.length())
+		var splitlink = pagelink.split(" ")
+		var pageNumber = splitlink[splitlink.size()-1].to_int()
+		splitlink.remove_at(splitlink.size() - 1)
+		var sectionIndex = " ".join(splitlink)
+		
+		emit_signal("go_to_page", sectionIndex, pageNumber)
 
 
 func _process(deltaTime):

@@ -39,9 +39,7 @@ operator = 2
 
 [sub_resource type="VisualShaderNodeFloatParameter" id="VisualShaderNodeFloatParameter_yjspk"]
 parameter_name = "time"
-qualifier = 2
-default_value_enabled = true
-default_value = 0.45
+default_value = 0.429
 
 [sub_resource type="VisualShaderNodeFloatOp" id="VisualShaderNodeFloatOp_2lp36"]
 output_port_for_preview = 0
@@ -230,7 +228,7 @@ op_type = 0
 code = "shader_type canvas_item;
 render_mode blend_mix;
 
-instance uniform float time = 0.44999998807907;
+uniform float time;
 
 
 

@@ -12,6 +12,7 @@ var spanners = {}
 var imagesDict = {}
 var textsDict = {}
 var systemFontsDict = {}
+var preloadedFontsDict = {}
 
 var currentTextData
 var finalTextData
@@ -45,7 +46,6 @@ func preload_xmls():
 
 func preload_section(path):
 	var filepath
-	print(bookPath + "/" + path)
 	var dir = DirAccess.open(bookPath + "/" + path)
 	if(dir == null):
 		return
@@ -485,13 +485,14 @@ func get_text_contents(parser):
 		return ""
 
 func generate_images_dict():
-	print("------------------BITCH-----------------------")
+	imagesDict["coverOutside"] = ImageTexture.create_from_image(Image.load_from_file(bookPath + "/cover_outside.png"))
+	imagesDict["coverInsideLeft"] = ImageTexture.create_from_image(Image.load_from_file(bookPath + "/cover_inside_left.png"))
+	imagesDict["coverInsideRight"] = ImageTexture.create_from_image(Image.load_from_file(bookPath + "/cover_inside_right.png"))
+		
 	for section in sectionsList:
 		var sectionObjectsPath = bookPath + "/" + section + "/objects/"
-		print(sectionObjectsPath)
 		var diracc = DirAccess.open(sectionObjectsPath)
 		if(diracc == null):
-			print("poo")
 			continue
 		diracc.list_dir_begin()
 		var filename = diracc.get_next()
@@ -519,16 +520,12 @@ func generate_images_dict():
 		if(extension == "svg"):
 			var svgdata = basicsZip.read_file(filename).get_string_from_utf8()
 			imagesDict[filename] = svgdata
-	print(imagesDict)
-	print("------------------MEOW-----------------------")
 
 func generate_texts_dict():
 	for section in sectionsList:
 		var sectionObjectsPath = bookPath + "/" + section + "/objects/"
-		print(sectionObjectsPath)
 		var diracc = DirAccess.open(sectionObjectsPath)
 		if(diracc == null):
-			print("poo")
 			continue
 		diracc.list_dir_begin()
 		var filename = diracc.get_next()
@@ -540,7 +537,19 @@ func generate_texts_dict():
 					var xmldata = fileacc.get_as_text()
 					textsDict[filename] = xmldata
 			filename = diracc.get_next()
-	
+func generate_fonts_dict():
+	var diracc = DirAccess.open(bookPath + "/fonts")
+	if(!diracc.dir_exists(bookPath + "/fonts")):
+		return
+	for file in diracc.get_files():
+		var font = FontFile.new()
+		if(bookPath.ends_with("/")):
+			font.load_dynamic_font(bookPath + "fonts/" + file)
+		else:
+			font.load_dynamic_font(bookPath + "/fonts/" + file)
+		preloadedFontsDict[font.get_font_name() + " " + font.get_font_style_name()] = font
+		pass
+
 
 func extract_all_from_zip(path):
 	var reader = ZIPReader.new()
@@ -579,7 +588,6 @@ func reload_stuff(sList, bPath, iZip):
 		bookPath = "user://temp/" + id + "/"
 	else:
 		bookPath = bPath
-	print(bookPath)
 	sectionsList = sList
 	scrapbookData = []
 	imagesDict = {}
@@ -587,9 +595,9 @@ func reload_stuff(sList, bPath, iZip):
 	iddshapes = {}
 	generate_images_dict()
 	generate_texts_dict()
+	generate_fonts_dict()
 	preload_xmls()
 	util_ClearTemp.clear_temp()
-	print("preloaded!")
 
 func preparse_text_for_shape(filepath, width):
 	var parsedData = parse_text_content(filepath)
@@ -641,10 +649,17 @@ func parse_blip(blip, scaleFactor, currentFontSize):
 				if(systemDefaultFontsDict.has(blipData["font"])):
 					fontNames.append(systemDefaultFontsDict[blipData["font"]])
 				else:
-					fontNames.append(blipData["font"])
-					fontNames.append(fontName)
-				newfont.set_font_names(fontNames)
-				systemFontsDict[fontName] = newfont
+					
+						fontNames.append(blipData["font"])
+						fontNames.append(fontName)
+				var dictHas = false
+				for fn in fontNames:
+					if(util_Preloader.preloadedFontsDict.has(fn)):
+						systemFontsDict[fontName] = util_Preloader.preloadedFontsDict[fn]
+						dictHas = true
+				if(!dictHas):
+					newfont.set_font_names(fontNames)
+					systemFontsDict[fontName] = newfont
 			font = systemFontsDict[fontName]
 		var fv = FontVariation.new()
 		fv.base_font = font

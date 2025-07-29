@@ -202,8 +202,6 @@ op_type = 2
 
 [sub_resource type="VisualShaderNodeFloatParameter" id="VisualShaderNodeFloatParameter_bmh2h"]
 parameter_name = "time"
-qualifier = 2
-default_value_enabled = true
 default_value = 0.6
 
 [sub_resource type="VisualShaderNodeFloatOp" id="VisualShaderNodeFloatOp_tt2ak"]
@@ -255,7 +253,7 @@ default_input_values = [0, 0.0, 1, -0.1]
 code = "shader_type canvas_item;
 render_mode blend_mix;
 
-instance uniform float time = 0.60000002384186;
+uniform float time;
 
 
 

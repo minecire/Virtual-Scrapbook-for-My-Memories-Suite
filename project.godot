@@ -16,7 +16,7 @@ config/features=PackedStringArray("4.4", "Forward Plus")
 run/delta_smoothing=false
 boot_splash/bg_color=Color(0.197362, 0.273724, 0.263637, 1)
 boot_splash/use_filter=false
-boot_splash/image="uid://b3uoo24r1ymbp"
+boot_splash/image="uid://dcfu6exswybbo"
 config/icon="uid://b3uoo24r1ymbp"
 
 [autoload]
@@ -26,6 +26,7 @@ util_Preloader="*res://scripts/util/preloader.gd"
 util_Enums="*res://scripts/util/enums.gd"
 util_ClearTemp="*res://scripts/util/clear_temp.gd"
 PageTurn="*res://scripts/page_turn.gd"
+util_Web="*res://scripts/util/web.gd"
 
 [display]
 
