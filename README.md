@@ -30,11 +30,13 @@ Add links by placing the following text inside a My Memories Suite text object:
 
 Make sure to include the full path to the section in the link from the base scrapbook directory
 
-#### Note: Virtual Scrapbook does not automatically style links to look clickable in order to give more options for customization. It is up to you to format links to make it clear you can click them.
+#### Note: With the exception of the automatically generated contents, Virtual Scrapbook does not automatically style links to look clickable in order to give more options for customization. It is up to you to format links to make it clear users can click them.
 
 ## Web Version
 Although it is quite a bit slower and glitchier due to the limitations of web generally, and godot's web exporter specifically, you can use the web build here:
 https://minecire.github.io/Virtual-Scrapbook-for-My-Memories-Suite/
+
+#### Note: Due to the limitations of web, you must compress your project directory into a .zip file in order to upload.
 
 ## Build Info
 This is a project creating using Godot Engine 4.4, and as such you need to install Godot to build.
