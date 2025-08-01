@@ -538,9 +538,10 @@ func generate_texts_dict():
 					textsDict[filename] = xmldata
 			filename = diracc.get_next()
 func generate_fonts_dict():
-	var diracc = DirAccess.open(bookPath + "/fonts")
+	var diracc = DirAccess.open(bookPath)
 	if(!diracc.dir_exists(bookPath + "/fonts")):
 		return
+	diracc = DirAccess.open(bookPath + "/fonts")
 	for file in diracc.get_files():
 		var font = FontFile.new()
 		if(bookPath.ends_with("/")):
@@ -566,16 +567,20 @@ func extract_all_from_zip(path):
 
 	var files = reader.get_files()
 	for file_path in files:
+		var real_file_path = file_path.replace("[SLASH]", "/")
+		
+		if(real_file_path.begins_with("/")):
+			real_file_path = real_file_path.substr(1, real_file_path.length())
 		# If the current entry is a directory.
-		if file_path.ends_with("/"):
-			root_dir.make_dir_recursive(file_path)
+		if real_file_path.ends_with("/"):
+			root_dir.make_dir_recursive(real_file_path)
 			continue
 
 		# Write file contents, creating folders automatically when needed.
 		# Not all ZIP archives are strictly ordered, so we need to do this in case
 		# the file entry comes before the folder entry.
-		root_dir.make_dir_recursive(root_dir.get_current_dir().path_join(file_path).get_base_dir())
-		var file = FileAccess.open(root_dir.get_current_dir().path_join(file_path), FileAccess.WRITE)
+		root_dir.make_dir_recursive(root_dir.get_current_dir().path_join(real_file_path).get_base_dir())
+		var file = FileAccess.open(root_dir.get_current_dir().path_join(real_file_path), FileAccess.WRITE)
 		var buffer = reader.read_file(file_path)
 		file.store_buffer(buffer)
 	return id
@@ -597,7 +602,7 @@ func reload_stuff(sList, bPath, iZip):
 	generate_texts_dict()
 	generate_fonts_dict()
 	preload_xmls()
-	util_ClearTemp.clear_temp()
+	#util_ClearTemp.clear_temp()
 
 func preparse_text_for_shape(filepath, width):
 	var parsedData = parse_text_content(filepath)

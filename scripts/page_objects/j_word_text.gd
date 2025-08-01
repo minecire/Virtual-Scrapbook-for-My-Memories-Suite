@@ -248,7 +248,7 @@ func parse_blip(blip, box, scaleFactor, currentFontSize):
 						systemFontsDict[fontName] = util_Preloader.preloadedFontsDict[fn]
 						dictHas = true
 				if(!dictHas):
-					#newfont.set_font_names(fontNames)
+					newfont.set_font_names(fontNames)
 					systemFontsDict[fontName] = newfont
 			font = systemFontsDict[fontName]
 		var fv = FontVariation.new()

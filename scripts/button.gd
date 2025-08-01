@@ -14,8 +14,8 @@ func _on_button_up() -> void:
 
 func resize():
 	if(get_viewport() != null):
-		size = get_viewport().get_visible_rect().size * Vector2(0.6, 0.2)
-		position = get_viewport().get_visible_rect().size * Vector2(0.2, 0.25)
+		size = get_viewport().get_visible_rect().size * Vector2(0.6, 0.1)
+		position = get_viewport().get_visible_rect().size * Vector2(0.2, 0.15)
 
 func _on_web_file_loaded(_filename, _filetype, data):
 	var raw = Marshalls.base64_to_raw(data)
@@ -30,6 +30,7 @@ func _on_file_dialog_file_selected(path: String, isExport = false) -> Control:
 	var root = get_tree().get_root()
 	
 	var sectionsList : Array[String] = get_sections_recursive_zip(path)
+	print(sectionsList)
 	var zipReader = ZIPReader.new()
 	zipReader.open(path)
 	if(zipReader.file_exists("sections.txt")):
@@ -51,6 +52,7 @@ func _on_file_dialog_file_selected(path: String, isExport = false) -> Control:
 			if(index != -1 && sectionNormalized != ""):
 				finalList.append(sectionsList[index])
 		sectionsList = finalList
+	print(sectionsList)
 	if(sectionsList.size() == 0):
 		return null
 	var book = load("res://scenes/book.tscn").instantiate()
@@ -127,7 +129,11 @@ func get_sections_recursive_zip(path: String):
 	for file in zipFiles:
 		var extension = file.split(".")[file.split(".").size() - 1]
 		if(extension == "mms"):
-			var dir = file.split("/")
+			var dir
+			if(file.find("[SLASH]") != -1):
+				dir = file.split("[SLASH]")
+			else:
+				dir = file.split("/")
 			dir.remove_at(dir.size() - 1)
 			dir = "/".join(dir)
 			sections.append(dir)

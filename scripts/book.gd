@@ -1,5 +1,9 @@
 extends Control
 
+#TODO:
+# -better controls for mobile
+# -more optimized web images / shaders
+
 @export var bookPath: String
 @export var borderSize: int
 @export var turnTime: float

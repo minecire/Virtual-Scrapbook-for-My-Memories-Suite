@@ -27,6 +27,7 @@ util_Enums="*res://scripts/util/enums.gd"
 util_ClearTemp="*res://scripts/util/clear_temp.gd"
 PageTurn="*res://scripts/page_turn.gd"
 util_Web="*res://scripts/util/web.gd"
+util_Compressor="*res://scripts/util/compressor.gd"
 
 [display]
 
