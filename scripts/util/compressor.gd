@@ -17,7 +17,7 @@ func write_temp_to_zip(tempDir, origDir):
 	var zipPath = origDir
 	while(zipPath.ends_with("/")):
 		zipPath = zipPath.substr(0, zipPath.length() - 1)
-	zipPath += ".zip"
+	zipPath += ".vsb"
 	
 	FileAccess.open(zipPath, FileAccess.WRITE)
 	

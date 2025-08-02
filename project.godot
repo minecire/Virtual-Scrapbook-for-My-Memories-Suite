@@ -18,6 +18,7 @@ boot_splash/bg_color=Color(0.197362, 0.273724, 0.263637, 1)
 boot_splash/use_filter=false
 boot_splash/image="uid://dcfu6exswybbo"
 config/icon="uid://b3uoo24r1ymbp"
+config/windows_native_icon="res://Virtual Scrapbook Icon.ico"
 
 [autoload]
 

@@ -99,15 +99,6 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_con2f")
 text = "Load Book"
 script = ExtResource("1_yqeox")
 
-[node name="FileDialog" type="FileDialog" parent="OpenScrapbookButton"]
-title = "Open a File or Directory"
-initial_position = 1
-ok_button_text = "Open"
-file_mode = 3
-access = 2
-filters = PackedStringArray("*.zip")
-show_hidden_files = true
-
 [node name="CustomFileDialog" type="Window" parent="OpenScrapbookButton"]
 title = "Select a Zip or Folder"
 initial_position = 2
@@ -118,7 +109,7 @@ transient = true
 exclusive = true
 force_native = true
 script = ExtResource("6_g3eks")
-extensions = PackedStringArray("zip")
+extensions = PackedStringArray("zip", "vsb", "mms")
 
 [node name="Box" type="VBoxContainer" parent="OpenScrapbookButton/CustomFileDialog"]
 offset_right = 40.0
@@ -211,8 +202,6 @@ show_hidden_files = true
 use_native_dialog = true
 
 [connection signal="button_up" from="OpenScrapbookButton" to="OpenScrapbookButton" method="_on_button_up"]
-[connection signal="dir_selected" from="OpenScrapbookButton/FileDialog" to="OpenScrapbookButton" method="_on_file_dialog_dir_selected"]
-[connection signal="file_selected" from="OpenScrapbookButton/FileDialog" to="OpenScrapbookButton" method="_on_file_dialog_file_selected"]
 [connection signal="close_requested" from="OpenScrapbookButton/CustomFileDialog" to="OpenScrapbookButton/CustomFileDialog" method="_on_close_requested"]
 [connection signal="dir_selected" from="OpenScrapbookButton/CustomFileDialog" to="OpenScrapbookButton" method="_on_file_dialog_dir_selected"]
 [connection signal="file_selected" from="OpenScrapbookButton/CustomFileDialog" to="OpenScrapbookButton" method="_on_file_dialog_file_selected"]

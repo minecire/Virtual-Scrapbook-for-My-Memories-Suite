@@ -87,6 +87,9 @@ func _ready():
 	else:
 		PageTurn.bookOpen = true
 		PageTurn.hasCover = false
+		$CoverOutside.visible = false
+		$CoverInsideRight.visible = false
+		$CoverInsideLeft.visible = false
 	
 	bookPath = util_Preloader.bookPath
 	update_pages()

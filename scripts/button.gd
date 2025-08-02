@@ -2,13 +2,14 @@ extends Button
 
 
 var file_access_web: FileAccessWeb
+var book
 
 func _on_button_up() -> void:
 	if(!OS.has_feature("web")):
 		$CustomFileDialog.current_dir = OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS)
 		$CustomFileDialog.visible = true
 	else:
-		file_access_web.open(".zip")
+		file_access_web.open(".zip,.vsb")
 		file_access_web.loaded.connect(_on_web_file_loaded)
 
 
@@ -27,7 +28,13 @@ func _on_web_file_loaded(_filename, _filetype, data):
 	
 
 func _on_file_dialog_file_selected(path: String, isExport = false) -> Control:
-	var root = get_tree().get_root()
+	if(path.get_extension() == "mms"):
+		_on_file_dialog_dir_selected(path.get_base_dir(), isExport)
+		return
+	
+	var root
+	if(is_inside_tree()):
+		root = get_tree().get_root()
 	
 	var sectionsList : Array[String] = get_sections_recursive_zip(path)
 	print(sectionsList)
@@ -55,15 +62,22 @@ func _on_file_dialog_file_selected(path: String, isExport = false) -> Control:
 	print(sectionsList)
 	if(sectionsList.size() == 0):
 		return null
-	var book = load("res://scenes/book.tscn").instantiate()
+	if(book == null):
+		book = load("res://scenes/book.tscn").instantiate()
 	book.isZip = true
 	book.bookPath = path
 	book.sectionsList = sectionsList
 	book.cantExit = isExport
-	
-	root.add_child.call_deferred(book)
-	root.remove_child.call_deferred(root.get_node("Menu"))
-	
+	if(is_inside_tree()):
+		root.add_child.call_deferred(book)
+		root.remove_child.call_deferred(root.get_node("Menu"))
+	else:
+		PageTurn.currentLeftPage = -1
+		PageTurn.currentRightPage = 1
+		PageTurn.leftPageSectionIndex = 0
+		PageTurn.rightPageSectionIndex = 0
+		PageTurn.bookOpen = false
+		book._ready()
 	return book
 
 func _on_file_dialog_dir_selected(dir: String, isExport = false) -> Control:
@@ -94,7 +108,7 @@ func _on_file_dialog_dir_selected(dir: String, isExport = false) -> Control:
 	if(sectionsList.size() == 0):
 		return null
 	
-	var book = load("res://scenes/book.tscn").instantiate()
+	book = load("res://scenes/book.tscn").instantiate()
 	book.isZip = false
 	book.bookPath = dir
 	book.sectionsList = sectionsList
@@ -140,11 +154,26 @@ func get_sections_recursive_zip(path: String):
 	return sections
 
 func _ready():
+	check_for_opened_with_book()
 	load_page()
 	get_tree().get_root().size_changed.connect(resize)
+	get_window().files_dropped.connect(on_files_dropped)
 	resize()
 	if(OS.has_feature("web")):
 		file_access_web = FileAccessWeb.new()
+
+func on_files_dropped(files):
+	var file = files[0]
+	if(file.get_extension() == "zip" || file.get_extension() == "vsb" || file.get_extension() == "mms"):
+		_on_file_dialog_file_selected(file)
+
+func check_for_opened_with_book():
+	var args = OS.get_cmdline_args()
+	for arg in args:
+		if(arg.get_extension() == "vsb" || arg.get_extension() == "zip" || arg.get_extension() == "mms"):
+			_on_file_dialog_file_selected(arg)
+	pass
+
 func load_page():
 	DirAccess.open("user://").remove("save")
 	if !FileAccess.file_exists("user://save"):
@@ -180,7 +209,6 @@ func load_page():
 	json.parse(savefile.get_as_text())
 	var data = json.data
 	var root = get_tree().get_root()
-	var book
 	if(data["isZip"]):
 		book = _on_file_dialog_file_selected(data["bookPath"])
 	else:

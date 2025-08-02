@@ -35,7 +35,7 @@ func populateFiles():
 			
 			var extension = file_name.split(".")[file_name.split(".").size() - 1]
 			if(extensions.find(extension) != -1):
-				if(extension == "zip"):
+				if(extension == "zip" || extension == "vsb"):
 					$Box/Middle/Files.add_item(file_name, zipIcon)
 				else:
 					$Box/Middle/Files.add_item(file_name)
