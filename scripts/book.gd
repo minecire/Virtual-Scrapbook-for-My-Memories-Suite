@@ -234,7 +234,7 @@ func update_pages():
 		emit_signal("add_pages_below", rightPage, rightPageTexture.position, rightPageTexture.size, PageTurn.rightPageSectionIndex, PageTurn.currentRightPage, true)
 	if(PageTurn.currentLeftPage != -1):
 		emit_signal("add_pages_below", leftPage, leftPageTexture.position, leftPageTexture.size, PageTurn.leftPageSectionIndex, PageTurn.currentLeftPage, false)
-	if(OS.has_feature("web")):
+	if(OS.has_feature("web") || RenderingServer.get_current_rendering_method() == "gl_compatibility"):
 		isi.shapes = {}
 		isi.shapesarr = []
 		isi.gradients = {}
@@ -245,7 +245,7 @@ func update_pages():
 		for node in $ClickablesHolder.get_children():
 			node.get_node("TextBox").meta_hover_started.connect(_on_text_box_meta_hover_started)
 			node.get_node("TextBox").meta_hover_ended.connect(_on_text_box_meta_hover_ended)
-	if(OS.has_feature("web")):
+	if(OS.has_feature("web") || RenderingServer.get_current_rendering_method() == "gl_compatibility"):
 		isi.imageMaterialWeb.set("shader_parameter/shape_textures", isi.shapesarr)
 		isi.imageMaterialWeb.set("shader_parameter/gradient_textures", isi.gradientsarr)
 		isi.imageMatteMaterialWeb.set("shader_parameter/gradient_textures", isi.gradientsarr)

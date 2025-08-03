@@ -38,7 +38,7 @@ var imageMatteMaterial = preload("res://shaders/image_matte_material.tres") as S
 var imageMaterial = preload("res://shaders/image_material.tres") as ShaderMaterial
 
 func _ready():
-	if(OS.has_feature("web")):
+	if(OS.has_feature("web") || RenderingServer.get_current_rendering_method() == "gl_compatibility"):
 		$MatteSvgTexture.set_material(imageMatteMaterialWeb)
 		$Texture.set_material(imageMaterialWeb)
 	else:

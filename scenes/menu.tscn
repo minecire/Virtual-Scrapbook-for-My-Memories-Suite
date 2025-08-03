@@ -176,6 +176,7 @@ layout_mode = 2
 text = "Cancel"
 
 [node name="CompressScrapbookButton" type="Button" parent="."]
+layout_mode = 0
 offset_left = 688.0
 offset_top = 334.0
 offset_right = 1155.0
