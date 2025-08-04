@@ -1,0 +1,77 @@
+[gd_scene load_steps=8 format=3 uid="uid://4tvdlys1yywv"]
+
+[ext_resource type="Texture2D" uid="uid://bifyjbsc0keck" path="res://icons/desktop_icon.png" id="1_ab8jw"]
+[ext_resource type="Theme" uid="uid://ckelpuopfeo8t" path="res://style_bits/fileselect_theme.tres" id="1_rti53"]
+[ext_resource type="Texture2D" uid="uid://d15ft6erreip2" path="res://icons/dowloads_icon.png" id="2_rti53"]
+[ext_resource type="Texture2D" uid="uid://dalyqalxiqr1c" path="res://icons/folder_icon.png" id="3_xxogn"]
+[ext_resource type="Texture2D" uid="uid://c7do8tq6rgvun" path="res://icons/user_icon.png" id="4_qf7sl"]
+[ext_resource type="Texture2D" uid="uid://v0lhsk1vutnf" path="res://icons/drive_icon.png" id="5_leivb"]
+
+[sub_resource type="GDScript" id="GDScript_mj5lg"]
+script/source = "extends LineEdit
+"
+
+[node name="Box" type="VBoxContainer"]
+offset_right = 40.0
+offset_bottom = 40.0
+theme = ExtResource("1_rti53")
+
+[node name="Path" type="LineEdit" parent="."]
+custom_minimum_size = Vector2(0, 40)
+layout_direction = 2
+layout_mode = 2
+emoji_menu_enabled = false
+script = SubResource("GDScript_mj5lg")
+
+[node name="Middle" type="HBoxContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 1
+
+[node name="FolderSelect" type="VBoxContainer" parent="Middle"]
+layout_mode = 2
+
+[node name="SystemFolders" type="ItemList" parent="Middle/FolderSelect"]
+layout_mode = 2
+size_flags_vertical = 3
+item_count = 5
+fixed_icon_size = Vector2i(32, 32)
+item_0/text = "Desktop"
+item_0/icon = ExtResource("1_ab8jw")
+item_1/text = "Downloads"
+item_1/icon = ExtResource("2_rti53")
+item_2/text = "Documents"
+item_2/icon = ExtResource("3_xxogn")
+item_3/text = "User"
+item_3/icon = ExtResource("4_qf7sl")
+item_4/text = "Drives"
+item_4/icon = ExtResource("5_leivb")
+
+[node name="Files" type="ItemList" parent="Middle"]
+layout_mode = 2
+size_flags_horizontal = 3
+fixed_icon_size = Vector2i(32, 32)
+
+[node name="Bottom" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="FileName" type="LineEdit" parent="Bottom"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+
+[node name="SelectButton" type="Button" parent="Bottom"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Select"
+
+[node name="EnterFolderButton" type="Button" parent="Bottom"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Enter Folder"
+
+[node name="CancelButton" type="Button" parent="Bottom"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Cancel"

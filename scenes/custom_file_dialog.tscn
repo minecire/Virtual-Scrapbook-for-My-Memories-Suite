@@ -1,0 +1,100 @@
+[gd_scene load_steps=9 format=3 uid="uid://c8qb0epq1u2n"]
+
+[ext_resource type="Script" uid="uid://bfgmmvemengh8" path="res://scripts/custom_file_dialog.gd" id="1_x8ua1"]
+[ext_resource type="Texture2D" uid="uid://bifyjbsc0keck" path="res://icons/desktop_icon.png" id="2_q0rpk"]
+[ext_resource type="Texture2D" uid="uid://d15ft6erreip2" path="res://icons/dowloads_icon.png" id="3_2fgxf"]
+[ext_resource type="Theme" uid="uid://ckelpuopfeo8t" path="res://style_bits/fileselect_theme.tres" id="3_5645r"]
+[ext_resource type="Texture2D" uid="uid://dalyqalxiqr1c" path="res://icons/folder_icon.png" id="4_h5iob"]
+[ext_resource type="Texture2D" uid="uid://c7do8tq6rgvun" path="res://icons/user_icon.png" id="5_swudl"]
+[ext_resource type="Texture2D" uid="uid://v0lhsk1vutnf" path="res://icons/drive_icon.png" id="6_5vi8i"]
+
+[sub_resource type="GDScript" id="GDScript_q0rpk"]
+script/source = "extends LineEdit
+"
+
+[node name="CustomFileDialog" type="Window"]
+auto_translate_mode = 1
+title = "Select a Zip or Folder"
+initial_position = 2
+size = Vector2i(720, 480)
+visible = false
+wrap_controls = true
+transient = true
+exclusive = true
+force_native = true
+script = ExtResource("1_x8ua1")
+extensions = PackedStringArray("zip", "vsb", "mms")
+
+[node name="Box" type="VBoxContainer" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+theme = ExtResource("3_5645r")
+
+[node name="Path" type="LineEdit" parent="Box"]
+custom_minimum_size = Vector2(0, 40)
+layout_direction = 2
+layout_mode = 2
+emoji_menu_enabled = false
+script = SubResource("GDScript_q0rpk")
+
+[node name="Middle" type="HBoxContainer" parent="Box"]
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 1
+
+[node name="FolderSelect" type="VBoxContainer" parent="Box/Middle"]
+layout_mode = 2
+
+[node name="SystemFolders" type="ItemList" parent="Box/Middle/FolderSelect"]
+layout_mode = 2
+size_flags_vertical = 3
+item_count = 5
+fixed_icon_size = Vector2i(32, 32)
+item_0/text = "Desktop"
+item_0/icon = ExtResource("2_q0rpk")
+item_1/text = "Downloads"
+item_1/icon = ExtResource("3_2fgxf")
+item_2/text = "Documents"
+item_2/icon = ExtResource("4_h5iob")
+item_3/text = "User"
+item_3/icon = ExtResource("5_swudl")
+item_4/text = "Drives"
+item_4/icon = ExtResource("6_5vi8i")
+
+[node name="Files" type="ItemList" parent="Box/Middle"]
+layout_mode = 2
+size_flags_horizontal = 3
+fixed_icon_size = Vector2i(32, 32)
+
+[node name="Bottom" type="HBoxContainer" parent="Box"]
+layout_mode = 2
+
+[node name="FileName" type="LineEdit" parent="Box/Bottom"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+
+[node name="SelectButton" type="Button" parent="Box/Bottom"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Select"
+
+[node name="EnterFolderButton" type="Button" parent="Box/Bottom"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Enter Folder"
+
+[node name="CancelButton" type="Button" parent="Box/Bottom"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Cancel"
+
+[connection signal="close_requested" from="." to="." method="_on_close_requested"]
+[connection signal="item_activated" from="Box/Middle/FolderSelect/SystemFolders" to="." method="_on_system_folder_selected"]
+[connection signal="item_activated" from="Box/Middle/Files" to="." method="_on_files_item_double_clicked"]
+[connection signal="item_clicked" from="Box/Middle/Files" to="." method="_on_files_item_clicked"]
+[connection signal="text_changed" from="Box/Bottom/FileName" to="." method="_on_file_name_text_changed"]
+[connection signal="pressed" from="Box/Bottom/SelectButton" to="." method="_on_select_button_pressed"]
+[connection signal="pressed" from="Box/Bottom/EnterFolderButton" to="." method="_on_enter_folder_button_pressed"]
+[connection signal="pressed" from="Box/Bottom/CancelButton" to="." method="_on_close_requested"]

@@ -4,6 +4,7 @@ var current_dir = OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS)
 @export var extensions : PackedStringArray
 var current_file = ""
 var current_file_is_dir
+var current_file_is_invalid = false
 
 signal file_selected
 signal dir_selected
@@ -42,6 +43,7 @@ func populateFiles():
 				itemsAreFolders.append(false)
 		file_name = diracc.get_next()
 	current_file = ""
+	current_file_is_invalid = false
 
 func _ready():
 	populateFiles()
@@ -61,11 +63,14 @@ func resize():
 		$Box/Bottom/FileName.custom_minimum_size.x = size.x * 0.4
 
 
+
 func _on_files_item_clicked(index: int, at_position: Vector2, mouse_button_index: int) -> void:
 	if(index == 0):
 		$Box/Bottom/FileName.text = ""
 		current_file = ""
-		$Box/Bottom/EnterFolderButton.disabled = false
+		current_file_is_invalid = false
+		current_file_is_dir = true
+		update_buttons()
 		return
 		
 	if(mouse_button_index == 1):
@@ -74,10 +79,8 @@ func _on_files_item_clicked(index: int, at_position: Vector2, mouse_button_index
 		if(text != ".."):
 			$Box/Bottom/FileName.text = text
 			current_file = text
-		if(itemsAreFolders[index - 1]):
-			$Box/Bottom/EnterFolderButton.disabled = false
-		else:
-			$Box/Bottom/EnterFolderButton.disabled = true
+			current_file_is_invalid = false
+		update_buttons()
 	pass # Replace with function body.
 
 
@@ -138,6 +141,8 @@ func _on_enter_folder_button_pressed() -> void:
 
 
 func _on_select_button_pressed() -> void:
+	if(current_file_is_invalid):
+		return
 	if(current_dir == ""):
 		return
 	if(current_file == ".."):
@@ -161,5 +166,38 @@ func _input(event):
 			if(DirAccess.open(newPath).dir_exists(newPath)):
 				current_dir = newPath
 				populateFiles()
-		else:
+		elif($Box/Bottom/FileName.has_focus() || $Box/Middle/Files.has_focus()):
+			if(current_file_is_dir):
+				_on_enter_folder_button_pressed()
+			else:
+				_on_select_button_pressed()
 			pass
+
+
+func _on_file_name_text_changed(new_text: String) -> void:
+	if(DirAccess.open(current_dir).file_exists(new_text)):
+		current_file = new_text
+		current_file_is_dir = false
+		current_file_is_invalid = false
+	elif(DirAccess.open(current_dir).dir_exists(new_text)):
+		current_file = new_text
+		current_file_is_dir = true
+		current_file_is_invalid = false
+	else:
+		current_file = new_text
+		current_file_is_invalid = true
+	update_buttons()
+	pass # Replace with function body.
+
+func update_buttons():
+	if(current_file_is_invalid):
+		$Box/Bottom/EnterFolderButton.disabled = true
+		$Box/Bottom/SelectButton.disabled = true
+	elif(current_file_is_dir):
+		$Box/Bottom/EnterFolderButton.disabled = false
+		$Box/Bottom/SelectButton.disabled = false
+	else:
+		$Box/Bottom/EnterFolderButton.disabled = true
+		$Box/Bottom/SelectButton.disabled = false
+		
+		

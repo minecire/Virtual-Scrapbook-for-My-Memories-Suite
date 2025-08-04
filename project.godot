@@ -91,7 +91,7 @@ gl_compatibility/item_buffer_size=8192
 shader_compiler/shader_cache/compress=false
 shader_compiler/shader_cache/use_zstd_compression=false
 limits/opengl/max_renderable_elements=32768
-environment/defaults/default_clear_color=Color(0.276689, 0.386816, 0.306732, 1)
+environment/defaults/default_clear_color=Color(0.839961, 0.690355, 0.597153, 1)
 
 [shader_globals]
 

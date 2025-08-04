@@ -1,16 +1,11 @@
-[gd_scene load_steps=20 format=3 uid="uid://c7mnsqgs1g7tf"]
+[gd_scene load_steps=14 format=3 uid="uid://c7mnsqgs1g7tf"]
 
 [ext_resource type="Texture2D" uid="uid://bxr7i81ohunjs" path="res://background.png" id="1_con2f"]
 [ext_resource type="Script" uid="uid://ysxmlrf8ei1u" path="res://scripts/button.gd" id="1_yqeox"]
 [ext_resource type="Script" uid="uid://vch07g6bbhn5" path="res://scripts/page_objects/background.gd" id="2_con2f"]
 [ext_resource type="Texture2D" uid="uid://dcfu6exswybbo" path="res://virtual_scrapbook_logo.png" id="3_mhnvy"]
 [ext_resource type="Script" uid="uid://cpvleot6ewsjy" path="res://scripts/logo.gd" id="4_4ytvr"]
-[ext_resource type="Script" uid="uid://bfgmmvemengh8" path="res://scripts/custom_file_dialog.gd" id="6_g3eks"]
-[ext_resource type="Texture2D" uid="uid://dalyqalxiqr1c" path="res://icons/folder_icon.png" id="7_13sgg"]
-[ext_resource type="Texture2D" uid="uid://d15ft6erreip2" path="res://icons/dowloads_icon.png" id="8_i6lef"]
-[ext_resource type="Texture2D" uid="uid://bifyjbsc0keck" path="res://icons/desktop_icon.png" id="9_i6lef"]
-[ext_resource type="Texture2D" uid="uid://c7do8tq6rgvun" path="res://icons/user_icon.png" id="10_70i5f"]
-[ext_resource type="Texture2D" uid="uid://v0lhsk1vutnf" path="res://icons/drive_icon.png" id="11_mj5lg"]
+[ext_resource type="PackedScene" uid="uid://c8qb0epq1u2n" path="res://scenes/custom_file_dialog.tscn" id="6_v86rl"]
 [ext_resource type="Script" uid="uid://bru3a32prouhm" path="res://scenes/compress_scrapbook_button.gd" id="12_ufwb2"]
 
 [sub_resource type="SystemFont" id="SystemFont_con2f"]
@@ -49,10 +44,6 @@ border_width_top = 10
 border_width_right = 10
 border_width_bottom = 10
 border_color = Color(0.488086, 0.571558, 0.444776, 1)
-
-[sub_resource type="GDScript" id="GDScript_mj5lg"]
-script/source = "extends LineEdit
-"
 
 [node name="Menu" type="Control"]
 layout_mode = 3
@@ -99,81 +90,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_con2f")
 text = "Load Book"
 script = ExtResource("1_yqeox")
 
-[node name="CustomFileDialog" type="Window" parent="OpenScrapbookButton"]
-title = "Select a Zip or Folder"
-initial_position = 2
-size = Vector2i(720, 480)
-visible = false
-wrap_controls = true
-transient = true
-exclusive = true
-force_native = true
-script = ExtResource("6_g3eks")
-extensions = PackedStringArray("zip", "vsb", "mms")
-
-[node name="Box" type="VBoxContainer" parent="OpenScrapbookButton/CustomFileDialog"]
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="Path" type="LineEdit" parent="OpenScrapbookButton/CustomFileDialog/Box"]
-custom_minimum_size = Vector2(0, 40)
-layout_direction = 2
-layout_mode = 2
-emoji_menu_enabled = false
-script = SubResource("GDScript_mj5lg")
-
-[node name="Middle" type="HBoxContainer" parent="OpenScrapbookButton/CustomFileDialog/Box"]
-layout_mode = 2
-size_flags_vertical = 3
-alignment = 1
-
-[node name="FolderSelect" type="VBoxContainer" parent="OpenScrapbookButton/CustomFileDialog/Box/Middle"]
-layout_mode = 2
-
-[node name="SystemFolders" type="ItemList" parent="OpenScrapbookButton/CustomFileDialog/Box/Middle/FolderSelect"]
-layout_mode = 2
-size_flags_vertical = 3
-item_count = 5
-fixed_icon_size = Vector2i(32, 32)
-item_0/text = "Desktop"
-item_0/icon = ExtResource("9_i6lef")
-item_1/text = "Downloads"
-item_1/icon = ExtResource("8_i6lef")
-item_2/text = "Documents"
-item_2/icon = ExtResource("7_13sgg")
-item_3/text = "User"
-item_3/icon = ExtResource("10_70i5f")
-item_4/text = "Drives"
-item_4/icon = ExtResource("11_mj5lg")
-
-[node name="Files" type="ItemList" parent="OpenScrapbookButton/CustomFileDialog/Box/Middle"]
-layout_mode = 2
-size_flags_horizontal = 3
-fixed_icon_size = Vector2i(32, 32)
-
-[node name="Bottom" type="HBoxContainer" parent="OpenScrapbookButton/CustomFileDialog/Box"]
-layout_mode = 2
-
-[node name="FileName" type="LineEdit" parent="OpenScrapbookButton/CustomFileDialog/Box/Bottom"]
-custom_minimum_size = Vector2(0, 40)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 0
-
-[node name="SelectButton" type="Button" parent="OpenScrapbookButton/CustomFileDialog/Box/Bottom"]
-custom_minimum_size = Vector2(0, 40)
-layout_mode = 2
-text = "Select"
-
-[node name="EnterFolderButton" type="Button" parent="OpenScrapbookButton/CustomFileDialog/Box/Bottom"]
-custom_minimum_size = Vector2(0, 40)
-layout_mode = 2
-text = "Enter Folder"
-
-[node name="CancelButton" type="Button" parent="OpenScrapbookButton/CustomFileDialog/Box/Bottom"]
-custom_minimum_size = Vector2(0, 40)
-layout_mode = 2
-text = "Cancel"
+[node name="CustomFileDialog" parent="OpenScrapbookButton" instance=ExtResource("6_v86rl")]
 
 [node name="CompressScrapbookButton" type="Button" parent="."]
 layout_mode = 0
@@ -203,14 +120,7 @@ show_hidden_files = true
 use_native_dialog = true
 
 [connection signal="button_up" from="OpenScrapbookButton" to="OpenScrapbookButton" method="_on_button_up"]
-[connection signal="close_requested" from="OpenScrapbookButton/CustomFileDialog" to="OpenScrapbookButton/CustomFileDialog" method="_on_close_requested"]
 [connection signal="dir_selected" from="OpenScrapbookButton/CustomFileDialog" to="OpenScrapbookButton" method="_on_file_dialog_dir_selected"]
 [connection signal="file_selected" from="OpenScrapbookButton/CustomFileDialog" to="OpenScrapbookButton" method="_on_file_dialog_file_selected"]
-[connection signal="item_activated" from="OpenScrapbookButton/CustomFileDialog/Box/Middle/FolderSelect/SystemFolders" to="OpenScrapbookButton/CustomFileDialog" method="_on_system_folder_selected"]
-[connection signal="item_activated" from="OpenScrapbookButton/CustomFileDialog/Box/Middle/Files" to="OpenScrapbookButton/CustomFileDialog" method="_on_files_item_double_clicked"]
-[connection signal="item_clicked" from="OpenScrapbookButton/CustomFileDialog/Box/Middle/Files" to="OpenScrapbookButton/CustomFileDialog" method="_on_files_item_clicked"]
-[connection signal="pressed" from="OpenScrapbookButton/CustomFileDialog/Box/Bottom/SelectButton" to="OpenScrapbookButton/CustomFileDialog" method="_on_select_button_pressed"]
-[connection signal="pressed" from="OpenScrapbookButton/CustomFileDialog/Box/Bottom/EnterFolderButton" to="OpenScrapbookButton/CustomFileDialog" method="_on_enter_folder_button_pressed"]
-[connection signal="pressed" from="OpenScrapbookButton/CustomFileDialog/Box/Bottom/CancelButton" to="OpenScrapbookButton/CustomFileDialog" method="_on_close_requested"]
 [connection signal="button_up" from="CompressScrapbookButton" to="CompressScrapbookButton" method="_on_button_up"]
 [connection signal="dir_selected" from="CompressScrapbookButton/FileDialog" to="CompressScrapbookButton" method="_on_file_dialog_dir_selected"]

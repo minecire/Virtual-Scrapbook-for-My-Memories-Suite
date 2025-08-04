@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/x-virtualscrapbook">
+    <comment>Virtual Scrapbook</comment>
+    <glob pattern="*.vsb"/>
+    <icon name="x-virtualscrapbook+xml"/>
+  </mime-type>
+</mime-info>

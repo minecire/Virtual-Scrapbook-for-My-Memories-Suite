@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+MimeType=application/x-virtualscrapbook
+Name=Virtual Scrapbook
+Exec=virtual_scrapbook.x86_64
+Icon=/usr/share/icons/default/virtual_scrapbook_icon.svg
