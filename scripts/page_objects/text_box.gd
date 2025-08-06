@@ -19,7 +19,7 @@ func _process(_dt):
 	leftPagePos = Vector2(get_viewport().get_visible_rect().size.x / 2.0 - pageSize.x, (get_viewport().get_visible_rect().size.y / 2.0 - pageSize.y / 2.0) / 2.0)
 	rightPagePos = Vector2(get_viewport().get_visible_rect().size.x / 2.0, (get_viewport().get_visible_rect().size.y / 2.0 - pageSize.y / 2.0) / 2.0)
 func _gui_input(event):
-	emit_signal("input", event.duplicate())
+	#emit_signal("input", event.duplicate())
 	if(pageType == util_Enums.pageType.LEFT):
 		event.position -= leftPagePos
 		

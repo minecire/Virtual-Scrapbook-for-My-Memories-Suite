@@ -45,6 +45,8 @@ var rightPageSection
 var cantExit = false
 
 var isFirstPageTurn = true
+var dragging = false
+var done_dragging = false
 
 var isZip
 
@@ -342,8 +344,9 @@ func _process(deltaTime):
 		display_info_timer -= deltaTime
 		if(display_info_timer <= 0):
 			display_basic_info()
-	if(time < 1 && PageTurn.turningRight):
-		time += deltaTime / turnTime
+	if((time < 1 || dragging) && PageTurn.turningRight):
+		if(!dragging):
+			time += deltaTime / turnTime
 		if(PageTurn.openingBook):
 			$CoverOutside.material.set("shader_parameter/time", time)
 			$CoverInsideLeft.material.set("shader_parameter/time", time)
@@ -355,8 +358,11 @@ func _process(deltaTime):
 			PageTurn.finish_turn_right()
 			update_pages()
 			save_page()
-	if(time > 0 && !PageTurn.turningRight):
-		time -= deltaTime / turnTime
+			if(dragging):
+				done_dragging = true
+	elif((time > 0 || dragging) && !PageTurn.turningRight):
+		if(!dragging):
+			time -= deltaTime / turnTime
 		if(PageTurn.openingBook):
 			$CoverOutside.material.set("shader_parameter/time", time)
 			$CoverInsideLeft.material.set("shader_parameter/time", time)
@@ -368,6 +374,10 @@ func _process(deltaTime):
 			PageTurn.finish_turn_left()
 			update_pages()
 			save_page()
+			if(dragging):
+				done_dragging = true
+	else:
+		time = round(time)
 
 func display_basic_info():
 	if(OS.has_feature("mobile") || OS.has_feature("web_android") || OS.has_feature("web_ios")):
@@ -508,36 +518,37 @@ func _notification(what):
 		get_tree().quit() # default behavior
 
 func _on_swipe_detecter_scroll_ended(movement = 0) -> void:
-	var scrollPos = 500 + movement
-	if(scrollPos == 500):
-		return
-	if(scrollPos > 510):
-		display_info_timer = -1
-		if(time < 1 && PageTurn.turningRight):
-			time = 0.999
-		elif(time > 0 && !PageTurn.turningRight):
-			time = 0.999
-			PageTurn.turningRight = true
-		else:
-			time = PageTurn.turn_page_right()
-			update_pages()
-			if(isFirstPageTurn):
-				display_first_page_turn_info()
-				isFirstPageTurn = false
-	elif(scrollPos < 490):
-		display_info_timer = -1
-		if(time < 1 && PageTurn.turningRight):
-			time = 0.001
-			PageTurn.turningRight = false
-		elif(time > 0 && !PageTurn.turningRight):
-			time = 0.001
-		else:
-			time = PageTurn.turn_page_left()
-			update_pages()
-			if(isFirstPageTurn):
-				display_first_page_turn_info()
-				isFirstPageTurn = false
-	$SwipeDetecter.set_deferred("scroll_horizontal", 500)
+	#var scrollPos = 500 + movement
+	#if(scrollPos == 500):
+		#return
+	#if(scrollPos > 510):
+		#display_info_timer = -1
+		#if(time < 1 && PageTurn.turningRight):
+			#time = 0.999
+		#elif(time > 0 && !PageTurn.turningRight):
+			#time = 0.999
+			#PageTurn.turningRight = true
+		#else:
+			#time = PageTurn.turn_page_right()
+			#update_pages()
+			#if(isFirstPageTurn):
+				#display_first_page_turn_info()
+				#isFirstPageTurn = false
+	#elif(scrollPos < 490):
+		#display_info_timer = -1
+		#if(time < 1 && PageTurn.turningRight):
+			#time = 0.001
+			#PageTurn.turningRight = false
+		#elif(time > 0 && !PageTurn.turningRight):
+			#time = 0.001
+		#else:
+			#time = PageTurn.turn_page_left()
+			#update_pages()
+			#if(isFirstPageTurn):
+				#display_first_page_turn_info()
+				#isFirstPageTurn = false
+	#$SwipeDetecter.set_deferred("scroll_horizontal", 500)
+	dragging = false
 
 
 func _on_swipe_detecter_next_section() -> void:
@@ -564,3 +575,39 @@ func _on_swipe_detecter_previous_section() -> void:
 		update_pages()
 	PageTurn.turn_to_section_start()
 	update_pages()
+
+
+func _on_swipe_detecter_scrolling(movement) -> void:
+	if(time > 0 && time < 1):
+		dragging = true
+	if(done_dragging):
+		return
+	movement = -movement
+	if(movement > 0.01 && (!dragging || PageTurn.turningRight) || (dragging && PageTurn.turningRight)):
+		if(!dragging && movement < 0.05):
+			PageTurn.turn_page_right()
+			PageTurn.turningRight = true
+			print("turning page!")
+			update_pages()
+			dragging = true
+		time = clamp(movement, 0.001, 0.999)
+	elif(movement < -0.01 && (!dragging || !PageTurn.turningRight) || (dragging && !PageTurn.turningRight)):
+		if(!dragging && movement > -0.05):
+			PageTurn.turn_page_left()
+			PageTurn.turningRight = false
+			print("turning page!")
+			update_pages()
+			dragging = true
+		time = clamp(1 + movement, 0.001, 0.999)
+	
+	pass # Replace with function body.
+
+
+func _on_swipe_detecter_released() -> void:
+	if(time > 0.6):
+		PageTurn.turningRight = true
+	elif(time < 0.4):
+		PageTurn.turningRight = false
+	dragging = false
+	done_dragging = false
+	pass # Replace with function body.

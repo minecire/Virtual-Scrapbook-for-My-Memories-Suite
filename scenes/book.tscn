@@ -720,4 +720,6 @@ script = ExtResource("10_h6yvl")
 [connection signal="go_to_section" from="LeftPage" to="." method="_on_go_to_section"]
 [connection signal="next_section" from="SwipeDetecter" to="." method="_on_swipe_detecter_next_section"]
 [connection signal="previous_section" from="SwipeDetecter" to="." method="_on_swipe_detecter_previous_section"]
+[connection signal="released" from="SwipeDetecter" to="." method="_on_swipe_detecter_released"]
 [connection signal="scroll_ended_2" from="SwipeDetecter" to="." method="_on_swipe_detecter_scroll_ended"]
+[connection signal="scrolling" from="SwipeDetecter" to="." method="_on_swipe_detecter_scrolling"]

@@ -175,7 +175,7 @@ func check_for_opened_with_book():
 	pass
 
 func load_page():
-	DirAccess.open("user://").remove("save")
+	#DirAccess.open("user://").remove("save")
 	if !FileAccess.file_exists("user://save"):
 		if !FileAccess.file_exists("res://export_data.txt"):
 			return
