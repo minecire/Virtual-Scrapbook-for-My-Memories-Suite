@@ -1,8 +1,8 @@
 [gd_scene load_steps=14 format=3 uid="uid://c7mnsqgs1g7tf"]
 
 [ext_resource type="Texture2D" uid="uid://bxr7i81ohunjs" path="res://background.png" id="1_con2f"]
-[ext_resource type="Script" uid="uid://ysxmlrf8ei1u" path="res://scripts/button.gd" id="1_yqeox"]
-[ext_resource type="Script" uid="uid://vch07g6bbhn5" path="res://scripts/page_objects/background.gd" id="2_con2f"]
+[ext_resource type="Script" uid="uid://ysxmlrf8ei1u" path="res://scripts/open_scrapbook_button.gd" id="1_yqeox"]
+[ext_resource type="Script" uid="uid://vch07g6bbhn5" path="res://scripts/background.gd" id="2_con2f"]
 [ext_resource type="Texture2D" uid="uid://dcfu6exswybbo" path="res://virtual_scrapbook_logo.png" id="3_mhnvy"]
 [ext_resource type="Script" uid="uid://cpvleot6ewsjy" path="res://scripts/logo.gd" id="4_4ytvr"]
 [ext_resource type="PackedScene" uid="uid://c8qb0epq1u2n" path="res://scenes/custom_file_dialog.tscn" id="6_v86rl"]
@@ -11,9 +11,15 @@
 [sub_resource type="SystemFont" id="SystemFont_con2f"]
 font_names = PackedStringArray("Segoe Print")
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_con2f"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_con2f"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_width_left = 10
+border_width_top = 10
+border_width_right = 10
+border_width_bottom = 10
+border_color = Color(0.488086, 0.571558, 0.444776, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4ytvr"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g3eks"]
 bg_color = Color(0.294, 0.408, 0.231, 0.486)
 border_width_left = 10
 border_width_top = 10
@@ -29,7 +35,7 @@ border_width_right = 10
 border_width_bottom = 10
 border_color = Color(0.486275, 0.572549, 0.443137, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g3eks"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4ytvr"]
 bg_color = Color(0.294, 0.408, 0.231, 0.486)
 border_width_left = 10
 border_width_top = 10
@@ -37,13 +43,7 @@ border_width_right = 10
 border_width_bottom = 10
 border_color = Color(0.486275, 0.572549, 0.443137, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_con2f"]
-bg_color = Color(0.6, 0.6, 0.6, 0)
-border_width_left = 10
-border_width_top = 10
-border_width_right = 10
-border_width_bottom = 10
-border_color = Color(0.488086, 0.571558, 0.444776, 1)
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_con2f"]
 
 [node name="Menu" type="Control"]
 layout_mode = 3
@@ -82,11 +82,11 @@ offset_right = 811.0
 offset_bottom = 352.0
 theme_override_fonts/font = SubResource("SystemFont_con2f")
 theme_override_font_sizes/font_size = 45
-theme_override_styles/focus = SubResource("StyleBoxEmpty_con2f")
-theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_4ytvr")
-theme_override_styles/hover = SubResource("StyleBoxFlat_mhnvy")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_g3eks")
 theme_override_styles/normal = SubResource("StyleBoxFlat_con2f")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_g3eks")
+theme_override_styles/hover = SubResource("StyleBoxFlat_mhnvy")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_4ytvr")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_con2f")
 text = "Load Book"
 script = ExtResource("1_yqeox")
 
@@ -100,11 +100,11 @@ offset_right = 1155.0
 offset_bottom = 519.0
 theme_override_fonts/font = SubResource("SystemFont_con2f")
 theme_override_font_sizes/font_size = 45
-theme_override_styles/focus = SubResource("StyleBoxEmpty_con2f")
-theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_4ytvr")
-theme_override_styles/hover = SubResource("StyleBoxFlat_mhnvy")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_g3eks")
 theme_override_styles/normal = SubResource("StyleBoxFlat_con2f")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_g3eks")
+theme_override_styles/hover = SubResource("StyleBoxFlat_mhnvy")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_4ytvr")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_con2f")
 text = "Compress Book"
 script = ExtResource("12_ufwb2")
 

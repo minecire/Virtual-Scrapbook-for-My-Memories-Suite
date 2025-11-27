@@ -221,7 +221,6 @@ func get_font_names(dir, file):
 			if(nodeName == "txt" || nodeName == "tns:txt"):
 				var attr = parse_attributes(parser)
 				var font
-				var styledfont
 				if(!attr.has("font")):
 					continue
 				else:

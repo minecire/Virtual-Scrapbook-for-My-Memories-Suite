@@ -1,5 +1,6 @@
 extends TextureRect
 
+# Makes sure the logo remains positioned when window is resized
 
 func _ready():
 	
