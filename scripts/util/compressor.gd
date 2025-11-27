@@ -119,7 +119,7 @@ func move_sections_to_temp(dir):
 		root_dir.make_dir_recursive("temp/" + id + "/fonts/")
 		var fonts_dir = DirAccess.open(dir + "fonts/")
 		for file in fonts_dir.get_files():
-			fonts_dir.copy_absolute(dir + "fonts/" + file, temp_dir + "/fonts/" + file)
+			DirAccess.copy_absolute(dir + "fonts/" + file, temp_dir + "/fonts/" + file)
 	
 	return temp_dir;
 	
@@ -161,7 +161,7 @@ func copy_section(dir1, dir2):
 	var objectsDirAccess = DirAccess.open(dir1 + "objects/");
 	for file in objectsDirAccess.get_files():
 		if(file.get_extension() != "png" && file.get_extension() != "jpg" || relevantObjects.find(file) != -1):
-			objectsDirAccess.copy_absolute(dir1 + "objects/" + file, dir2 + "objects/" + file);
+			DirAccess.copy_absolute(dir1 + "objects/" + file, dir2 + "objects/" + file);
 
 func get_relevant_objects_from_mms(file):
 	print(file)
@@ -180,7 +180,6 @@ func get_relevant_objects_from_mms(file):
 				pass
 			
 	return relevantObjects;
-	pass
 
 
 func copy_system_fonts(dir):
@@ -200,7 +199,7 @@ func copy_system_fonts(dir):
 	
 	for path in fontPaths:
 		diracc.make_dir("fonts/")
-		diracc.copy_absolute(path, dir + "/fonts/" + path.get_file())
+		DirAccess.copy_absolute(path, dir + "/fonts/" + path.get_file())
 func get_system_font_paths(fonts):
 	var paths = []
 	for font in fonts:

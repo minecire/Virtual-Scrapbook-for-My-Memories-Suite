@@ -26,6 +26,6 @@
 [resource]
 shader = ExtResource("1_t0es5")
 shader_parameter/shape_textures = Array[Texture2D]([SubResource("PlaceholderTexture2D_faxig"), SubResource("PlaceholderTexture2D_qwo15"), SubResource("PlaceholderTexture2D_bbov8"), SubResource("PlaceholderTexture2D_yqvbi"), SubResource("PlaceholderTexture2D_ptb0x")])
+shader_parameter/gradient_textures = Array[Texture2D]([SubResource("PlaceholderTexture2D_ax6fi"), SubResource("PlaceholderTexture2D_b6c2c"), SubResource("PlaceholderTexture2D_t7xah")])
 shader_parameter/corner_textures = Array[Texture2D]([ExtResource("2_q2rbk"), ExtResource("3_fv8gk")])
 shader_parameter/rip_textures = Array[Texture2D]([ExtResource("4_rbkow"), ExtResource("5_dnl24"), ExtResource("6_5umo8")])
-shader_parameter/gradient_textures = Array[Texture2D]([SubResource("PlaceholderTexture2D_ax6fi"), SubResource("PlaceholderTexture2D_b6c2c"), SubResource("PlaceholderTexture2D_t7xah")])

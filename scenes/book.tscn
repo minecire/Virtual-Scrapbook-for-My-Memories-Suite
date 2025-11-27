@@ -435,7 +435,6 @@ void fragment() {
 
 }
 "
-graph_offset = Vector2(-1635.39, -583.1)
 mode = 1
 flags/light_only = false
 nodes/fragment/0/position = Vector2(1380, -100)
@@ -579,9 +578,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
 script = ExtResource("1_3wpgy")
-bookPath = "C:\\Users\\cubec\\OneDrive\\Documents\\scrapbooks/test/"
-borderSize = 60
-turnTime = 0.7
+turn_time = 0.4
 
 [node name="Background" type="TextureRect" parent="."]
 self_modulate = Color(0.121587, 0.233752, 0.275718, 1)
@@ -722,5 +719,4 @@ script = ExtResource("10_h6yvl")
 [connection signal="next_section" from="SwipeDetecter" to="." method="_on_swipe_detecter_next_section"]
 [connection signal="previous_section" from="SwipeDetecter" to="." method="_on_swipe_detecter_previous_section"]
 [connection signal="released" from="SwipeDetecter" to="." method="_on_swipe_detecter_released"]
-[connection signal="scroll_ended_2" from="SwipeDetecter" to="." method="_on_swipe_detecter_scroll_ended"]
 [connection signal="scrolling" from="SwipeDetecter" to="." method="_on_swipe_detecter_scrolling"]

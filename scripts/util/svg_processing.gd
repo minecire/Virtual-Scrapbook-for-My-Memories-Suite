@@ -181,26 +181,26 @@ func apply_transformation(point, tf, translate):
 		tfmatrix[1][3] = 0.
 	return(apply_transformation_matrix(point, tfmatrix))
 
-func apply_transformation_string(point, string, translate):
+func apply_transformation_stringing(point, stringing, translate):
 	var currentType = ""
 	var currentNumberString = ""
 	var currentRelevantNumbers = []
 	var newpoint = point
-	for i in range(string.length()):
-		var char: String = string[i]
-		if(char.to_upper() != char.to_lower()):
-			currentType += char
-		elif(char == "("):
-			while(char != ")"):
+	for i in range(stringing.length()):
+		var chr: String = stringing[i]
+		if(chr.to_upper() != chr.to_lower()):
+			currentType += chr
+		elif(chr == "("):
+			while(chr != ")"):
 				i+=1
-				if(i >= string.length()):
+				if(i >= stringing.length()):
 					break
-				char = string[i]
-				if(char == "," || char == " "):
+				chr = stringing[i]
+				if(chr == "," || chr == " "):
 					currentRelevantNumbers.append(parse_css_number_thing(currentNumberString))
 					currentNumberString = ""
 				else:
-					currentNumberString += char
+					currentNumberString += chr
 			currentRelevantNumbers.append(parse_css_number_thing(currentNumberString))
 			currentNumberString = ""
 			newpoint = apply_transformation(newpoint, [currentType.replace(" ", ""), currentRelevantNumbers], translate)
@@ -216,19 +216,19 @@ func apply_transformations_to_curve(acurve, tfs):
 		var p_out_new = p_out
 		var p_pos_new = p_pos
 		for j in range(tfs.size() - 1, -1, -1):
-			p_in_new = apply_transformation_string(p_in_new, tfs[j], false)
-			p_out_new = apply_transformation_string(p_out_new, tfs[j], false)
-			p_pos_new = apply_transformation_string(p_pos_new, tfs[j], true)
+			p_in_new = apply_transformation_stringing(p_in_new, tfs[j], false)
+			p_out_new = apply_transformation_stringing(p_out_new, tfs[j], false)
+			p_pos_new = apply_transformation_stringing(p_pos_new, tfs[j], true)
 		newcurve.set_point_in(i, p_in_new)
 		newcurve.set_point_out(i, p_out_new)
 		newcurve.set_point_position(i, p_pos_new)
 	return newcurve
-func parse_css_number_thing(str):
+func parse_css_number_thing(string):
 	var unit = ""
-	var number = str.to_float()
-	for char: String in str:
-		if(char.to_upper() != char.to_lower()):
-			unit += char
+	var number = string.to_float()
+	for chr: String in string:
+		if(chr.to_upper() != chr.to_lower()):
+			unit += chr
 	if(unit == "" || unit == "px" || unit == "rad"):
 		return number
 	elif(unit == "cm"):
@@ -261,17 +261,17 @@ func parse_path(pathdata, numberScale, squish):
 	var currentNumberString = ""
 	var currentRelevantNumbers = []
 	var firstMove = true
-	for char : String in pathdata:
-		if(char.is_valid_int() || char == "." || char == "-"):
-			currentNumberString += char
-		elif(currentNumberString != "" && char == " "):
+	for chr : String in pathdata:
+		if(chr.is_valid_int() || chr == "." || chr == "-"):
+			currentNumberString += chr
+		elif(currentNumberString != "" && chr == " "):
 			if(currentElementType != "A" || currentRelevantNumbers.size() < 2 ||
 				currentRelevantNumbers.size() > 4):
 				currentRelevantNumbers.append(currentNumberString.to_float() * numberScale)
 			else:
 				currentRelevantNumbers.append(currentNumberString.to_float())
 			currentNumberString = ""
-		elif(char.to_upper() != char.to_lower()):
+		elif(chr.to_upper() != chr.to_lower()):
 			if(currentElementType != ""):
 				if(currentElementType == "m" || currentElementType == "M"):
 					if(!firstMove):
@@ -281,7 +281,7 @@ func parse_path(pathdata, numberScale, squish):
 						firstMove = false
 				parse_path_element(currentElementType, currentRelevantNumbers, squish, curve)
 				currentRelevantNumbers = []
-			currentElementType = char
+			currentElementType = chr
 	if(currentNumberString != ""):
 		currentRelevantNumbers.append(currentNumberString.to_float() * numberScale)
 	parse_path_element(currentElementType, currentRelevantNumbers, squish, curve)
@@ -481,25 +481,25 @@ func convert_shape_to_curves(file, shapedata, pageSize, canvasWidth, canvasHeigh
 	parser.open(file)
 	while parser.read() != ERR_FILE_EOF:
 		if parser.get_node_type() == XMLParser.NODE_ELEMENT:
-			var name = parser.get_node_name()
-			if(name == "svg" || name == "svg:svg"):
+			var node_name = parser.get_node_name()
+			if(node_name == "svg" || node_name == "svg:svg"):
 				svgdata = parse_attributes(parser)
 				if(svgdata.has("x") && svgdata.has("y")):
 					transformStack.append("matrix(1 0 0 1 " +svgdata["x"] + " " + svgdata["y"] + ")")
-			elif(name == "g" || name == "svg:g"):
+			elif(node_name == "g" || node_name == "svg:g"):
 				var data_ = parse_attributes(parser)
 				if(data_.has("transform")):
 					transformStack.append(data_["transform"])
 				else:
 					transformStack.append("")
-			elif(name == "path" || name == "svg:path" || name == "rect" || name == "svg:rect" || name == "circle" || name == "svg:circle" || 
-				name == "ellipse" || name == "svg:ellipse" || name == "polygon" || name == "svg:polygon"):
+			elif(node_name == "path" || node_name == "svg:path" || node_name == "rect" || node_name == "svg:rect" || node_name == "circle" || node_name == "svg:circle" || 
+				node_name == "ellipse" || node_name == "svg:ellipse" || node_name == "polygon" || node_name == "svg:polygon"):
 				var attributes = parse_attributes(parser)
 				if(attributes.has("transform")):
 					transformStack.append(attributes["transform"])
 				else:
 					transformStack.append("")
-				curves.append([parse_shape_object(name, attributes, transformStack), transformStack.duplicate()])
+				curves.append([parse_shape_object(node_name, attributes, transformStack), transformStack.duplicate()])
 				transformStack.pop_back()
 				
 		if parser.get_node_type() == XMLParser.NODE_ELEMENT_END:
@@ -511,18 +511,18 @@ func convert_shape_to_curves(file, shapedata, pageSize, canvasWidth, canvasHeigh
 		for curve in curveArray[0]:
 			tfdCurves.append(apply_transformations_to_curve(curve, curveArray[1]))
 	return tfdCurves
-func parse_shape_object(name, data_, transforms):
+func parse_shape_object(shape_name, data_, transforms):
 	var shapeCurves = []
 	var path_
-	if(name == "path" || name == "svg:path"):
+	if(shape_name == "path" || shape_name == "svg:path"):
 		path_ = data_["d"]
-	if(name == "rect" || name == "svg:rect"):
+	if(shape_name == "rect" || shape_name == "svg:rect"):
 		path_ = convert_rect_to_path(data_)
-	if(name == "circle" || name == "svg:circle"):
+	if(shape_name == "circle" || shape_name == "svg:circle"):
 		path_ = convert_circle_to_path(data_)
-	if(name == "ellipse" || name == "svg:ellipse"):
+	if(shape_name == "ellipse" || shape_name == "svg:ellipse"):
 		path_ = convert_ellipse_to_path(data_)
-	if(name == "polygon" || name == "svg:polygon"):
+	if(shape_name == "polygon" || shape_name == "svg:polygon"):
 		path_ = convert_polygon_to_path(data_)
 	var curves = parse_path(path_, 1., 1.)
 	for curve_ in curves:

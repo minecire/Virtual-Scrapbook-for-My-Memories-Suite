@@ -1,14 +1,12 @@
 extends RichTextLabel
 
 static var scrapbookData = []
-var sectionIndex
-var pageSize
+var section_index
+var page_size
 var leftPagePos = Vector2(0., 0.)
 var rightPagePos = Vector2(0., 0.)
 
 var pageType
-
-signal input
 
 func _ready():
 	Input.set_custom_mouse_cursor(load("res://icons/cursor.png"), Input.CURSOR_ARROW)
@@ -16,24 +14,24 @@ func _ready():
 	Input.set_custom_mouse_cursor(load("res://icons/cursor_pointing.png"), Input.CURSOR_CROSS)
 
 func _process(_dt):
-	leftPagePos = Vector2(get_viewport().get_visible_rect().size.x / 2.0 - pageSize.x, (get_viewport().get_visible_rect().size.y / 2.0 - pageSize.y / 2.0) / 2.0)
-	rightPagePos = Vector2(get_viewport().get_visible_rect().size.x / 2.0, (get_viewport().get_visible_rect().size.y / 2.0 - pageSize.y / 2.0) / 2.0)
+	leftPagePos = Vector2(get_viewport().get_visible_rect().size.x / 2.0 - page_size.x, (get_viewport().get_visible_rect().size.y / 2.0 - page_size.y / 2.0) / 2.0)
+	rightPagePos = Vector2(get_viewport().get_visible_rect().size.x / 2.0, (get_viewport().get_visible_rect().size.y / 2.0 - page_size.y / 2.0) / 2.0)
 func _gui_input(event):
 	#emit_signal("input", event.duplicate())
 	if(pageType == util_Enums.pageType.LEFT):
 		event.position -= leftPagePos
 		
-		var normalizedPosition = event.position / pageSize
+		var normalizedPosition = event.position / page_size
 		normalizedPosition.y += log(1. - normalizedPosition.x) * 0.004
 		
-		event.position = normalizedPosition * pageSize
+		event.position = normalizedPosition * page_size
 	else:
 		event.position -= rightPagePos
 		
-		var normalizedPosition = event.position / pageSize
+		var normalizedPosition = event.position / page_size
 		normalizedPosition.y += log(normalizedPosition.x) * 0.004
 		
-		event.position = normalizedPosition * pageSize
+		event.position = normalizedPosition * page_size
 
 func _has_point(_point):
 	if((_point.x < get_viewport().get_visible_rect().size.x / 2) == (pageType == util_Enums.pageType.LEFT)):

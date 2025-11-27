@@ -1,3 +1,3 @@
 extends Node
 
-enum pageType{LEFT, RIGHT, TURNING, UNDER}
+enum page_type{LEFT, RIGHT, TURNING, UNDER}

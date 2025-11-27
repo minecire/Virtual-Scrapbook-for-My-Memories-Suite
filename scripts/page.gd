@@ -5,34 +5,34 @@ extends SubViewport
 
 @export var path: String;
 @export var file: String;
-@export var pageName: String;
-@export var pageSize: Vector2;
+@export var page_name: String;
+@export var page_size: Vector2;
 @export var pos: Vector2;
 
-var pageIndex = 0
-var sectionIndex = 0
+var page_index = 0
+var section_index = 0
 
 #Preload scenes to be used later
-var imageBackgroundScene = preload("res://scenes/pageobjects/image_background.tscn")
-var colorBackgroundScene = preload("res://scenes/pageobjects/color_background.tscn")
-var imageScene = preload("res://scenes/pageobjects/image.tscn")
-var textScene = preload("res://scenes/pageobjects/j_word_text.tscn")
-var lineScene = preload("res://scenes/pageobjects/line.tscn")
-var wordArtScene = preload("res://scenes/pageobjects/word_art.tscn")
+var image_background_scene = preload("res://scenes/pageobjects/image_background.tscn")
+var color_background_scene = preload("res://scenes/pageobjects/color_background.tscn")
+var image_scene = preload("res://scenes/pageobjects/image.tscn")
+var text_scene = preload("res://scenes/pageobjects/j_word_text.tscn")
+var line_scene = preload("res://scenes/pageobjects/line.tscn")
+var word_art_scene = preload("res://scenes/pageobjects/word_art.tscn")
 
-var aspectRatio: float;
+var aspect_ratio: float;
 
-var maxOutputWidth: int; #Variables used for calculations later
-var maxOutputHeight: int;
+var max_output_width: int; #Variables used for calculations later
+var max_output_height: int;
 
 #Size that MMS considers the page to be
 # (This is very different from the actual size of the page, which is dependent on window size)
-var canvasWidth: int;
-var canvasHeight: int;
+var canvas_width: int;
+var canvas_height: int;
 
-var numPages = -1
+var num_pages = -1
 
-var pageType : util_Enums.pageType;
+var page_type : util_Enums.page_type;
 
 signal go_to_section # Emitted to tell the book to go to a section
 signal reload_text # Used to refresh textboxes
@@ -55,8 +55,8 @@ func load_page(): # Called to reload a page
 	
 	if get_children().size() == 0: 
 		# If page is blank, at least add a background
-		var cbi = colorBackgroundScene.instantiate()
-		cbi.size = pageSize
+		var cbi = color_background_scene.instantiate()
+		cbi.size = page_size
 		cbi.color = Color(0.9, 0.83, 0.8)
 		add_child(cbi)
 	
@@ -72,18 +72,18 @@ func calculate_missing_data():
 	# MMS files do not store the canvas height or aspect ratio
 	# But they do store "max output width" and height variables that have the same ratio
 	# So we can calculate it ourselves
-	aspectRatio = float(maxOutputWidth) / float(maxOutputHeight)
-	canvasHeight = int(canvasWidth / aspectRatio)
+	aspect_ratio = float(max_output_width) / float(max_output_height)
+	canvas_height = int(canvas_width / aspect_ratio)
 func parse_full_page():
 	# Get some global data
-	numPages = util_Preloader.scrapbookData[sectionIndex]["numPages"]
-	canvasWidth = util_Preloader.scrapbookData[sectionIndex]["canvasWidth"]
-	maxOutputWidth = util_Preloader.scrapbookData[sectionIndex]["maxOutputWidth"]
-	maxOutputHeight = util_Preloader.scrapbookData[sectionIndex]["maxOutputHeight"]
+	num_pages = util_Preloader.scrapbookData[section_index]["num_pages"]
+	canvas_width = util_Preloader.scrapbookData[section_index]["canvas_width"]
+	max_output_width = util_Preloader.scrapbookData[section_index]["max_output_width"]
+	max_output_height = util_Preloader.scrapbookData[section_index]["max_output_height"]
 	
 	# Parse the individual page's data
-	if(pageIndex < util_Preloader.scrapbookData[sectionIndex]["pages"].size()):
-		parse_page(util_Preloader.scrapbookData[sectionIndex]["pages"][pageIndex])
+	if(page_index < util_Preloader.scrapbookData[section_index]["pages"].size()):
+		parse_page(util_Preloader.scrapbookData[section_index]["pages"][page_index])
 func parse_page(data):
 	calculate_missing_data()
 	for object in data["objects"]: # Parse each object one at a time
@@ -125,311 +125,303 @@ func parse_page_object(object):
 		# plaintext, links, and more, although MMS itself has no way to use these features
 		
 func parse_color_background(data): # Background of a solid color
-	var colorBackgroundInstance = colorBackgroundScene.instantiate()
-	var colordata = data["fillColor"]
+	var color_background_instance = color_background_scene.instantiate()
+	var color_data = data["fillColor"]
 	
-	var opacity = 1
+	var _opacity = 1
 	if(data.has("imageopacity")):
-		opacity = data["imageopacity"].to_float()
-	var colorvalue = 16777216 + colordata.to_int() # Convert color from a negative integer to a hex value
+		_opacity = data["imageopacity"].to_float()
+	var color_value = 16777216 + color_data.to_int() # Convert color from a negative integer to a hex value
 	# It's actually just the RGB value, but written as an unsigned integer rather than a signed one, 
 	# and stored in decimal rather than hex, leading to this odd conversion where we subtract it from 2^24
-	var colorcode = "#" + ( "%6X" % colorvalue )
-	var maincolor = Color(colorcode)
+	var color_code = "#" + ( "%6X" % color_value )
+	var main_color = Color(color_code)
 	
-	colorBackgroundInstance.color = maincolor
-	colorBackgroundInstance.size = pageSize
-	colorBackgroundInstance.position = Vector2(0, 0)
-	add_child(colorBackgroundInstance)
-	pass
+	color_background_instance.color = main_color
+	color_background_instance.size = page_size
+	color_background_instance.position = Vector2(0, 0)
+	add_child(color_background_instance)
 
 func parse_image_background(data): # Background from image
-	var imageBackgroundInstance = imageBackgroundScene.instantiate()
+	var image_background_instance = image_background_scene.instantiate()
 	var filename = data["fileName"]
-	var imagePath = path+"objects/"+filename
-	var ibiTexture = imageBackgroundInstance.get_node("Texture")
-	var imageTexture
+	var image_path = path+"objects/"+filename
+	var image_background_instance_texture = image_background_instance.get_node("Texture")
+	var image_texture
 	if(util_Preloader.imagesDict.has(filename)):
-		imageTexture = util_Preloader.imagesDict[filename]
+		image_texture = util_Preloader.imagesDict[filename]
 	else:
-		imageTexture = ImageTexture.create_from_image(Image.load_from_file(imagePath))
-	var imageAtlas : AtlasTexture = AtlasTexture.new() # We need an image atlas to crop the image
-	imageAtlas.atlas = imageTexture
+		image_texture = ImageTexture.create_from_image(Image.load_from_file(image_path))
+	var image_atlas : AtlasTexture = AtlasTexture.new() # We need an image atlas to crop the image
+	image_atlas.atlas = image_texture
 	var region = Rect2()
 	
 	# We are baffled by trying to set the image region properly. The numbers don't quite seem to ever line up.
 	# This is as close as we got, and it's a total mess
-	if(aspectRatio <= float(imageTexture.get_width()) / float(imageTexture.get_height())): 
+	if(aspect_ratio <= float(image_texture.get_width()) / float(image_texture.get_height())): 
 		# Preserve image as unstretched if unscaled
-		region.size.x = aspectRatio * imageTexture.get_height()
-		region.position.x = (imageTexture.get_width() - region.size.x) / 2.0
+		region.size.x = aspect_ratio * image_texture.get_height()
+		region.position.x = (image_texture.get_width() - region.size.x) / 2.0
 	else:
-		region.size.y = imageTexture.get_height() / aspectRatio
-		region.position.y = (imageTexture.get_width() - region.size.x) / 2.0
+		region.size.y = image_texture.get_height() / aspect_ratio
+		region.position.y = (image_texture.get_width() - region.size.x) / 2.0
 	if(data.has("SubImage") && data["SubImage"] == "true"):
 		# Nonsense, idk. It kinda works? 
 		# Every time I try to redo this from scratch I come up with something equally upsetting to look at
 		# I think? The stored values are like. The position and scale of a rescaled image 
 		# such that the original image shape and size would be the proper scale
 		# But the math doesn't quite work out for that.
-		if(aspectRatio <= float(imageTexture.get_width()) / float(imageTexture.get_height())):
+		if(aspect_ratio <= float(image_texture.get_width()) / float(image_texture.get_height())):
 			if(data["sW"].to_int() != 0):
 				region.size.x = region.size.x * region.size.x / (region.size.x + float(data["sW"].to_int()))
 			if(data["sH"].to_int() != 0):
-				region.size.y = imageTexture.get_height() * imageTexture.get_height() /(imageTexture.get_height() + float(data["sH"].to_int()))
-			region.position.x = (-float(data["sX"].to_int()) * region.size.y / float(imageTexture.get_height()) + imageTexture.get_width()/2. - imageTexture.get_height() * aspectRatio / 2.)
-			region.position.y = - data["sY"].to_int() * region.size.y / imageTexture.get_height()
+				region.size.y = image_texture.get_height() * image_texture.get_height() /(image_texture.get_height() + float(data["sH"].to_int()))
+			region.position.x = (-float(data["sX"].to_int()) * region.size.y / float(image_texture.get_height()) + image_texture.get_width()/2. - image_texture.get_height() * aspect_ratio / 2.)
+			region.position.y = - data["sY"].to_int() * region.size.y / image_texture.get_height()
 		else:
-			region.size.y = imageTexture.get_height() / aspectRatio - data["sH"].to_int() * canvasHeight / imageTexture.get_height()
-			region.position.y = (imageTexture.get_width() - region.size.x) / 2.0 + data["sY"].to_int() * canvasHeight / imageTexture.get_height()
+			region.size.y = image_texture.get_height() / aspect_ratio - data["sH"].to_int() * canvas_height / image_texture.get_height()
+			region.position.y = (image_texture.get_width() - region.size.x) / 2.0 + data["sY"].to_int() * canvas_height / image_texture.get_height()
 		
 	
 	if(data.has("mirror")):
-		ibiTexture.flip_h = data["mirror"] == "true"
+		image_background_instance_texture.flip_h = data["mirror"] == "true"
 	if(data.has("flip")):
-		ibiTexture.flip_v = data["flip"] == "true"
+		image_background_instance_texture.flip_v = data["flip"] == "true"
 	if(data.has("rotation")):
-		ibiTexture.rotation_degrees = data["rotation"].to_float()
+		image_background_instance_texture.rotation_degrees = data["rotation"].to_float()
 	if(data.has("imageopacity")):
-		ibiTexture.self_modulate.a = data["imageopacity"].to_float()
-	imageAtlas.region = region
+		image_background_instance_texture.self_modulate.a = data["imageopacity"].to_float()
+	image_atlas.region = region
 	
-	ibiTexture.texture = imageAtlas # Set the texture properly
+	image_background_instance_texture.texture = image_atlas # Set the texture properly
 	
-	ibiTexture.pivot_offset = pageSize / 2 # Center of page
-	ibiTexture.position = Vector2(0, 0)
-	ibiTexture.size = pageSize
-	imageBackgroundInstance.get_node("ColorRect").size = pageSize
-	imageBackgroundInstance.get_node("ColorRect").position = Vector2(0, 0)
-	add_child(imageBackgroundInstance)
+	image_background_instance_texture.pivot_offset = page_size / 2 # Center of page
+	image_background_instance_texture.position = Vector2(0, 0)
+	image_background_instance_texture.size = page_size
+	image_background_instance.get_node("ColorRect").size = page_size
+	image_background_instance.get_node("ColorRect").position = Vector2(0, 0)
+	add_child(image_background_instance)
 
-func getGradient(rawGradientData, width, height):
+func getGradient(raw_gradient_data, width, height):
 	# Little utility function to convert the gradient storage format
 	# into a Godot gradient texture
 	
-	var gradientData = rawGradientData.split("~") # Gradients use tilde to separate parts
-	var gradientTexture = GradientTexture2D.new()
-	gradientTexture.width = width
-	gradientTexture.height = height
-	if(gradientData[0] == "linearGradient"): # First whether the gradient is linear or radial
-		gradientTexture.fill = GradientTexture2D.FILL_LINEAR
+	var gradient_data = raw_gradient_data.split("~") # Gradients use tilde to separate parts
+	var gradient_texture = GradientTexture2D.new()
+	gradient_texture.width = width
+	gradient_texture.height = height
+	if(gradient_data[0] == "linearGradient"): # First whether the gradient is linear or radial
+		gradient_texture.fill = GradientTexture2D.FILL_LINEAR
 	else:
-		gradientTexture.fill = GradientTexture2D.FILL_RADIAL
+		gradient_texture.fill = GradientTexture2D.FILL_RADIAL
 	
 	# Then the start and end points of the gradient
 	# Further separated into 2D coordinates by backtick
-	var gradientFromData = gradientData[1].split("`") 
-	var gradientFrom = Vector2(gradientFromData[0].to_float(), gradientFromData[1].to_float()) / Vector2(width, height)
-	var gradientToData = gradientData[2].split("`")
-	var gradientTo = Vector2(gradientToData[0].to_float(), gradientToData[1].to_float()) / Vector2(width, height)
-	gradientTexture.fill_from = gradientFrom
-	gradientTexture.fill_to = gradientTo
+	var gradient_from_data = gradient_data[1].split("`") 
+	var gradient_from = Vector2(gradient_from_data[0].to_float(), gradient_from_data[1].to_float()) / Vector2(width, height)
+	var gradient_to_data = gradient_data[2].split("`")
+	var gradient_to = Vector2(gradient_to_data[0].to_float(), gradient_to_data[1].to_float()) / Vector2(width, height)
+	gradient_texture.fill_from = gradient_from
+	gradient_texture.fill_to = gradient_to
 	
 	# Then colors in that odd negative number format, again separated by backticks
-	var gradientColorsData = gradientData[3].split("`")
-	var gradientColors = PackedColorArray()
-	for col in gradientColorsData:
-		gradientColors.append(getColorFromNegative(col.to_int()))
-	gradientTexture.gradient = Gradient.new()
-	gradientTexture.gradient.colors = gradientColors
+	var gradient_colors_data = gradient_data[3].split("`")
+	var gradient_colors = PackedColorArray()
+	for col in gradient_colors_data:
+		gradient_colors.append(getColorFromNegative(col.to_int()))
+	gradient_texture.gradient = Gradient.new()
+	gradient_texture.gradient.colors = gradient_colors
 	
 	# Then the offsets from 0 to 1 along the gradient each point is at
-	var gradientOffsetData = gradientData[4].split("`")
-	var gradientOffsets = []
-	for offset in gradientOffsetData:
-		gradientOffsets.append(offset.to_float())
-	gradientTexture.gradient.offsets = gradientOffsets
-	if(gradientData[5] == "NO_CYCLE"): # And finally the way in which the gradient repeats (or doesn't)
-		gradientTexture.repeat = GradientTexture2D.REPEAT_NONE
-	if(gradientData[5] == "REFLECT"):
-		gradientTexture.repeat = GradientTexture2D.REPEAT_MIRROR
+	var gradient_offset_data = gradient_data[4].split("`")
+	var gradient_offsets = []
+	for offset in gradient_offset_data:
+		gradient_offsets.append(offset.to_float())
+	gradient_texture.gradient.offsets = gradient_offsets
+	if(gradient_data[5] == "NO_CYCLE"): # And finally the way in which the gradient repeats (or doesn't)
+		gradient_texture.repeat = GradientTexture2D.REPEAT_NONE
+	if(gradient_data[5] == "REFLECT"):
+		gradient_texture.repeat = GradientTexture2D.REPEAT_MIRROR
 	else:
-		gradientTexture.repeat = GradientTexture2D.REPEAT
-	return gradientTexture
+		gradient_texture.repeat = GradientTexture2D.REPEAT
+	return gradient_texture
 
 func parse_gradient_background(data):
-	var imageBackgroundInstance = imageBackgroundScene.instantiate()
-	var ibiTexture = imageBackgroundInstance.get_node("Texture")
-	ibiTexture.texture = getGradient(data["GradientDefinition"], canvasWidth / 5., canvasHeight / 5.)
-	ibiTexture.size = pageSize
+	var image_background_instance = image_background_scene.instantiate()
+	var image_background_instance_texture = image_background_instance.get_node("Texture")
+	image_background_instance_texture.texture = getGradient(data["GradientDefinition"], canvas_width / 5., canvas_height / 5.)
+	image_background_instance_texture.size = page_size
 	
 	if(data.has("imageopacity")):
-		ibiTexture.self_modulate.a = data["imageopacity"].to_float()
+		image_background_instance_texture.self_modulate.a = data["imageopacity"].to_float()
 	
-	add_child(imageBackgroundInstance)
+	add_child(image_background_instance)
 	
 	pass
 func parse_image(data, type):
-	var imageInstance = imageScene.instantiate()
+	var image_instance = image_scene.instantiate()
 	# Set image data and add to scene, the image scene itself handles the rest
-	imageInstance.pageSize = pageSize
-	imageInstance.canvasWidth = canvasWidth
-	imageInstance.canvasHeight = canvasHeight
-	imageInstance.path = path
-	imageInstance.data = data
-	imageInstance.type = type
-	add_child(imageInstance)
+	image_instance.page_size = page_size
+	image_instance.canvas_width = canvas_width
+	image_instance.canvas_height = canvas_height
+	image_instance.path = path
+	image_instance.data = data
+	image_instance.type = type
+	add_child(image_instance)
 	if(data.has("id")): 
 		# An image with an id means that the image has text attached to it
 		# niche feature where you can combine a 'shape' type image with text
 		# and the text will fill the shape
-		var hti = util_Preloader.heldTextInstances[data["id"]].duplicate() 
+		var held_text_instance = util_Preloader.heldTextInstances[data["id"]].duplicate() 
 		# It's possible that the image is being parsed before the text would be
 		# so we simply generate all the text instances beforepaw in the preload step
 		# so they're here when we need them
 		
-		hti.pageSize = pageSize # Adding info that wasn't available during preload
-		hti.canvasWidth = canvasWidth
-		hti.canvasHeight = canvasHeight
+		held_text_instance.page_size = page_size # Adding info that wasn't available during preload
+		held_text_instance.canvas_width = canvas_width
+		held_text_instance.canvas_height = canvas_height
 		
 		# Duplicate is not recursive so we need to duplicate the data ourselves
-		hti.data = util_Preloader.heldTextInstances[data["id"]].data.duplicate()
-		hti.path = util_Preloader.heldTextInstances[data["id"]].path
-		hti.shapedata = util_Preloader.heldTextInstances[data["id"]].shapedata
-		add_child(hti)
+		held_text_instance.data = util_Preloader.heldTextInstances[data["id"]].data.duplicate()
+		held_text_instance.path = util_Preloader.heldTextInstances[data["id"]].path
+		held_text_instance.shapedata = util_Preloader.heldTextInstances[data["id"]].shapedata
+		add_child(held_text_instance)
 		
 		# We need to tell the text instance to reload now, which requires a whole signal system
 		# because communication between nodes has to be complicated
-		reload_text.connect(hti.reload)
+		reload_text.connect(held_text_instance.reload)
 		emit_signal("reload_text")
-		reload_text.disconnect(hti.reload)
+		reload_text.disconnect(held_text_instance.reload)
 	
 func parse_text(data): 
 	# Much like with images, parsing text requires just setting some things and letting the object handle itself
 	get_tree().root.get_viewport().set_canvas_cull_mask_bit(2, false);
-	var textInstance = textScene.instantiate()
-	textInstance.pageSize = pageSize
-	textInstance.canvasWidth = canvasWidth
-	textInstance.get_node("TextBox").sectionIndex = sectionIndex
-	if(canvasWidth == 0):
-		textInstance.canvasWidth = pageSize.x
-	textInstance.canvasHeight = canvasHeight
-	textInstance.path = path
-	textInstance.data = data
-	textInstance.go_to_section.connect(_on_text_go_to_section)
+	var text_instance = text_scene.instantiate()
+	text_instance.page_size = page_size
+	text_instance.canvas_width = canvas_width
+	text_instance.get_node("TextBox").section_index = section_index
+	if(canvas_width == 0):
+		text_instance.canvas_width = page_size.x
+	text_instance.canvas_height = canvas_height
+	text_instance.path = path
+	text_instance.data = data
+	text_instance.go_to_section.connect(_on_text_go_to_section)
 	if(data.has("id")): 
 		# Loading text with an id also causes problems because it creates duplicate instances
-		textInstance.shapedata = util_Preloader.iddshapes[data["id"]]
-		#util_Preloader.heldTextInstances[data["id"]] = textInstance
+		text_instance.shapedata = util_Preloader.iddshapes[data["id"]]
+		#util_Preloader.heldTextInstances[data["id"]] = text_instance
 	else:
-		add_child(textInstance)
-	if(textInstance.hasLinks && pageType != util_Enums.pageType.TURNING && pageType != util_Enums.pageType.UNDER):
+		add_child(text_instance)
+	if(text_instance.hasLinks && page_type != util_Enums.page_type.TURNING && page_type != util_Enums.page_type.UNDER):
 		# If we have links, we need to make an invisible copy of the textbox that is clickable
 		# Because subviewports don't like to handle inputs
 		# Unless this page is currently turning or under another page
 		
-		var textInstance2 = textScene.instantiate()
-		textInstance2.pageSize = pageSize
-		textInstance2.canvasWidth = canvasWidth
-		textInstance2.get_node("TextBox").pageType = pageType
+		var text_instance_2 = text_scene.instantiate()
+		text_instance_2.page_size = page_size
+		text_instance_2.canvas_width = canvas_width
+		text_instance_2.get_node("TextBox").page_type = page_type
 		
-		if(canvasWidth == 0):
-			textInstance2.canvasWidth = pageSize.x
-		textInstance2.canvasHeight = canvasHeight
-		textInstance2.path = path
-		textInstance2.data = data
-		textInstance2.get_node("TextBox").sectionIndex = sectionIndex
-		textInstance2.go_to_section.connect(_on_text_go_to_section)
-		textInstance2.go_to_page.connect(_on_text_go_to_page)
-		textInstance2.get_node("TextBox").input.connect(get_tree().get_root().get_node("Book/SwipeDetecter")._input)
-		textInstance2.get_node("TextBox").set_modulate(Color(1., 1., 1., 0.))
+		if(canvas_width == 0):
+			text_instance_2.canvas_width = page_size.x
+		text_instance_2.canvas_height = canvas_height
+		text_instance_2.path = path
+		text_instance_2.data = data
+		text_instance_2.get_node("TextBox").section_index = section_index
+		text_instance_2.go_to_section.connect(_on_text_go_to_section)
+		text_instance_2.go_to_page.connect(_on_text_go_to_page)
+		text_instance_2.get_node("TextBox").input.connect(get_tree().get_root().get_node("Book/SwipeDetecter")._input)
+		text_instance_2.get_node("TextBox").set_modulate(Color(1., 1., 1., 0.))
 		
 		# Add to the clickables holder node in the book scene
-		get_tree().get_root().get_node("Book/ClickablesHolder").add_child(textInstance2)
+		get_tree().get_root().get_node("Book/ClickablesHolder").add_child(text_instance_2)
 
 func getColorFromNegative(val): 
 	# Convert the silly negative number color representation to something Godot can interpret
-	var negval = 16777216 + val
+	var negative_value = 16777216 + val
 	
 	# Not sure Godot is smart enough to do this with bitshifts
 	# But that doesn't matter too much since this function doesn't get run too often
-	var red = float(floor(negval / (256 * 256))) 
-	var green = float(floor(negval / (256) % 256))
-	var blue = float(floor(negval % 256))
+	var red = float(floor(negative_value / (256 * 256))) 
+	var green = float(floor(negative_value / (256) % 256))
+	var blue = float(floor(negative_value % 256))
 	return Color(red / 256., green / 256., blue / 256.)
 	
-func parse_line(data):
-	var lineInstance = lineScene.instantiate()
-	lineInstance.position = Vector2(data["startX"].to_int(), data["startY"].to_int()) * pageSize.y / canvasHeight
-	lineInstance.size = Vector2(data["width"].to_int(), data["height"].to_int()) * pageSize.y / canvasHeight
+func parse_line(data): # Line is stored as a part of an SVG object
+	var line_instance = line_scene.instantiate()
+	
+	# Set up basic position scale and rotation, rescaling from the canvas scale to page scale
+	line_instance.position = Vector2(data["startX"].to_int(), data["startY"].to_int()) * page_size.y / canvas_height
+	line_instance.size = Vector2(data["width"].to_int(), data["height"].to_int()) * page_size.y / canvas_height
 	if(data.has("rotation")):
-		lineInstance.rotation_degrees = data["rotation"].to_int()
-		lineInstance.pivot_offset = lineInstance.size / 2.
-	var svgfile = FileAccess.open("res://Shapes/line_svg.txt", FileAccess.READ)
-	var svgdata = svgfile.get_as_text()
+		line_instance.rotation_degrees = data["rotation"].to_int()
+		line_instance.pivot_offset = line_instance.size / 2.
+	
+	
+	var svg_file = FileAccess.open("res://Shapes/line_svg.txt", FileAccess.READ)
+	var svg_data = svg_file.get_as_text() # Loading in the line svg template (see Shapes/line_svg.txt)
 	var col = Color.BLACK
 	if(data.has("fillColor")):
-		var colvalue = data["fillColor"].to_int()
-		if(colvalue < 0):
-			col = getColorFromNegative(colvalue)
-		else:
-			col = getColorFromNegative(-16777216+(colvalue % (256 * 256 * 256)))
-			col.a = float(colvalue) / (256 * 256 * 256 * 256)
-	var newsvgdata = svgdata.replace(
+		var color_value = data["fillColor"].to_int()
+		if(color_value < 0):
+			col = getColorFromNegative(color_value)
+		else: # Sometimes the number *is* stored as an unsigned integer when it has alpha, so we gotta do this
+			col = getColorFromNegative(-16777216+(color_value % (256 * 256 * 256)))
+			col.a = float(color_value) / (256 * 256 * 256 * 256)
+	var new_svg_data = svg_data.replace( # Replace each element in the template with the proper value
 		"{IMAGE_WIDTH}", data["width"]).replace(
 		"{IMAGE_HEIGHT}", data["height"]).replace(
 		"{STROKE_WEIGHT}", str(data["outlineThickness"].to_int())).replace(
 		"{STROKE_COLOR}", "#" + col.to_html(false)).replace(
 		"{LINE_DATA}", data["svgPathData"])
 	var img = Image.new()
-	img.load_svg_from_string(newsvgdata, 1.0)
-	img.load_svg_from_string(newsvgdata, lineInstance.size.x / img.get_width())
+	# Now we need to load in the SVG
+	# This essentially rasterizes it to a normal texture
+	img.load_svg_from_string(new_svg_data, 1.0)
+	img.load_svg_from_string(new_svg_data, line_instance.size.x / img.get_width())
 	var tex = ImageTexture.create_from_image(img)
-	lineInstance.texture = tex
-	lineInstance.self_modulate.a = col.a
-	add_child(lineInstance)
-	if(data.has("id")):
-		var hti = util_Preloader.heldTextInstances[data["id"]].duplicate()
-		hti.pageSize = pageSize
-		hti.data = util_Preloader.heldTextInstances[data["id"]].data.duplicate()
-		hti.canvasWidth = canvasWidth
-		hti.canvasHeight = canvasHeight
-		hti.path = util_Preloader.heldTextInstances[data["id"]].path
-		hti.shapedata = util_Preloader.heldTextInstances[data["id"]].shapedata
-		add_child(hti)
-		reload_text.connect(hti.reload)
+	line_instance.texture = tex
+	line_instance.self_modulate.a = col.a
+	add_child(line_instance)
+	if(data.has("id")): # Text can also be attached to line objects, in which case it follows a curve
+		var held_text_instance = util_Preloader.heldTextInstances[data["id"]].duplicate()
+		# Set held text instance data
+		held_text_instance.page_size = page_size
+		held_text_instance.data = util_Preloader.heldTextInstances[data["id"]].data.duplicate()
+		held_text_instance.canvas_width = canvas_width
+		held_text_instance.canvas_height = canvas_height
+		held_text_instance.path = util_Preloader.heldTextInstances[data["id"]].path
+		held_text_instance.shapedata = util_Preloader.heldTextInstances[data["id"]].shapedata
+		add_child(held_text_instance)
+		
+		# Silly signal method to reload the text
+		reload_text.connect(held_text_instance.reload)
 		emit_signal("reload_text")
-		reload_text.disconnect(hti.reload)
+		reload_text.disconnect(held_text_instance.reload)
 
 
-func parse_text_art(data):
-	var wordArtInstance = wordArtScene.instantiate()
-	wordArtInstance.data = data
-	wordArtInstance.path = path
-	wordArtInstance.pageSize = pageSize
-	wordArtInstance.canvasWidth = canvasWidth
+func parse_text_art(data): # Word art
+	var word_art_instance = word_art_scene.instantiate()
+	word_art_instance.data = data
+	word_art_instance.path = path
+	word_art_instance.page_size = page_size
+	word_art_instance.canvas_width = canvas_width
 	
-	add_child(wordArtInstance)
+	add_child(word_art_instance)
 	
-	pass
-
-func parse_attributes(parser):
-	var data = {}
-	for idx in range(parser.get_attribute_count()):
-		data[parser.get_attribute_name(idx)] = parser.get_attribute_value(idx)
-	return data
-
-func get_text_contents(parser):
-	parser.read()
-	if(parser.get_node_type() == XMLParser.NODE_TEXT):
-		return(parser.get_node_data())
-	else:
-		return ""
-
-
-func _on_book_page_update() -> void:
+func _on_book_page_update() -> void: # Run on signal from book to reload
+	# Clear out the page
 	for n in get_children():
 		remove_child(n)
 		n.free()
 	
+	# Then reload it
 	load_page()
 
 
-func _on_text_go_to_section(section):
-	print("go to section \"" + section + "\"")
+func _on_text_go_to_section(section): # Emitted when a page link is clicked
 	emit_signal("go_to_section", section, 1)
 
 
-func _on_text_go_to_page(section, page):
-	print("go to section \"" + section + "\", page " + str(page))
+func _on_text_go_to_page(section, page): # Emitted when a page link is clicked
 	emit_signal("go_to_section", section, page)

@@ -4,9 +4,9 @@ extends Panel
 #todo:
 #(low priority)a few missing fonts, bold/italics failing on some fonts, rotation on curves
 var data = {}
-var pageSize
-var canvasWidth
-var canvasHeight
+var page_size
+var canvas_width
+var canvas_height
 var systemFontsDict = {}
 var hasLinks = false
 var specialFontsDict = {
@@ -43,16 +43,16 @@ var curveAdvance = 0.
 
 var currentTextData = {}
 
-var pageType : util_Enums.pageType;
+var page_type : util_Enums.page_type;
 
 signal go_to_section
 signal go_to_page
 
 func _has_point(_point):
-	if(_point.x < get_viewport().get_visible_rect().size.x / 2 && $TextBox.pageType == util_Enums.pageType.LEFT):
+	if(_point.x < get_viewport().get_visible_rect().size.x / 2 && $TextBox.page_type == util_Enums.page_type.LEFT):
 		return true
 	
-	if(_point.x > get_viewport().get_visible_rect().size.x / 2 && $TextBox.pageType == util_Enums.pageType.RIGHT):
+	if(_point.x > get_viewport().get_visible_rect().size.x / 2 && $TextBox.page_type == util_Enums.page_type.RIGHT):
 		return true
 	return false
 
@@ -60,26 +60,26 @@ func _ready():
 	reload()
 
 func reload():
-	$TextBox.pageSize = pageSize
+	$TextBox.page_size = page_size
 	if(shapedata != null):
 		parse_shape()
 	parse_text()
 
 func parse_shape():
 	if(shapedata["objecttype"] == "line"):
-		curve = util_SvgProcessing.parse_path(shapedata["svgPathData"], pageSize.x / canvasWidth, 1)[0]
-		$LineCanvas.pageScale = pageSize.x / canvasWidth
+		curve = util_SvgProcessing.parse_path(shapedata["svgPathData"], page_size.x / canvas_width, 1)[0]
+		$LineCanvas.pageScale = page_size.x / canvas_width
 		$LineCanvas.shapeCoords = Vector2(shapedata["startX"].to_int(), shapedata["startY"].to_int())
 		$LineCanvas.curve = curve
 		hasCurve = true
 	elif(data.has("shapeTextPlacements")):
 		$ShapeCanvas.data = data["shapeTextPlacements"]
-		$ShapeCanvas.pageScale = pageSize.x / canvasWidth
+		$ShapeCanvas.pageScale = page_size.x / canvas_width
 		hasShape = true
 	
 func parse_default_shape(shapename):
-	curve = util_SvgProcessing.parse_path(defaultCurvesDict[shapename], pageSize.x / canvasWidth * data["width"].to_int(), float(data["height"].to_int()) / float(data["width"].to_int()))[0]
-	$LineCanvas.pageScale = pageSize.x / canvasWidth
+	curve = util_SvgProcessing.parse_path(defaultCurvesDict[shapename], page_size.x / canvas_width * data["width"].to_int(), float(data["height"].to_int()) / float(data["width"].to_int()))[0]
+	$LineCanvas.pageScale = page_size.x / canvas_width
 	$LineCanvas.shapeCoords = Vector2(data["startX"].to_int(), data["startY"].to_int())
 	$LineCanvas.fontSizeFactor = float(data["height"].to_int()) / float(data["width"].to_int())
 	$LineCanvas.curve = curve
@@ -102,14 +102,14 @@ func parse_text():
 	var pos = Vector2(0,0)
 	pos.x = float(data["startX"].to_int())
 	pos.y = float(data["startY"].to_int())
-	boxsize *= (pageSize.x / canvasWidth)
-	pos *= (pageSize.x / canvasWidth)
+	boxsize *= (page_size.x / canvas_width)
+	pos *= (page_size.x / canvas_width)
 	self.size = boxsize
 	$TextBox.size = boxsize 
 	$TextBox.position = Vector2.ZERO
 	if(data.has("padding")):
-		$TextBox.size -= Vector2(data["padding"].to_int(), data["padding"].to_int()) * 2 * (pageSize.x / canvasWidth)
-		$TextBox.position += Vector2(data["padding"].to_int(), data["padding"].to_int()) * (pageSize.x / canvasWidth)
+		$TextBox.size -= Vector2(data["padding"].to_int(), data["padding"].to_int()) * 2 * (page_size.x / canvas_width)
+		$TextBox.position += Vector2(data["padding"].to_int(), data["padding"].to_int()) * (page_size.x / canvas_width)
 	self.position = pos
 	
 	self.pivot_offset = boxsize / 2
@@ -118,7 +118,7 @@ func parse_text():
 		self.visible = true
 		var panel = StyleBoxFlat.new()
 		panel.draw_center = false
-		mattewidth = data["outlineThickness"].to_int() * (pageSize.x / canvasWidth)
+		mattewidth = data["outlineThickness"].to_int() * (page_size.x / canvas_width)
 		panel.border_width_left = mattewidth
 		panel.border_width_right = mattewidth
 		panel.border_width_top = mattewidth
@@ -157,9 +157,9 @@ func parse_text():
 	if(data.has("verticalAlignment")):
 		var valign = data["verticalAlignment"].to_int()
 		$TextBox.vertical_alignment = valign - 1
-	$LineCanvas.size = pageSize
+	$LineCanvas.size = page_size
 	$LineCanvas.top_level = true
-	$ShapeCanvas.size = pageSize
+	$ShapeCanvas.size = page_size
 	$ShapeCanvas.top_level = true
 	
 	set_text_from_file($TextBox,data["fileName"])
@@ -254,7 +254,7 @@ func parse_blip(blip, box, scaleFactor, currentFontSize):
 		var fv = FontVariation.new()
 		fv.base_font = font
 		if(blipData.has("expnd")):
-			var expandFactor = float(blipData["expnd"])/(currentFontSize) * pageSize.x / canvasWidth * pageSize.x / canvasWidth
+			var expandFactor = float(blipData["expnd"])/(currentFontSize) * page_size.x / canvas_width * page_size.x / canvas_width
 			fv.set_spacing(TextServer.SPACING_GLYPH, expandFactor)
 		currentTextData["font"] = fv
 		box.push_font(fv)
@@ -293,7 +293,6 @@ func generate_contents(text):
 	var blipstyleinfo_major_section = blipstyleinfo.duplicate()
 	var blipstyleinfo_minor_section = blipstyleinfo.duplicate()
 	var blipstyleinfo_subminor_section = blipstyleinfo.duplicate()
-	var blipstyleinfo_subsubminor_section = blipstyleinfo.duplicate()
 	blipstyleinfo_major_section["fs"] = str(blipstyleinfo["fs"].to_float() * 0.8)
 	blipstyleinfo_minor_section["fs"] = str(blipstyleinfo["fs"].to_float() * 0.4)
 	blipstyleinfo_minor_section["alpha"] = 0.8
@@ -352,14 +351,12 @@ func generate_contents(text):
 
 func parse_brackets(text):
 	var currentBracketedItem = ""
-	var insideBrackets = false
 	var finalText = []
 	var tagStack = []
 	for line in text:
 		var newline = []
 		for blip in line[1]:
 			if(blip[1].length() > 0 && blip[1][0] == '['):
-				insideBrackets = true
 				currentBracketedItem = blip[1].replace("[", "")
 				if(blip[1][blip[1].length()-1] == ']'):
 					currentBracketedItem = currentBracketedItem.replace("]", "")
@@ -368,7 +365,6 @@ func parse_brackets(text):
 					else:
 						tagStack.append(currentBracketedItem)
 						hasLinks = true
-					insideBrackets = false
 			elif(blip[1].length() > 0 && blip[1][blip[1].length()-1] == ']'):
 				currentBracketedItem += blip[1].replace("]", "")
 				if(currentBracketedItem[0] == "/"):
@@ -376,7 +372,6 @@ func parse_brackets(text):
 				else:
 					tagStack.append(currentBracketedItem)
 					hasLinks = true
-				insideBrackets = false
 			else:
 				var newblip = blip.duplicate()
 				if(tagStack.size() > 0):
@@ -417,7 +412,6 @@ func split_by_bracket(text):
 				newline.append(blip)
 		newtext.append([line[0], newline])
 	return newtext
-	pass
 
 func check_for_contents(text):
 	var textString = ""
@@ -440,10 +434,10 @@ func parse_text_line(parser):
 	return [lineStyleInfo, lineData]
 
 func parse_attributes(parser):
-	var data = {}
+	var attribute_data = {}
 	for idx in range(parser.get_attribute_count()):
-		data[parser.get_attribute_name(idx)] = parser.get_attribute_value(idx)
-	return data
+		attribute_data[parser.get_attribute_name(idx)] = parser.get_attribute_value(idx)
+	return attribute_data
 
 func get_text_contents(parser):
 	parser.read()
@@ -475,9 +469,9 @@ func parse_meta_tag(tag):
 		var splitlink = pagelink.split(" ")
 		var pageNumber = splitlink[splitlink.size()-1].to_int()
 		splitlink.remove_at(splitlink.size() - 1)
-		var sectionIndex = " ".join(splitlink)
+		var section_index = " ".join(splitlink)
 		
-		emit_signal("go_to_page", sectionIndex, pageNumber)
+		emit_signal("go_to_page", section_index, pageNumber)
 
 
 func _process(deltaTime):

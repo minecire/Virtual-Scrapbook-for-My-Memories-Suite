@@ -7,12 +7,12 @@ static var shapes = {}
 static var shapesarr = []
 static var gradients = {}
 static var gradientsarr = []
-var pageSize
-var canvasWidth
-var canvasHeight
+var page_size
+var canvas_width
+var canvas_height
 var path
-var imageSize
-var imagePos
+var image_size
+var image_pos
 var numberedShapesDict = {
 	0: "Circle.svg",
 	1: "Heart.svg",
@@ -104,15 +104,15 @@ func parseRegularMatte():
 	if(data.has("matteGradient")):
 		matteColor = Color.WHITE
 		var rotation = 0.#$Texture.rotation
-		var scale = $Texture.size / pageSize
+		var scale = $Texture.size / page_size
 		var transformationMatrix = Vector4(scale.x * cos(rotation), -scale.y * sin(rotation), scale.x * sin(rotation), scale.y * cos(rotation))
-		var translationVector = Vector2($Texture.position / pageSize) + Vector2(scale.x * cos(rotation) - scale.y * sin(rotation), scale.x * sin(rotation) + scale.y * cos(rotation)) / 2
+		var translationVector = Vector2($Texture.position / page_size) + Vector2(scale.x * cos(rotation) - scale.y * sin(rotation), scale.x * sin(rotation) + scale.y * cos(rotation)) / 2
 		$Texture.set_instance_shader_parameter("transformationMatrix", transformationMatrix)
 		$Texture.set_instance_shader_parameter("translation", translationVector)
 		
 		var rawGradientData = data["matteGradient"]
 		if(!gradients.has(rawGradientData)):
-			addGradient(rawGradientData, canvasWidth * 2, canvasHeight * 2)
+			addGradient(rawGradientData, canvas_width * 2, canvas_height * 2)
 		$Texture.set_instance_shader_parameter("gradientIndex", gradients[rawGradientData])
 	elif data.has("outlineColor"):
 		matteColor = getColorFromNegative(data["outlineColor"].to_int())
@@ -148,9 +148,9 @@ func parseShapeMatte():
 	if(data.has("matteGradient")):
 		matteColor = Color.WHITE
 		var rotation = 0.#$Texture.rotation
-		var scale = $Texture.size / pageSize
+		var scale = $Texture.size / page_size
 		var transformationMatrix = Vector4(scale.x * cos(rotation), -scale.y * sin(rotation), scale.x * sin(rotation), scale.y * cos(rotation))
-		var translationVector = Vector2($Texture.position / pageSize) + Vector2(scale.x * cos(rotation) - scale.y * sin(rotation), scale.x * sin(rotation) - scale.y * cos(rotation)) / 2.
+		var translationVector = Vector2($Texture.position / page_size) + Vector2(scale.x * cos(rotation) - scale.y * sin(rotation), scale.x * sin(rotation) - scale.y * cos(rotation)) / 2.
 		if(type != "shape"):
 			$MatteSvgTexture.set_instance_shader_parameter("transformationMatrix", transformationMatrix)
 			$MatteSvgTexture.set_instance_shader_parameter("translation", translationVector)
@@ -159,7 +159,7 @@ func parseShapeMatte():
 			$MatteSvgTexture.set_instance_shader_parameter("translation", Vector2(0., 0.))
 		var rawGradientData = data["matteGradient"]
 		if(!gradients.has(rawGradientData)):
-			addGradient(rawGradientData, canvasWidth * 2, canvasHeight * 2)
+			addGradient(rawGradientData, canvas_width * 2, canvas_height * 2)
 		$MatteSvgTexture.set_instance_shader_parameter("gradientIndex", gradients[rawGradientData])
 	elif data.has("outlineColor"):
 		matteColor = getColorFromNegative(data["outlineColor"].to_int())
@@ -196,17 +196,17 @@ func parseShapeMatte():
 			shapeheight = shape.get_height() * 2.
 		editedContent = editedContent.replace("<svg ", "<svg width=\"" + str(shapewidth) + "px\" height=\"" + str(shapeheight) + "px\" 
 			viewBox=\"" + str(-shapewidth / 4.) + " " + str(-shapeheight / 4.) +" " + str(shapewidth) + " " + str(shapeheight) + "\"")
-	$MatteSvgTexture.pivot_offset = imageSize
-	$MatteSvgTexture.position = imagePos - imageSize / 2
-	$MatteSvgTexture.size = imageSize * 2
+	$MatteSvgTexture.pivot_offset = image_size
+	$MatteSvgTexture.position = image_pos - image_size / 2
+	$MatteSvgTexture.size = image_size * 2
 	editedContent = editedContent.replace("fill=\"none\"", "")
-	editedContent = editedContent.replace("<path", "<path fill=\"#" + matteColor.to_html(false) + "\" stroke=\"#" + matteColor.to_html(false) + "\" stroke-width=\"" + str(float(data["mattewidth"].to_int()) * shapewidth / float(imageSize.x) * pageSize.x / canvasWidth * 2.) + "\"") 
-	editedContent = editedContent.replace("<ellipse", "<ellipse fill=\"#" + matteColor.to_html(false) + "\" stroke=\"#" + matteColor.to_html(false) + "\" stroke-width=\"" + str(float(data["mattewidth"].to_int()) * shapewidth / float(imageSize.x) * pageSize.x / canvasWidth * 2.) + "\"") 
-	editedContent = editedContent.replace("<circle", "<circle fill=\"#" + matteColor.to_html(false) + "\" stroke=\"#" + matteColor.to_html(false) + "\" stroke-width=\"" + str(float(data["mattewidth"].to_int()) * shapewidth / float(imageSize.x) * pageSize.x / canvasWidth * 2.) + "\"") 
-	editedContent = editedContent.replace("<rect", "<rect fill=\"#" + matteColor.to_html(false) + "\" stroke=\"#" + matteColor.to_html(false) + "\" stroke-width=\"" + str(float(data["mattewidth"].to_int()) * shapewidth / float(imageSize.x) * pageSize.x / canvasWidth * 2.) + "\"") 
-	editedContent = editedContent.replace("<polygon", "<polygon fill=\"#" + matteColor.to_html(false) + "\" stroke=\"#" + matteColor.to_html(false) + "\" stroke-width=\"" + str(float(data["mattewidth"].to_int()) * shapewidth / float(imageSize.x) * pageSize.x / canvasWidth * 2.) + "\"") 
+	editedContent = editedContent.replace("<path", "<path fill=\"#" + matteColor.to_html(false) + "\" stroke=\"#" + matteColor.to_html(false) + "\" stroke-width=\"" + str(float(data["mattewidth"].to_int()) * shapewidth / float(image_size.x) * page_size.x / canvas_width * 2.) + "\"") 
+	editedContent = editedContent.replace("<ellipse", "<ellipse fill=\"#" + matteColor.to_html(false) + "\" stroke=\"#" + matteColor.to_html(false) + "\" stroke-width=\"" + str(float(data["mattewidth"].to_int()) * shapewidth / float(image_size.x) * page_size.x / canvas_width * 2.) + "\"") 
+	editedContent = editedContent.replace("<circle", "<circle fill=\"#" + matteColor.to_html(false) + "\" stroke=\"#" + matteColor.to_html(false) + "\" stroke-width=\"" + str(float(data["mattewidth"].to_int()) * shapewidth / float(image_size.x) * page_size.x / canvas_width * 2.) + "\"") 
+	editedContent = editedContent.replace("<rect", "<rect fill=\"#" + matteColor.to_html(false) + "\" stroke=\"#" + matteColor.to_html(false) + "\" stroke-width=\"" + str(float(data["mattewidth"].to_int()) * shapewidth / float(image_size.x) * page_size.x / canvas_width * 2.) + "\"") 
+	editedContent = editedContent.replace("<polygon", "<polygon fill=\"#" + matteColor.to_html(false) + "\" stroke=\"#" + matteColor.to_html(false) + "\" stroke-width=\"" + str(float(data["mattewidth"].to_int()) * shapewidth / float(image_size.x) * page_size.x / canvas_width * 2.) + "\"") 
 	shape.load_svg_from_string(editedContent, 1.)
-	shape.load_svg_from_string(editedContent, imageSize.x / shape.get_width() * 2)
+	shape.load_svg_from_string(editedContent, image_size.x / shape.get_width() * 2)
 	var shapeTexture = ImageTexture.create_from_image(shape)
 	$MatteSvgTexture.texture = shapeTexture
 	$MatteSvgTexture.visible = true
@@ -250,22 +250,22 @@ func parseShape():
 			shapeheight = shapeImage.get_height()
 		shapeImageData = shapeImageData.replace("<svg ", "<svg width=\"" + str(shapewidth * 2.) + "px\" height=\"" + str(shapeheight * 2.) + "px\" 
 			viewBox=\"" + str(-shapewidth / 2.) + " " + str(-shapeheight / 2.) +" " + str(shapewidth * 2.) + " " + str(shapeheight * 2.) + "\"")
-		imageSize *= 2.
-		imagePos -= imageSize / 4.
-		$Texture.size = imageSize
-		$Texture.position = imagePos
+		image_size *= 2.
+		image_pos -= image_size / 4.
+		$Texture.size = image_size
+		$Texture.position = image_pos
 	shapeImage.load_svg_from_string(shapeImageData, 1.)
-	shapeImage.load_svg_from_string(shapeImageData, imageSize.x / shapeImage.get_width())
+	shapeImage.load_svg_from_string(shapeImageData, image_size.x / shapeImage.get_width())
 	var shape = ImageTexture.create_from_image(shapeImage)
 	if(type == "shape"):
 		var shapeSubtexture = Vector4(
-		region2.position.x / shape.get_width() * pageSize.x / canvasWidth,
-		region2.position.y / shape.get_height() * pageSize.x / canvasWidth,
-		1 if region2.size.x == 0 else region2.size.x / shape.get_width() * pageSize.x / canvasWidth,
-		1 if region2.size.y == 0 else region2.size.y / shape.get_height() * pageSize.x / canvasWidth)
+		region2.position.x / shape.get_width() * page_size.x / canvas_width,
+		region2.position.y / shape.get_height() * page_size.x / canvas_width,
+		1 if region2.size.x == 0 else region2.size.x / shape.get_width() * page_size.x / canvas_width,
+		1 if region2.size.y == 0 else region2.size.y / shape.get_height() * page_size.x / canvas_width)
 		$Texture.set_instance_shader_parameter("shape_subtexture", shapeSubtexture);
 		if(data.has("mattewidth") && data.has("SubImage")):
-			$MatteSvgTexture.set_instance_shader_parameter("subtexture", shapeSubtexture + Vector4(data["mattewidth"].to_float() / shape.get_width() * pageSize.y / canvasHeight, data["mattewidth"].to_float() / shape.get_height() * pageSize.y / canvasHeight, 0., 0.) * 9 / 5);
+			$MatteSvgTexture.set_instance_shader_parameter("subtexture", shapeSubtexture + Vector4(data["mattewidth"].to_float() / shape.get_width() * page_size.y / canvas_height, data["mattewidth"].to_float() / shape.get_height() * page_size.y / canvas_height, 0., 0.) * 9 / 5);
 	if(!shapes.has(shapeFile)):
 		shapesarr.append(shape)
 		shapes[shapeFile] = shapesarr.size() - 1
@@ -360,19 +360,19 @@ func parseRounding():
 	$Texture.set_instance_shader_parameter("cornerType", data["CornerType"].to_int())
 	$Texture.set_instance_shader_parameter("corner_rounding", scaledCornersData)
 func parseImage():
-	imageSize = Vector2(0,0)
+	image_size = Vector2(0,0)
 		
 		
-	imageSize.x = float(data["width"].to_int())
-	imageSize.y = float(data["height"].to_int())
-	imagePos = Vector2(0,0)
-	imagePos.x = float(data["startX"].to_int())
-	imagePos.y = float(data["startY"].to_int())
+	image_size.x = float(data["width"].to_int())
+	image_size.y = float(data["height"].to_int())
+	image_pos = Vector2(0,0)
+	image_pos.x = float(data["startX"].to_int())
+	image_pos.y = float(data["startY"].to_int())
 	
-	imageSize *= (pageSize.x / canvasWidth)
-	imagePos *= (pageSize.x / canvasWidth)
-	$Texture.position = imagePos
-	$Texture.size = imageSize
+	image_size *= (page_size.x / canvas_width)
+	image_pos *= (page_size.x / canvas_width)
+	$Texture.position = image_pos
+	$Texture.size = image_size
 	region = Rect2()
 	var filename;
 	var imagePath
@@ -390,7 +390,7 @@ func parseImage():
 				imageTexture = ImageTexture.create_from_image(Image.load_from_file(imagePath))
 	elif(data.has("GradientDefinition")):
 		if(!gradients.has(data["GradientDefinition"])):
-			addGradient(data["GradientDefinition"], imageSize.x / 4., imageSize.y / 4.)
+			addGradient(data["GradientDefinition"], image_size.x / 4., image_size.y / 4.)
 		imageTexture = gradientsarr[gradients[data["GradientDefinition"]]]
 	else:
 		imageTexture = GradientTexture1D.new()
@@ -428,11 +428,11 @@ func parseImage():
 		region = Rect2()
 		var defaultWidth
 		var defaultHeight
-		if(imageSize.x >= imageSize.y):
+		if(image_size.x >= image_size.y):
 			defaultWidth = imageTexture.get_width()
-			defaultHeight = imageTexture.get_width() * imageSize.y / imageSize.x
+			defaultHeight = imageTexture.get_width() * image_size.y / image_size.x
 		else:
-			defaultWidth = imageTexture.get_height() * imageSize.x / imageSize.y
+			defaultWidth = imageTexture.get_height() * image_size.x / image_size.y
 			defaultHeight = imageTexture.get_height()
 		
 		region.size.x = defaultWidth
@@ -455,11 +455,11 @@ func parseImage():
 		region = Rect2()
 		var defaultWidth
 		var defaultHeight
-		if(imageSize.x / imageSize.y > imageTexture.get_width() / imageTexture.get_height()):
+		if(image_size.x / image_size.y > imageTexture.get_width() / imageTexture.get_height()):
 			defaultWidth = imageTexture.get_width()
-			defaultHeight = imageTexture.get_width() * imageSize.y / imageSize.x
+			defaultHeight = imageTexture.get_width() * image_size.y / image_size.x
 		else:
-			defaultWidth = imageTexture.get_height() * imageSize.x / imageSize.y
+			defaultWidth = imageTexture.get_height() * image_size.x / image_size.y
 			defaultHeight = imageTexture.get_height()
 		
 		region.size.x = defaultWidth
@@ -512,7 +512,7 @@ func parseImage():
 		$Texture.set_instance_shader_parameter("corner_rounding", Vector4.ZERO)
 		
 		
-	var imageAspectRatio = imageSize.x / imageSize.y
+	var imageAspectRatio = image_size.x / image_size.y
 	if(data.has("RipJagged")):
 		parseRip(imageAspectRatio)
 	else:
@@ -554,7 +554,7 @@ func parseImage():
 	
 	$Texture.set_instance_shader_parameter("assorted_data", assortedShaderData)
 	$Texture.texture = imageAtlas
-	$Texture.pivot_offset = imageSize / 2
+	$Texture.pivot_offset = image_size / 2
 		
 	
 	if(data.has("imageopacity")):

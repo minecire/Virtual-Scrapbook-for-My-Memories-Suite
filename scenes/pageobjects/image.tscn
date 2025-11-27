@@ -19,7 +19,6 @@ texture_filter = 2
 material = ExtResource("3_ujagd")
 instance_shader_parameters/corner_rounding = Vector4(0, 0, 0, 0)
 instance_shader_parameters/recolor_value = Vector4(0, 0, 0, 0)
-instance_shader_parameters/textureIndex = -1
 offset_left = 87.0
 offset_top = 72.0
 offset_right = 299.0

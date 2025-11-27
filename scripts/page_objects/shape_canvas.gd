@@ -15,5 +15,5 @@ func write_text(words, space):
 			var currentTextData = datum[0]
 			var text = datum[1]
 			var font = currentTextData["font"]
-			for char in text.to_utf8_buffer():
-				textPos.x += font.draw_char(get_canvas_item(), textPos, char, currentTextData["fontSize"] * pageScale, currentTextData["color"]);
+			for chr in text.to_utf8_buffer():
+				textPos.x += font.draw_char(get_canvas_item(), textPos, chr, currentTextData["fontSize"] * pageScale, currentTextData["color"]);

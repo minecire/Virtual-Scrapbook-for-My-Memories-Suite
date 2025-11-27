@@ -17,6 +17,6 @@
 [resource]
 shader = ExtResource("1_q31pn")
 shader_parameter/shape_textures = Array[Texture2D]([])
+shader_parameter/gradient_textures = Array[Texture2D]([ExtResource("4_gp7t1"), ExtResource("5_n3lia"), ExtResource("6_64jpm"), ExtResource("7_bqh2t"), ExtResource("8_vt51g"), ExtResource("9_kimv0"), ExtResource("10_fn2m7"), ExtResource("11_bnqm2"), ExtResource("12_vipqx"), ExtResource("13_centr")])
 shader_parameter/corner_textures = Array[Texture2D]([ExtResource("2_km3ln"), ExtResource("3_y8hgr")])
 shader_parameter/rip_textures = Array[Texture2D]([])
-shader_parameter/gradient_textures = Array[Texture2D]([ExtResource("4_gp7t1"), ExtResource("5_n3lia"), ExtResource("6_64jpm"), ExtResource("7_bqh2t"), ExtResource("8_vt51g"), ExtResource("9_kimv0"), ExtResource("10_fn2m7"), ExtResource("11_bnqm2"), ExtResource("12_vipqx"), ExtResource("13_centr")])

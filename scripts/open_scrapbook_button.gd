@@ -72,7 +72,8 @@ func _on_file_dialog_file_selected(path: String, is_export = false) -> Control: 
 	if(sections_list.size() == 0): # Invalid scrapbook
 		return null
 	if(book == null): # Instantiate the book scene if it's not there already
-		book = load("res://scenes/book.tscn").instantiate()
+		var book_scene = load("res://scenes/book.tscn")
+		book = book_scene.instantiate()
 	book.is_zip = true
 	book.book_path = path
 	book.sections_list = sections_list
@@ -80,10 +81,9 @@ func _on_file_dialog_file_selected(path: String, is_export = false) -> Control: 
 	
 	PageTurn.currentLeftPage = -1 # Reset page to page 1
 	PageTurn.currentRightPage = 1
-	PageTurn.leftPageSectionIndex = 0
-	PageTurn.rightPageSectionIndex = 0
+	PageTurn.left_page_section_index = 0
+	PageTurn.right_page_section_index = 0
 	PageTurn.bookOpen = false # And closed book
-	book._ready()
 	
 	if(is_inside_tree()):
 		var root = get_tree().get_root() # Replace the menu scene with the scrapbook scene
@@ -123,7 +123,8 @@ func _on_file_dialog_dir_selected(dir: String, is_export = false) -> Control:
 		return null
 	
 	if(book == null): # Instantiate the book scene if it's not there already
-		book = load("res://scenes/book.tscn").instantiate()
+		var book_scene = load("res://scenes/book.tscn")
+		book = book_scene.instantiate()
 	book.is_zip = false
 	book.book_path = dir
 	book.sections_list = sections_list
@@ -131,10 +132,9 @@ func _on_file_dialog_dir_selected(dir: String, is_export = false) -> Control:
 	
 	PageTurn.currentLeftPage = -1 # Reset page to page 1
 	PageTurn.currentRightPage = 1
-	PageTurn.leftPageSectionIndex = 0
-	PageTurn.rightPageSectionIndex = 0
+	PageTurn.left_page_section_index = 0
+	PageTurn.right_page_section_index = 0
 	PageTurn.bookOpen = false # And closed book
-	book._ready()
 	
 	if(is_inside_tree()):
 		var root = get_tree().get_root() # Replace the menu scene with the scrapbook scene
@@ -227,7 +227,7 @@ func load_packaged_book():
 
 func load_page(): # Load based on savefile or from export data
 	# # Uncomment to stop VS loading a savefile, useful for debugging
-	#DirAccess.open("user://").remove("save")
+	DirAccess.open("user://").remove("save")
 	if !FileAccess.file_exists("user://save"):
 		# If there is no savefile we check for a packaged book, then exit
 		load_packaged_book()
@@ -241,13 +241,12 @@ func load_page(): # Load based on savefile or from export data
 	var json = JSON.new()
 	json.parse(savefile.get_as_text()) # Otherwise we can grab the JSON data from the save file
 	var data = json.data
-	var root = get_tree().get_root()
 	if(data["is_zip"]):
 		book = _on_file_dialog_file_selected(data["book_path"])
 	else:
 		book = _on_file_dialog_dir_selected(data["book_path"])
-	PageTurn.leftPageSectionIndex = data["leftPageSectionIndex"]
-	PageTurn.rightPageSectionIndex = data["rightPageSectionIndex"]
+	PageTurn.left_page_section_index = data["left_page_section_index"]
+	PageTurn.right_page_section_index = data["right_page_section_index"]
 	PageTurn.currentLeftPage = data["currentLeftPage"]
 	PageTurn.currentRightPage = data["currentRightPage"]
 	PageTurn.bookOpen = data["bookOpen"]

@@ -1,6 +1,6 @@
 [gd_scene load_steps=12 format=3 uid="uid://bjeu7kpe7vi6g"]
 
-[ext_resource type="Script" path="res://addons/FileAccessWeb/examples/upload_image_example.gd" id="1_f62sm"]
+[ext_resource type="Script" uid="uid://blohu2inr5amd" path="res://addons/FileAccessWeb/examples/upload_image_example.gd" id="1_f62sm"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3h46t"]
 bg_color = Color(0, 0, 0, 1)
@@ -23,15 +23,15 @@ border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_eqd2r"]
+bg_color = Color(0.372549, 0.372549, 0.372549, 1)
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v0hm0"]
 bg_color = Color(0.168627, 0.168627, 0.168627, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_eqd2r"]
-bg_color = Color(0.372549, 0.372549, 0.372549, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_owjfu"]
 draw_center = false
@@ -118,8 +118,8 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_k6sdq")
-theme_override_styles/hover = SubResource("StyleBoxFlat_v0hm0")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_eqd2r")
+theme_override_styles/hover = SubResource("StyleBoxFlat_v0hm0")
 theme_override_styles/focus = SubResource("StyleBoxFlat_owjfu")
 text = "Upload File"
 

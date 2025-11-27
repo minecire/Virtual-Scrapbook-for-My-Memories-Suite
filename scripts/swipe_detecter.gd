@@ -5,7 +5,6 @@ func _ready():
 
 var lastPosition = -1
 
-signal scroll_ended_2
 signal next_section
 signal previous_section
 signal scrolling
@@ -42,5 +41,5 @@ func _input(event):
 				emit_signal("released")
 	if(event is InputEventMouseMotion && isPressed):
 		var movement = event.position.x - lastPosition
-		emit_signal("scrolling", (event.position.x - lastPosition) / get_viewport().get_visible_rect().size.x * 2) 
+		emit_signal("scrolling", movement / get_viewport().get_visible_rect().size.x * 2) 
 		

@@ -2,7 +2,7 @@ extends Node
 
 const stepSize = 10
 
-var bookPath
+var book_path
 var zipPath
 var sectionsList
 var isZip
@@ -46,7 +46,7 @@ func preload_xmls():
 
 func preload_section(path):
 	var filepath
-	var dir = DirAccess.open(bookPath + "/" + path)
+	var dir = DirAccess.open(book_path + "/" + path)
 	if(dir == null):
 		return
 	for file: String in dir.get_files():
@@ -55,40 +55,40 @@ func preload_section(path):
 			filepath = file
 	
 	var zipreader = ZIPReader.new()
-	zipreader.open(bookPath + "/" + path + "/" + filepath)
+	zipreader.open(book_path + "/" + path + "/" + filepath)
 	var content = zipreader.read_file(zipreader.get_files()[0])
 	zipreader.close()
 	var parser = XMLParser.new()
 	parser.open_buffer(content)
 	var lastPage
-	var canvasWidth
-	var maxOutputWidth
-	var maxOutputHeight
+	var canvas_width
+	var max_output_width
+	var max_output_height
 	while parser.read() != ERR_FILE_EOF:
 		if parser.get_node_type() == XMLParser.NODE_ELEMENT:
-			if(parser.get_node_name() == "canvasWidth"):
-				canvasWidth = get_text_contents(parser).to_int()
-			elif(parser.get_node_name() == "maxOutputWidth"):
-				maxOutputWidth = get_text_contents(parser).to_int()
-			elif(parser.get_node_name() == "maxOutputHeight"):
-				maxOutputHeight = get_text_contents(parser).to_int()
+			if(parser.get_node_name() == "canvas_width"):
+				canvas_width = get_text_contents(parser).to_int()
+			elif(parser.get_node_name() == "max_output_width"):
+				max_output_width = get_text_contents(parser).to_int()
+			elif(parser.get_node_name() == "max_output_height"):
+				max_output_height = get_text_contents(parser).to_int()
 			elif(parser.get_node_name() == "pageObject"):
 				var pagename = parser.get_named_attribute_value_safe("name")
-				preload_page_object_first_pass(parser, canvasWidth, maxOutputWidth, maxOutputHeight, path)
+				preload_page_object_first_pass(parser)
 				lastPage = pagename.to_int()
 	parser = XMLParser.new()
 	parser.open_buffer(content)
 	while parser.read() != ERR_FILE_EOF:
 		if parser.get_node_type() == XMLParser.NODE_ELEMENT:
 			if(parser.get_node_name() == "canvasWidth"):
-				canvasWidth = get_text_contents(parser).to_int()
+				canvas_width = get_text_contents(parser).to_int()
 			elif(parser.get_node_name() == "maxOutputWidth"):
-				maxOutputWidth = get_text_contents(parser).to_int()
+				max_output_width = get_text_contents(parser).to_int()
 			elif(parser.get_node_name() == "maxOutputHeight"):
-				maxOutputHeight = get_text_contents(parser).to_int()
+				max_output_height = get_text_contents(parser).to_int()
 			elif(parser.get_node_name() == "pageObject"):
 				var pagename = parser.get_named_attribute_value_safe("name")
-				preload_page_object_second_pass(parser, canvasWidth, maxOutputWidth, maxOutputHeight, path)
+				preload_page_object_second_pass(parser, canvas_width, max_output_width, max_output_height, path)
 				lastPage = pagename.to_int()
 	parser = XMLParser.new()
 	parser.open_buffer(content)
@@ -97,14 +97,14 @@ func preload_section(path):
 		if parser.get_node_type() == XMLParser.NODE_ELEMENT:
 			if parser.get_node_name() == "page":
 				var pagename = parser.get_named_attribute_value_safe("name")
-				var pagedata = preload_page(parser, pagename, canvasWidth, maxOutputWidth, maxOutputHeight, path)
+				var pagedata = preload_page(parser, pagename, canvas_width, max_output_width, max_output_height, path)
 				pages.append(pagedata)
 				lastPage = pagename.to_int()
 	
-	var numPages = lastPage
-	return {"pages" : pages, "canvasWidth" : canvasWidth, "maxOutputWidth" : maxOutputWidth, "maxOutputHeight" : maxOutputHeight, "numPages" : numPages}
+	var num_pages = lastPage
+	return {"pages" : pages, "canvas_width" : canvas_width, "max_output_width" : max_output_width, "max_output_height" : max_output_height, "num_pages" : num_pages}
 
-func preload_page_object_first_pass(parser, canvasWidth, maxOutputWidth, maxOutputHeight, path):
+func preload_page_object_first_pass(parser):
 	var type = parser.get_named_attribute_value_safe("type")
 	if(type == "spanner"):
 		return
@@ -121,7 +121,7 @@ func preload_page_object_first_pass(parser, canvasWidth, maxOutputWidth, maxOutp
 	if(data.has("id") && (type == "shape" || type == "line")):
 		data["objecttype"] = type
 		iddshapes[data["id"]] = data
-func preload_page_object_second_pass(parser, canvasWidth, maxOutputWidth, maxOutputHeight, path):
+func preload_page_object_second_pass(parser, canvas_width, max_output_width, max_output_height, path):
 	var type = parser.get_named_attribute_value_safe("type")
 	if(type == "spanner"):
 		return
@@ -136,26 +136,26 @@ func preload_page_object_second_pass(parser, canvasWidth, maxOutputWidth, maxOut
 		data["objecttype"] = type
 		spanners[data["spannerId"]] = data
 	if(type == "jWordText" && data.has("id") && iddshapes.has(data["id"])):
-		parse_text(data, canvasWidth, maxOutputWidth, maxOutputHeight, path)
+		parse_text(data, canvas_width, max_output_width, max_output_height, path)
 var heldTextInstances = {}
-func parse_text(data, canvasWidth, maxOutputWidth, maxOutputHeight, path):
-	var canvasHeight = float(maxOutputHeight) / float(maxOutputWidth) * float(canvasWidth)
+func parse_text(data, canvas_width, max_output_width, max_output_height, path):
+	var canvasHeight = float(max_output_height) / float(max_output_width) * float(canvas_width)
 	get_tree().root.get_viewport().set_canvas_cull_mask_bit(2, false);
 	var textInstance = textScene.instantiate()
 	textInstance.pageSize = Vector2(100, 100)
-	textInstance.canvasWidth = canvasWidth
+	textInstance.canvas_width = canvas_width
 	textInstance.canvasHeight = canvasHeight
-	textInstance.path = bookPath + "/" + path
+	textInstance.path = book_path + "/" + path
 	textInstance.data = data
 	var shape = iddshapes[data["id"]]
 	if(shape["objecttype"] == "shape"):
-		textInstance.data["shapeTextPlacements"] = parse_text_shape(shape, data, canvasWidth, canvasHeight, bookPath + path)
+		textInstance.data["shapeTextPlacements"] = parse_text_shape(shape, data, canvas_width, canvasHeight, book_path + path)
 	textInstance.shapedata = shape
 	heldTextInstances[data["id"]] = textInstance
 
-func parse_text_shape(shape, data, canvasWidth, canvasHeight, path):
+func parse_text_shape(shape, data, canvas_width, canvasHeight, path):
 	var shapeFile = path + "/objects/" + shape["customShapeName"]
-	var shapeCurves = util_SvgProcessing.convert_shape_to_curves(shapeFile, shape, Vector2(canvasWidth, canvasHeight), canvasWidth, canvasHeight)
+	var shapeCurves = util_SvgProcessing.convert_shape_to_curves(shapeFile, shape, Vector2(canvas_width, canvasHeight), canvas_width, canvasHeight)
 	var naivePolygons = util_SvgProcessing.convert_curves_to_polygons_naive(shapeCurves, 60)
 	var shapePolygons = util_SvgProcessing.combine_polygons(naivePolygons)
 	var finalShapePolygons = util_SvgProcessing.convert_to_convex_polygon_shapes_2d(shapePolygons)
@@ -174,7 +174,6 @@ func find_text_placements(shapes, boundsPos, boundsSize, padding):
 
 func calculate_positions(wordBrokenData, boundsPos, boundsSize, padding, shapes):
 	var textSpaces = []
-	var rectShape = RectangleShape2D.new()
 	if(wordBrokenData == []):
 		return
 	if(boundsPos == null):
@@ -185,7 +184,7 @@ func calculate_positions(wordBrokenData, boundsPos, boundsSize, padding, shapes)
 	var letterFlag = false
 	while currentLinePos.y < boundsPos.y + boundsSize.y:
 		var currentWords = []
-		var emptySpace
+		var emptySpace = null
 		var continueFlag = false
 		while true:
 			if(letterFlag):
@@ -201,7 +200,7 @@ func calculate_positions(wordBrokenData, boundsPos, boundsSize, padding, shapes)
 			
 			var newLinePos1 = currentLinePos
 			var newLineRect1 = Rect2(newLinePos1, newLineSize)
-			var newEmptySpace = find_empty_space(newLineRect1, boundsPos, boundsSize, shapes, stepSize, padding)
+			var newEmptySpace = find_empty_space(newLineRect1, boundsPos, boundsSize, shapes, padding)
 			
 			if(newEmptySpace == null || (wordBrokenData[nextWordIndex][0].size() > 0 && wordBrokenData[nextWordIndex][0][0][1] == "\n")):
 				if(currentWords.size() == 1 && newEmptySpace == null):
@@ -256,7 +255,7 @@ func calculate_positions(wordBrokenData, boundsPos, boundsSize, padding, shapes)
 			
 			var newLinePos2 = Vector2(boundsPos.x, currentLinePos.y + newLineSize.y)
 			var newLineRect2 = Rect2(newLinePos2, newLineSize)
-			var newEmptySpace = find_empty_space(newLineRect2, boundsPos, boundsSize, shapes, stepSize, padding)
+			var newEmptySpace = find_empty_space(newLineRect2, boundsPos, boundsSize, shapes, padding)
 			
 			if(newEmptySpace == null || (wordBrokenData[nextWordIndex][0].size() > 0 && wordBrokenData[nextWordIndex][0][0][1] == "\n")):
 				if(currentWords.size() == 1 && newEmptySpace == null):
@@ -319,7 +318,7 @@ func get_letter(word, index):
 			c, 
 			d)]
 
-func find_minimum_positions(yPos, boundsPos, boundsSize, shapes, stepSize):
+func find_minimum_positions(yPos, boundsPos, boundsSize, shapes):
 	var mins = []
 	var pos = Vector2(boundsPos.x, yPos)
 	while pos.x < boundsPos.x + boundsSize.x:
@@ -340,13 +339,13 @@ func find_minimum_positions(yPos, boundsPos, boundsSize, shapes, stepSize):
 	return mins
 
 var minima = {}
-func find_empty_space(rect, boundsPos, boundsSize, shapes, stepSize, padding):
+func find_empty_space(rect, boundsPos, boundsSize, shapes, padding):
 	var newRect = rect
 	newRect.size += padding * 2
 	newRect.position -= padding
 	var mins
 	if(!minima.has(newRect.position.y)):
-		minima[newRect.position.y] = find_minimum_positions(newRect.position.y, boundsPos, boundsSize, shapes, stepSize)
+		minima[newRect.position.y] = find_minimum_positions(newRect.position.y, boundsPos, boundsSize, shapes)
 	mins = minima[newRect.position.y]
 	var rectShape = RectangleShape2D.new()
 	rectShape.size = newRect.size
@@ -357,26 +356,26 @@ func find_empty_space(rect, boundsPos, boundsSize, shapes, stepSize, padding):
 		return null
 	while newRect.position.x + newRect.size.x < boundsPos.x + boundsSize.x:
 		for i in range(shapes.size()):
-			var intersects = intersects(shapes[i], rectShape, newRect.position)
-			if(intersects == 1):
+			var num_intersects = intersects(shapes[i], rectShape, newRect.position)
+			if(num_intersects == 1):
 				var pos1 = newRect.position.x
-				while(intersects == 1):
+				while(num_intersects == 1):
 					newRect.position.x += stepSize
-					intersects = intersects(shapes[i], rectShape, newRect.position)
+					num_intersects = intersects(shapes[i], rectShape, newRect.position)
 				newRect.size -= padding * 2
 				newRect.position.y += padding.y
 				newRect.position.x = (pos1 + newRect.position.x) / 2.
 				return newRect
-			elif(intersects > 1):
+			elif(num_intersects > 1):
 				if(newRect.position.x < intersects):
 					newRect.position.x = intersects
 		newRect.position.x += stepSize
 	return null
 
 func next_min(mins, pos):
-	for min in mins:
-		if(min > pos):
-			return min
+	for minim in mins:
+		if(minim > pos):
+			return minim
 	return -1
 
 func intersects(shape, rect, rectpos):
@@ -392,12 +391,12 @@ func intersects(shape, rect, rectpos):
 	return -1
 
 func line_size(words):
-	var max = 0
+	var maximum = 0
 	var width = 0
 	for word in words:
-		max = max(max, word[1].y)
+		maximum = max(maximum, word[1].y)
 		width += word[1].x
-	return Vector2(width, max)
+	return Vector2(width, maximum)
 
 
 
@@ -438,8 +437,7 @@ func get_datum_size(datum):
 func get_letter_size(letter, font, fontSize):
 	return font.get_string_size(letter, 0, -1, fontSize)
 	
-func preload_page(parser, pagename, canvasWidth, maxOutputWidth, maxOutputHeight, path):
-	var name = pagename
+func preload_page(parser, pagename, canvas_width, max_output_width, max_output_height, path):
 	var objects = []
 	var hasBackground = false
 	var hasChildren = false
@@ -453,8 +451,8 @@ func preload_page(parser, pagename, canvasWidth, maxOutputWidth, maxOutputHeight
 			if(pageobjectdata["type"] == "background" && (!pageobjectdata["data"].has("imageopacity") || pageobjectdata["data"]["imageopacity"].to_float() > 0.99)):
 				hasBackground = true
 			if(pageobjectdata["type"] == "jWordText" && pageobjectdata.has("id")):
-				parse_text(pageobjectdata, canvasWidth, maxOutputWidth, maxOutputHeight, path)
-	return {"name" : name, "objects" : objects, "hasBackground" : hasBackground || !hasChildren}
+				parse_text(pageobjectdata, canvas_width, max_output_width, max_output_height, path)
+	return {"name" : pagename, "objects" : objects, "hasBackground" : hasBackground || !hasChildren}
 
 func preload_page_object(parser):
 	var type = parser.get_named_attribute_value_safe("type")
@@ -485,12 +483,13 @@ func get_text_contents(parser):
 		return ""
 
 func generate_images_dict():
-	imagesDict["coverOutside"] = ImageTexture.create_from_image(Image.load_from_file(bookPath + "/cover_outside.png"))
-	imagesDict["coverInsideLeft"] = ImageTexture.create_from_image(Image.load_from_file(bookPath + "/cover_inside_left.png"))
-	imagesDict["coverInsideRight"] = ImageTexture.create_from_image(Image.load_from_file(bookPath + "/cover_inside_right.png"))
+	if(FileAccess.file_exists(book_path + "/cover_outside.png")):
+		imagesDict["coverOutside"] = ImageTexture.create_from_image(Image.load_from_file(book_path + "/cover_outside.png"))
+		imagesDict["coverInsideLeft"] = ImageTexture.create_from_image(Image.load_from_file(book_path + "/cover_inside_left.png"))
+		imagesDict["coverInsideRight"] = ImageTexture.create_from_image(Image.load_from_file(book_path + "/cover_inside_right.png"))
 		
 	for section in sectionsList:
-		var sectionObjectsPath = bookPath + "/" + section + "/objects/"
+		var sectionObjectsPath = book_path + "/" + section + "/objects/"
 		var diracc = DirAccess.open(sectionObjectsPath)
 		if(diracc == null):
 			continue
@@ -523,7 +522,7 @@ func generate_images_dict():
 
 func generate_texts_dict():
 	for section in sectionsList:
-		var sectionObjectsPath = bookPath + "/" + section + "/objects/"
+		var sectionObjectsPath = book_path + "/" + section + "/objects/"
 		var diracc = DirAccess.open(sectionObjectsPath)
 		if(diracc == null):
 			continue
@@ -538,16 +537,16 @@ func generate_texts_dict():
 					textsDict[filename] = xmldata
 			filename = diracc.get_next()
 func generate_fonts_dict():
-	var diracc = DirAccess.open(bookPath)
-	if(!diracc.dir_exists(bookPath + "/fonts")):
+	var diracc = DirAccess.open(book_path)
+	if(!diracc.dir_exists(book_path + "/fonts")):
 		return
-	diracc = DirAccess.open(bookPath + "/fonts")
+	diracc = DirAccess.open(book_path + "/fonts")
 	for file in diracc.get_files():
 		var font = FontFile.new()
-		if(bookPath.ends_with("/")):
-			font.load_dynamic_font(bookPath + "fonts/" + file)
+		if(book_path.ends_with("/")):
+			font.load_dynamic_font(book_path + "fonts/" + file)
 		else:
-			font.load_dynamic_font(bookPath + "/fonts/" + file)
+			font.load_dynamic_font(book_path + "/fonts/" + file)
 		preloadedFontsDict[font.get_font_name() + " " + font.get_font_style_name()] = font
 		pass
 
@@ -590,9 +589,9 @@ func reload_stuff(sList, bPath, iZip):
 	if(iZip):
 		zipPath = bPath
 		var id = extract_all_from_zip(bPath)
-		bookPath = "user://temp/" + id + "/"
+		book_path = "user://temp/" + id + "/"
 	else:
-		bookPath = bPath
+		book_path = bPath
 	sectionsList = sList
 	scrapbookData = []
 	imagesDict = {}
@@ -602,6 +601,7 @@ func reload_stuff(sList, bPath, iZip):
 	generate_texts_dict()
 	generate_fonts_dict()
 	preload_xmls()
+	print("just reloaded!")
 	#util_ClearTemp.clear_temp()
 
 func preparse_text_for_shape(filepath, width):
@@ -619,11 +619,9 @@ func preparse_line(line, scaleFactor):
 	var lineData = line[0]
 	var lineText = line[1]
 	
-	var halign = HORIZONTAL_ALIGNMENT_LEFT if lineData["halign"] == "left" else HORIZONTAL_ALIGNMENT_CENTER if lineData["halign"] == "center" else HORIZONTAL_ALIGNMENT_RIGHT if lineData["halign"] == "right" else HORIZONTAL_ALIGNMENT_FILL
+	var _halign = HORIZONTAL_ALIGNMENT_LEFT if lineData["halign"] == "left" else HORIZONTAL_ALIGNMENT_CENTER if lineData["halign"] == "center" else HORIZONTAL_ALIGNMENT_RIGHT if lineData["halign"] == "right" else HORIZONTAL_ALIGNMENT_FILL
 	
 	var currentFontSize = float(lineText[0][0]["fs"].to_int()) * scaleFactor
-	if(lineData.has("linespace")):
-		var linespace = lineData["linespace"].to_float()
 	if(lineData.has("list") && lineData["list"].to_int() > 0):
 		parse_blip(lineText[0], scaleFactor, currentFontSize)
 	for blip in lineText:

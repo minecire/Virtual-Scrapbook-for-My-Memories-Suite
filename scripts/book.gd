@@ -91,10 +91,10 @@ func _ready():
 	#These values get set here instead of in UI because they have a habit of reverting back to defaults
 	$CoverOutside.material.set("shader_parameter/time", 0)
 	$CoverInsideLeft.material.set("shader_parameter/time", 0)
-	$LeftPage.pageType = util_Enums.pageType.LEFT
-	$RightPage.pageType = util_Enums.pageType.RIGHT
-	$TurningPageLeft.pageType = util_Enums.pageType.TURNING
-	$TurningPageRight.pageType = util_Enums.pageType.TURNING
+	$LeftPage.page_type = util_Enums.page_type.LEFT
+	$RightPage.page_type = util_Enums.page_type.RIGHT
+	$TurningPageLeft.page_type = util_Enums.page_type.TURNING
+	$TurningPageRight.page_type = util_Enums.page_type.TURNING
 	$LeftPage.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	$RightPage.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	$LeftPageTexture.texture.set_viewport_path_in_scene("LeftPage")
@@ -114,7 +114,7 @@ func _ready():
 	#Load the entire scrapbook into memory to cut down on lagspikes due to loading from files
 	util_Preloader.reload_stuff(sections_list, book_path, is_zip)
 	
-	if(util_Preloader.imagesDict["coverOutside"] != null): #If there is a cover, set the cover textures
+	if(util_Preloader.imagesDict.has("coverOutside") && util_Preloader.imagesDict["coverOutside"] != null): #If there is a cover, set the cover textures
 		$CoverInsideLeft.texture = util_Preloader.imagesDict["coverInsideLeft"]
 		$CoverInsideRight.texture = util_Preloader.imagesDict["coverInsideRight"]
 		$CoverOutside.texture = util_Preloader.imagesDict["coverOutside"]
@@ -142,7 +142,8 @@ func _ready():
 	
 	book_path = util_Preloader.book_path #Set the book's path from the one given to preloader
 	update_pages()
-	get_tree().get_root().size_changed.connect(delayed_page_update) 
+	if(is_inside_tree()):
+		get_tree().get_root().size_changed.connect(delayed_page_update) 
 	#Make sure there's a delayed page update on resize
 	
 	save_page()
@@ -171,8 +172,8 @@ func update_pages(): #This sets all the visible pages to the correct values and 
 	for n in pages_under.get_children():
 		pages_under.remove_child(n)
 		n.free() 
-	
-	$Background.size = get_viewport().get_visible_rect().size
+	if is_inside_tree():
+		$Background.size = get_viewport().get_visible_rect().size
 	if(PageTurn.currentLeftPage == -1): #Set pages invisible if the page number is -1, visible otherwise
 		left_page_texture.visible = false
 	else:
@@ -208,60 +209,62 @@ func update_pages(): #This sets all the visible pages to the correct values and 
 	# Note: Sometimes they are neither, such as when a section is only a single page 
 	# or flipping between sections. This glitches the program a little, 
 	# and might be worth reworking at some point.
-	turning_page_left.path = sectionPathRight if PageTurn.turning_page_leftSectionSide else sectionPathLeft
-	turning_page_right.path = sectionPathRight if PageTurn.turning_page_rightSectionSide else sectionPathLeft
+	turning_page_left.path = sectionPathRight if PageTurn.turning_page_left_section_side else sectionPathLeft
+	turning_page_right.path = sectionPathRight if PageTurn.turning_page_right_section_side else sectionPathLeft
 	
 	# Find the name of each page. MMS convention is to name each page Page N for each page, starting at 1
-	left_page.pageName = "Page " + ("%d") % PageTurn.currentLeftPage
-	right_page.pageName = "Page " + ("%d") % PageTurn.currentRightPage
-	turning_page_left.pageName = "Page " + ("%d") % PageTurn.currentLeftTurningPage
-	turning_page_right.pageName = "Page " + ("%d") % PageTurn.currentRightTurningPage
+	left_page.page_name = "Page " + ("%d") % PageTurn.currentLeftPage
+	right_page.page_name = "Page " + ("%d") % PageTurn.currentRightPage
+	turning_page_left.page_name = "Page " + ("%d") % PageTurn.currentLeftTurningPage
+	turning_page_right.page_name = "Page " + ("%d") % PageTurn.currentRightTurningPage
 	
 	# The index needs to start at 0, so we subtract 1
-	left_page.pageIndex = PageTurn.currentLeftPage - 1
-	right_page.pageIndex = PageTurn.currentRightPage - 1
-	turning_page_left.pageIndex = PageTurn.currentLeftTurningPage - 1
-	turning_page_right.pageIndex = PageTurn.currentRightTurningPage - 1
+	left_page.page_index = PageTurn.currentLeftPage - 1
+	right_page.page_index = PageTurn.currentRightPage - 1
+	turning_page_left.page_index = PageTurn.currentLeftTurningPage - 1
+	turning_page_right.page_index = PageTurn.currentRightTurningPage - 1
 	
 	#Set section indeces
 	left_page.section_index = PageTurn.left_page_section_index
 	right_page.section_index = PageTurn.right_page_section_index
-	turning_page_left.section_index = PageTurn.right_page_section_index if PageTurn.turning_page_leftSectionSide else PageTurn.left_page_section_index
-	turning_page_right.section_index = PageTurn.right_page_section_index if PageTurn.turning_page_rightSectionSide else PageTurn.left_page_section_index
+	turning_page_left.section_index = PageTurn.right_page_section_index if PageTurn.turning_page_left_section_side else PageTurn.left_page_section_index
+	turning_page_right.section_index = PageTurn.right_page_section_index if PageTurn.turning_page_right_section_side else PageTurn.left_page_section_index
 	
 	#Calculate the screen aspect ratio, as well as the book 
 	#to limit size based on width or height
-	var aspect_ratio = float(util_Preloader.scrapbookData[PageTurn.left_page_section_index]["maxOutputWidth"]) / float(util_Preloader.scrapbookData[PageTurn.left_page_section_index]["maxOutputHeight"])
-	if(aspect_ratio * 2 < get_viewport().get_visible_rect().size.x / get_viewport().get_visible_rect().size.y):
-		left_page.pageSize = Vector2(get_viewport().get_visible_rect().size.y * aspect_ratio - border_size * 2, get_viewport().get_visible_rect().size.y - border_size * 2 / aspect_ratio)
-		right_page.pageSize = Vector2(get_viewport().get_visible_rect().size.y * aspect_ratio - border_size * 2, get_viewport().get_visible_rect().size.y - border_size * 2 / aspect_ratio)
-	else:
-		left_page.pageSize = Vector2(get_viewport().get_visible_rect().size.x / 2.0 - border_size * 2, get_viewport().get_visible_rect().size.x / aspect_ratio / 2.0 - border_size * 2 / aspect_ratio)
-		right_page.pageSize = Vector2(get_viewport().get_visible_rect().size.x / 2.0 - border_size * 2, get_viewport().get_visible_rect().size.x / aspect_ratio / 2.0 - border_size * 2 / aspect_ratio)
+	var aspect_ratio = float(util_Preloader.scrapbookData[PageTurn.left_page_section_index]["max_output_width"]) / float(util_Preloader.scrapbookData[PageTurn.left_page_section_index]["max_output_height"])
+	if(is_inside_tree()):
+		if(aspect_ratio * 2 < get_viewport().get_visible_rect().size.x / get_viewport().get_visible_rect().size.y):
+			left_page.page_size = Vector2(get_viewport().get_visible_rect().size.y * aspect_ratio - border_size * 2, get_viewport().get_visible_rect().size.y - border_size * 2 / aspect_ratio)
+			right_page.page_size = Vector2(get_viewport().get_visible_rect().size.y * aspect_ratio - border_size * 2, get_viewport().get_visible_rect().size.y - border_size * 2 / aspect_ratio)
+		else:
+			left_page.page_size = Vector2(get_viewport().get_visible_rect().size.x / 2.0 - border_size * 2, get_viewport().get_visible_rect().size.x / aspect_ratio / 2.0 - border_size * 2 / aspect_ratio)
+			right_page.page_size = Vector2(get_viewport().get_visible_rect().size.x / 2.0 - border_size * 2, get_viewport().get_visible_rect().size.x / aspect_ratio / 2.0 - border_size * 2 / aspect_ratio)
 	
 	#Set page sizes, scaled up slightly in order to be run through a shader to give a curve to the pages 
 	#as well as animating the page turning
-	left_page_texture.size = left_page.pageSize
-	right_page_texture.size = right_page.pageSize
+	left_page_texture.size = left_page.page_size
+	right_page_texture.size = right_page.page_size
 	left_page_texture.size.y *= 1.2
 	right_page_texture.size.y *= 1.2
-	left_page.size = left_page.pageSize
-	right_page.size = right_page.pageSize
+	left_page.size = left_page.page_size
+	right_page.size = right_page.page_size
 	left_page.size.y *= 1.2
 	right_page.size.y *= 1.2
 	#Position of the page on screen
-	left_page_texture.position = Vector2(get_viewport().get_visible_rect().size.x / 2.0 - left_page.pageSize.x, get_viewport().get_visible_rect().size.y / 2.0 - left_page.pageSize.y / 2.0)
-	right_page_texture.position = Vector2(get_viewport().get_visible_rect().size.x / 2.0 - left_page.pageSize.x, get_viewport().get_visible_rect().size.y / 2.0 - left_page.pageSize.y / 2.0)
-	right_page_texture.position.x += left_page.pageSize.x - 1 
+	if(is_inside_tree()):
+		left_page_texture.position = Vector2(get_viewport().get_visible_rect().size.x / 2.0 - left_page.page_size.x, get_viewport().get_visible_rect().size.y / 2.0 - left_page.page_size.y / 2.0)
+		right_page_texture.position = Vector2(get_viewport().get_visible_rect().size.x / 2.0 - left_page.page_size.x, get_viewport().get_visible_rect().size.y / 2.0 - left_page.page_size.y / 2.0)
+	right_page_texture.position.x += left_page.page_size.x - 1 
 		#Subtract 1 to stop an occasional single pixel showing up between the pages
 		#Depending on page size
 	
 	left_page_texture.position.y /= 2
 	right_page_texture.position.y /= 2
 	
-	turning_page_left.pageSize = left_page.pageSize
+	turning_page_left.page_size = left_page.page_size
 	turning_page_left.size = left_page.size
-	turning_page_right.pageSize = right_page.pageSize
+	turning_page_right.page_size = right_page.page_size
 	turning_page_right.size = right_page.size
 	
 	turning_page_left_texture.size = left_page_texture.size
@@ -275,23 +278,23 @@ func update_pages(): #This sets all the visible pages to the correct values and 
 	turning_page_right.pos = Vector2(0, turning_page_left_texture.size.y / 10)
 	
 	#These are lil blocks of color under the pages, used to fill in the gap to better sell the book texture
-	$UnderLeftPage.position = Vector2(left_page_texture.position.x, left_page_texture.position.y + left_page.pageSize.y * 0.99)
-	$UnderLeftPage.size = Vector2(left_page.pageSize.x, left_page.pageSize.y * 0.05)
-	$UnderRightPage.position = Vector2(right_page_texture.position.x, right_page_texture.position.y + right_page.pageSize.y * 0.99)
-	$UnderRightPage.size = Vector2(right_page.pageSize.x, right_page.pageSize.y * 0.05)
+	$UnderLeftPage.position = Vector2(left_page_texture.position.x, left_page_texture.position.y + left_page.page_size.y * 0.99)
+	$UnderLeftPage.size = Vector2(left_page.page_size.x, left_page.page_size.y * 0.05)
+	$UnderRightPage.position = Vector2(right_page_texture.position.x, right_page_texture.position.y + right_page.page_size.y * 0.99)
+	$UnderRightPage.size = Vector2(right_page.page_size.x, right_page.page_size.y * 0.05)
 	
 	$UnderLeftPage.visible = !PageTurn.currentLeftPage == -1
 	$UnderRightPage.visible = !PageTurn.currentRightPage == -1
 	
 	#Set the covers slightly bigger than the pages
-	$CoverInsideLeft.size.y = left_page.pageSize.y * 1.067 * 1.1
-	$CoverInsideLeft.size.x = left_page.pageSize.x * 1.067
-	$CoverInsideLeft.position = left_page_texture.position - Vector2(left_page.pageSize.x / 15, left_page.pageSize.y / 60 + $CoverInsideLeft.size.y * 0.0909)
-	$CoverInsideRight.size = left_page.pageSize * 1.067
-	$CoverInsideRight.position = right_page_texture.position - Vector2(0.0, left_page.pageSize.y / 60.0)
-	$CoverOutside.size.y = left_page.pageSize.y * 1.067 * 1.1
-	$CoverOutside.size.x = left_page.pageSize.x * 1.067
-	$CoverOutside.position = right_page_texture.position - Vector2(0.0, left_page.pageSize.y / 60.0 + $CoverOutside.size.y * 0.0909)
+	$CoverInsideLeft.size.y = left_page.page_size.y * 1.067 * 1.1
+	$CoverInsideLeft.size.x = left_page.page_size.x * 1.067
+	$CoverInsideLeft.position = left_page_texture.position - Vector2(left_page.page_size.x / 15, left_page.page_size.y / 60 + $CoverInsideLeft.size.y * 0.0909)
+	$CoverInsideRight.size = left_page.page_size * 1.067
+	$CoverInsideRight.position = right_page_texture.position - Vector2(0.0, left_page.page_size.y / 60.0)
+	$CoverOutside.size.y = left_page.page_size.y * 1.067 * 1.1
+	$CoverOutside.size.x = left_page.page_size.x * 1.067
+	$CoverOutside.position = right_page_texture.position - Vector2(0.0, left_page.page_size.y / 60.0 + $CoverOutside.size.y * 0.0909)
 	
 	emit_signal("get_has_background")
 	
@@ -533,7 +536,7 @@ func save_menu(): # Save that the user has returned to the menu
 
 var page_scene = preload("res://scenes/page.tscn") # Preload the page scene to be used by _on_add_pages_below
 
-func _on_add_pages_below(page, position, size, section_index, page_number, increasing, depth = -2) -> void:
+func _on_add_pages_below(page, page_position, page_size, section_index, page_number, increasing, depth = -2) -> void:
 	# This function will add pages below the left and right page until it hits the end of the book or
 	# a page with a full background that would cover up anything below
 	if(util_Preloader.scrapbookData[section_index]["pages"].size() <= page_number - 1): 
@@ -568,13 +571,13 @@ func _on_add_pages_below(page, position, size, section_index, page_number, incre
 	var newPage = page_scene.instantiate() # Make a new page and set its data
 	
 	newPage.canvasWidth = page.canvasWidth
-	newPage.pageSize = page.pageSize
+	newPage.page_size = page.page_size
 	newPage.size = page.size
 	newPage.pos = page.pos
-	newPage.pageName = "Page "+ str(newPageNumber - 1)
-	newPage.pageIndex = newPageNumber - 1
+	newPage.page_name = "Page "+ str(newPageNumber - 1)
+	newPage.page_index = newPageNumber - 1
 	newPage.section_index = newSectionIndex
-	newPage.pageType = util_Enums.pageType.UNDER
+	newPage.page_type = util_Enums.page_type.UNDER
 	newPage.path = book_path + "/" + sections_list[newSectionIndex] + "/"
 	
 	page_update.connect(newPage._on_book_page_update) # Make sure it knows to update itself
@@ -583,8 +586,8 @@ func _on_add_pages_below(page, position, size, section_index, page_number, incre
 	# We need a texture too to display the subviewport with the proper shader
 	var newPageTexture = TextureRect.new()
 	newPageTexture.texture = newPage.get_texture()
-	newPageTexture.position = position
-	newPageTexture.size = size
+	newPageTexture.position = page_position
+	newPageTexture.size = page_size
 	newPageTexture.z_index = depth
 	newPageTexture.stretch_mode = TextureRect.STRETCH_KEEP
 	newPageTexture.material = ShaderMaterial.new()
@@ -594,7 +597,7 @@ func _on_add_pages_below(page, position, size, section_index, page_number, incre
 		newPageTexture.material.shader = load("shaders/left_page_shader.tres")
 	pages_under.add_child(newPageTexture)
 	if(depth > -12): # Break eventually to prevent massive lag spikes for lots of layers of transparency
-		_on_add_pages_below(newPage, position, size, newSectionIndex, newPageNumber, increasing, depth - 2)
+		_on_add_pages_below(newPage, page_position, page_size, newSectionIndex, newPageNumber, increasing, depth - 2)
 	elif(!newPage.hasBackground): # Set invisible if there's a background
 		if(increasing):
 			$UnderRightPage.visible = false
@@ -641,7 +644,7 @@ func _notification(what):
 # Swipe Detector is a screen size scrolling box, with a giant, invisible block inside.
 # Dragging will scroll the box, which we can detect
 
-func _on_swipe_detecter_scroll_ended(movement = 0) -> void:
+func _on_swipe_detecter_scroll_ended(_movement = 0) -> void:
 	dragging = false
 
 

@@ -41,16 +41,16 @@ func parse_text(filepath):
 	#$TextViewport/Text.add_theme_font_override("normal_font", font)
 	$TextViewport/Text.add_theme_font_size_override("normal_font_size", 300)
 	
-	var stringSize = font.get_string_size(text, 0, -1, 300)
+	var stringSize = font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, 300)
 	$TextViewport.size = stringSize
 	$TextViewport/Text.size = stringSize
 
 
 func parse_attributes(parser):
-	var data = {}
+	var attribute_data = {}
 	for idx in range(parser.get_attribute_count()):
-		data[parser.get_attribute_name(idx)] = parser.get_attribute_value(idx)
-	return data
+		attribute_data[parser.get_attribute_name(idx)] = parser.get_attribute_value(idx)
+	return attribute_data
 	
 func get_text_contents(parser):
 	parser.read()
