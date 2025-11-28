@@ -1,6 +1,16 @@
-[gd_scene format=3 uid="uid://babstq8arpeb6"]
+[gd_scene load_steps=2 format=3 uid="uid://babstq8arpeb6"]
 
-[node name="Line" type="TextureRect"]
+[ext_resource type="Script" uid="uid://bvjxjykehdi1d" path="res://scenes/pageobjects/line.gd" id="1_whn5k"]
+
+[node name="Line" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_whn5k")
+
+[node name="LineTexture" type="TextureRect" parent="."]
+layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
 expand_mode = 1

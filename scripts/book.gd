@@ -162,19 +162,19 @@ func update_pages(): #This sets all the visible pages to the correct values and 
 		n.free() 
 	if is_inside_tree():
 		$Background.size = get_viewport().get_visible_rect().size
-	if(PageTurn.current_left_page == -1): #Set pages invisible if the page number is -1, visible otherwise
+	if(PageTurn.current_left_page < 0): #Set pages invisible if the page number is -1, visible otherwise
 		left_page_texture.visible = false
 	else:
 		left_page_texture.visible = true
-	if(PageTurn.current_right_page == -1):
+	if(PageTurn.current_right_page < 0):
 		right_page_texture.visible = false
 	else:
 		right_page_texture.visible = true
-	if(PageTurn.current_left_turning_page == -1):
+	if(PageTurn.current_left_turning_page < 0):
 		turning_page_left_texture.visible = false
 	else:
 		turning_page_left_texture.visible = true
-	if(PageTurn.current_right_turning_page == -1):
+	if(PageTurn.current_right_turning_page < 0):
 		turning_page_right_texture.visible = false
 	else:
 		turning_page_right_texture.visible = true

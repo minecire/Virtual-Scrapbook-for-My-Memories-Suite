@@ -31,6 +31,7 @@ PageTurn="*res://scripts/page_turn.gd"
 util_Web="*res://scripts/util/web.gd"
 util_Compressor="*res://scripts/util/compressor.gd"
 util_Timers="*res://scripts/util/timers.gd"
+util_Color="*res://scripts/util/color.gd"
 
 [display]
 

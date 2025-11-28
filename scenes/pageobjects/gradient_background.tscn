@@ -1,13 +1,13 @@
-[gd_scene load_steps=3 format=3 uid="uid://c8bixk4df7l83"]
+[gd_scene load_steps=3 format=3 uid="uid://hm0ju10tc8ms"]
 
-[ext_resource type="Script" uid="uid://bhecenaqv70xs" path="res://scripts/page_objects/image_background.gd" id="1_equqb"]
+[ext_resource type="Script" uid="uid://c1nshyit2oaiy" path="res://scripts/page_objects/gradient_background.gd" id="1_d7xe7"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_tecwl"]
 
-[node name="image_background" type="Control"]
+[node name="gradient_background" type="Control"]
 layout_mode = 3
 anchors_preset = 0
-script = ExtResource("1_equqb")
+script = ExtResource("1_d7xe7")
 
 [node name="Texture" type="TextureRect" parent="."]
 z_index = -1000

@@ -65,7 +65,7 @@ func check_for_held_text():
 		held_text_instance.data = util_Preloader.heldTextInstances[data["id"]].data.duplicate()
 		held_text_instance.path = util_Preloader.heldTextInstances[data["id"]].path
 		held_text_instance.shapedata = util_Preloader.heldTextInstances[data["id"]].shapedata
-		add_child(held_text_instance)
+		get_parent().add_child(held_text_instance)
 		
 		# We need to tell the text instance to reload now, which requires a whole signal system
 		# because communication between nodes has to be complicated
@@ -139,10 +139,10 @@ func parseRegularMatte():
 	var matteColor
 	if(data.has("matteGradient")):
 		matteColor = Color.WHITE
-		var rotation = 0.#$Texture.rotation
-		var scale = $Texture.size / page_size
-		var transformationMatrix = Vector4(scale.x * cos(rotation), -scale.y * sin(rotation), scale.x * sin(rotation), scale.y * cos(rotation))
-		var translationVector = Vector2($Texture.position / page_size) + Vector2(scale.x * cos(rotation) - scale.y * sin(rotation), scale.x * sin(rotation) + scale.y * cos(rotation)) / 2
+		var matte_rotation = 0.#$Texture.rotation
+		var matte_scale = $Texture.size / page_size
+		var transformationMatrix = Vector4(matte_scale.x * cos(matte_rotation), -matte_scale.y * sin(matte_rotation), matte_scale.x * sin(matte_rotation), matte_scale.y * cos(matte_rotation))
+		var translationVector = Vector2($Texture.position / page_size) + Vector2(matte_scale.x * cos(matte_rotation) - matte_scale.y * sin(matte_rotation), matte_scale.x * sin(matte_rotation) + matte_scale.y * cos(matte_rotation)) / 2
 		$Texture.set_instance_shader_parameter("transformationMatrix", transformationMatrix)
 		$Texture.set_instance_shader_parameter("translation", translationVector)
 		
@@ -183,10 +183,10 @@ func parseShapeMatte():
 	var matteColor
 	if(data.has("matteGradient")):
 		matteColor = Color.WHITE
-		var rotation = 0.#$Texture.rotation
-		var scale = $Texture.size / page_size
-		var transformationMatrix = Vector4(scale.x * cos(rotation), -scale.y * sin(rotation), scale.x * sin(rotation), scale.y * cos(rotation))
-		var translationVector = Vector2($Texture.position / page_size) + Vector2(scale.x * cos(rotation) - scale.y * sin(rotation), scale.x * sin(rotation) - scale.y * cos(rotation)) / 2.
+		var matte_rotation = 0.#$Texture.rotation
+		var matte_scale = $Texture.size / page_size
+		var transformationMatrix = Vector4(matte_scale.x * cos(matte_rotation), -matte_scale.y * sin(matte_rotation), matte_scale.x * sin(matte_rotation), matte_scale.y * cos(matte_rotation))
+		var translationVector = Vector2($Texture.position / page_size) + Vector2(matte_scale.x * cos(matte_rotation) - matte_scale.y * sin(matte_rotation), matte_scale.x * sin(matte_rotation) - matte_scale.y * cos(matte_rotation)) / 2.
 		if(type != "shape"):
 			$MatteSvgTexture.set_instance_shader_parameter("transformationMatrix", transformationMatrix)
 			$MatteSvgTexture.set_instance_shader_parameter("translation", translationVector)

@@ -9,7 +9,7 @@
 [ext_resource type="Shader" uid="uid://c8vvyu3ty2g3r" path="res://shaders/turning_page.tres" id="5_01hes"]
 [ext_resource type="Shader" uid="uid://5tycrtepnri4" path="res://shaders/outsideCover.tres" id="6_dm1x1"]
 [ext_resource type="Script" uid="uid://bsk4600q1jht" path="res://scripts/swipe_detecter.gd" id="9_4lhog"]
-[ext_resource type="Script" uid="uid://0mqb81h010tj" path="res://scenes/info.gd" id="10_h6yvl"]
+[ext_resource type="Script" uid="uid://0mqb81h010tj" path="res://scripts/info.gd" id="10_h6yvl"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4lhog"]
 shader = ExtResource("2_cgkwt")

@@ -1,6 +1,16 @@
-[gd_scene format=3 uid="uid://c46je55cv4hei"]
+[gd_scene load_steps=2 format=3 uid="uid://c46je55cv4hei"]
 
-[node name="ColorBackground" type="ColorRect"]
+[ext_resource type="Script" uid="uid://dr3tfixty73eh" path="res://scripts/page_objects/color_background.gd" id="1_4monv"]
+
+[node name="ColorBackground" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_4monv")
+
+[node name="ColorPanel" type="ColorRect" parent="."]
+layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
 mouse_filter = 2
