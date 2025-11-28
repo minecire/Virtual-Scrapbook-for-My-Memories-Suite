@@ -1,10 +1,16 @@
-extends Node
+extends PageObject
 
 var data
 var path
 
 var pageSize
 var canvasWidth
+
+func initialize_variables(_type, data_, path_, page_size_, _page_type, canvas_width_, _canvas_height, _section_index):
+	data = data_
+	path = path_
+	pageSize = page_size_
+	canvasWidth = canvas_width_
 
 func _ready():
 	parse_text(data["fileName"])

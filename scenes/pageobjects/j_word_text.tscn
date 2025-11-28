@@ -1,27 +1,34 @@
-[gd_scene load_steps=6 format=3 uid="uid://nxfavcysyqs8"]
+[gd_scene load_steps=7 format=3 uid="uid://nxfavcysyqs8"]
 
-[ext_resource type="Script" uid="uid://lnh7v1f4wlp6" path="res://scripts/page_objects/j_word_text.gd" id="1_75ujf"]
-[ext_resource type="Script" uid="uid://bcs3s6u7x2qa8" path="res://scripts/page_objects/line_canvas.gd" id="2_1rppq"]
-[ext_resource type="Script" uid="uid://bg4mt7b5twr6t" path="res://scripts/page_objects/text_box.gd" id="3_eav5y"]
-[ext_resource type="Script" uid="uid://owv3h7vaojbj" path="res://scripts/page_objects/shape_canvas.gd" id="4_e5hpf"]
+[ext_resource type="Script" uid="uid://lnh7v1f4wlp6" path="res://scripts/page_objects/j_word_text/background.gd" id="1_75ujf"]
+[ext_resource type="Script" uid="uid://due2t45v34eeq" path="res://scripts/page_objects/j_word_text/j_word_text.gd" id="1_rar66"]
+[ext_resource type="Script" uid="uid://bcs3s6u7x2qa8" path="res://scripts/page_objects/j_word_text/line_canvas.gd" id="2_1rppq"]
+[ext_resource type="Script" uid="uid://bg4mt7b5twr6t" path="res://scripts/page_objects/j_word_text/text_box.gd" id="3_eav5y"]
+[ext_resource type="Script" uid="uid://owv3h7vaojbj" path="res://scripts/page_objects/j_word_text/shape_canvas.gd" id="4_e5hpf"]
 
 [sub_resource type="Theme" id="Theme_xs5kr"]
 
-[node name="JWordText" type="Panel"]
+[node name="JWordText" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_rar66")
+
+[node name="Background" type="Panel" parent="."]
+layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
 mouse_filter = 2
 script = ExtResource("1_75ujf")
 sampleCount = 60
 
-[node name="LineCanvas" type="Control" parent="."]
+[node name="LineCanvas" type="Control" parent="Background"]
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 mouse_filter = 2
 script = ExtResource("2_1rppq")
 
-[node name="TextBox" type="RichTextLabel" parent="."]
+[node name="TextBox" type="RichTextLabel" parent="Background"]
 clip_contents = false
 layout_mode = 0
 offset_right = 1.0
@@ -32,14 +39,16 @@ scroll_active = false
 drag_and_drop_selection_enabled = false
 script = ExtResource("3_eav5y")
 
-[node name="ShapeCanvas" type="Control" parent="."]
+[node name="ShapeCanvas" type="Control" parent="Background"]
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 mouse_filter = 2
 script = ExtResource("4_e5hpf")
 
-[connection signal="gui_input" from="TextBox" to="." method="_on_text_box_gui_input"]
-[connection signal="meta_clicked" from="TextBox" to="." method="_on_text_box_meta_clicked"]
-[connection signal="meta_hover_ended" from="TextBox" to="." method="_on_text_box_meta_hover_ended"]
-[connection signal="meta_hover_started" from="TextBox" to="." method="_on_text_box_meta_hover_started"]
+[connection signal="go_to_page" from="Background" to="." method="_on_background_go_to_page"]
+[connection signal="go_to_section" from="Background" to="." method="_on_background_go_to_section"]
+[connection signal="gui_input" from="Background/TextBox" to="Background" method="_on_text_box_gui_input"]
+[connection signal="meta_clicked" from="Background/TextBox" to="Background" method="_on_text_box_meta_clicked"]
+[connection signal="meta_hover_ended" from="Background/TextBox" to="Background" method="_on_text_box_meta_hover_ended"]
+[connection signal="meta_hover_started" from="Background/TextBox" to="Background" method="_on_text_box_meta_hover_started"]

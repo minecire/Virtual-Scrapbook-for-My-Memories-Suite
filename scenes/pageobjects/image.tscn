@@ -4,12 +4,15 @@
 [ext_resource type="Material" uid="uid://5771ersyd56u" path="res://shaders/image_matte_material_web.tres" id="2_ifxiq"]
 [ext_resource type="Material" uid="uid://b0hf34ub671o3" path="res://shaders/image_material_web.tres" id="3_ujagd"]
 
-[node name="Image" type="Node"]
+[node name="Image" type="Control"]
+layout_mode = 3
+anchors_preset = 0
 script = ExtResource("1_237c1")
 
 [node name="MatteSvgTexture" type="TextureRect" parent="."]
 material = ExtResource("2_ifxiq")
 clip_contents = true
+layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
 expand_mode = 1
@@ -19,6 +22,7 @@ texture_filter = 2
 material = ExtResource("3_ujagd")
 instance_shader_parameters/corner_rounding = Vector4(0, 0, 0, 0)
 instance_shader_parameters/recolor_value = Vector4(0, 0, 0, 0)
+layout_mode = 0
 offset_left = 87.0
 offset_top = 72.0
 offset_right = 299.0

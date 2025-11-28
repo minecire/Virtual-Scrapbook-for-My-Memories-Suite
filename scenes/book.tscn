@@ -578,7 +578,8 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
 script = ExtResource("1_3wpgy")
-turn_time = 0.4
+border_size = 25
+page_turn_time_seconds = 0.4
 
 [node name="Background" type="TextureRect" parent="."]
 self_modulate = Color(0.121587, 0.233752, 0.275718, 1)
@@ -653,8 +654,6 @@ stretch_mode = 2
 [node name="TurningPageRightTexture" type="TextureRect" parent="."]
 material = SubResource("ShaderMaterial_cgkwt")
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
 mouse_filter = 2
 texture = SubResource("ViewportTexture_ih1ba")
 stretch_mode = 2
@@ -714,8 +713,6 @@ script = ExtResource("10_h6yvl")
 [connection signal="page_update" from="." to="TurningPageRight" method="_on_book_page_update"]
 [connection signal="page_update" from="." to="RightPage" method="_on_book_page_update"]
 [connection signal="page_update" from="." to="LeftPage" method="_on_book_page_update"]
-[connection signal="go_to_section" from="RightPage" to="." method="_on_go_to_section"]
-[connection signal="go_to_section" from="LeftPage" to="." method="_on_go_to_section"]
 [connection signal="next_section" from="SwipeDetecter" to="." method="_on_swipe_detecter_next_section"]
 [connection signal="previous_section" from="SwipeDetecter" to="." method="_on_swipe_detecter_previous_section"]
 [connection signal="released" from="SwipeDetecter" to="." method="_on_swipe_detecter_released"]

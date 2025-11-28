@@ -79,11 +79,11 @@ func _on_file_dialog_file_selected(path: String, is_export = false) -> Control: 
 	book.sections_list = sections_list
 	book.cant_exit = is_export # Set its data
 	
-	PageTurn.currentLeftPage = -1 # Reset page to page 1
-	PageTurn.currentRightPage = 1
+	PageTurn.current_left_page = -1 # Reset page to page 1
+	PageTurn.current_right_page = 1
 	PageTurn.left_page_section_index = 0
 	PageTurn.right_page_section_index = 0
-	PageTurn.bookOpen = false # And closed book
+	PageTurn.book_is_open = false # And closed book
 	
 	if(is_inside_tree()):
 		var root = get_tree().get_root() # Replace the menu scene with the scrapbook scene
@@ -130,11 +130,11 @@ func _on_file_dialog_dir_selected(dir: String, is_export = false) -> Control:
 	book.sections_list = sections_list
 	book.cant_exit = is_export
 	
-	PageTurn.currentLeftPage = -1 # Reset page to page 1
-	PageTurn.currentRightPage = 1
+	PageTurn.current_left_page = -1 # Reset page to page 1
+	PageTurn.current_right_page = 1
 	PageTurn.left_page_section_index = 0
 	PageTurn.right_page_section_index = 0
-	PageTurn.bookOpen = false # And closed book
+	PageTurn.book_is_open = false # And closed book
 	
 	if(is_inside_tree()):
 		var root = get_tree().get_root() # Replace the menu scene with the scrapbook scene
@@ -247,9 +247,9 @@ func load_page(): # Load based on savefile or from export data
 		book = _on_file_dialog_dir_selected(data["book_path"])
 	PageTurn.left_page_section_index = data["left_page_section_index"]
 	PageTurn.right_page_section_index = data["right_page_section_index"]
-	PageTurn.currentLeftPage = data["currentLeftPage"]
-	PageTurn.currentRightPage = data["currentRightPage"]
-	PageTurn.bookOpen = data["bookOpen"]
+	PageTurn.current_left_page = data["current_left_page"]
+	PageTurn.current_right_page = data["current_right_page"]
+	PageTurn.book_is_open = data["book_is_open"]
 	if FileAccess.file_exists("res://export_data.txt"):
 		var export_data = FileAccess.open("res://export_data.txt", FileAccess.READ)
 		var export_text = export_data.get_as_text().split("\n")

@@ -7,9 +7,10 @@
 shader = ExtResource("1_4skvc")
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_2dm3i"]
-viewport_path = NodePath("TextViewport")
 
-[node name="WordArt" type="Node"]
+[node name="WordArt" type="Control"]
+layout_mode = 3
+anchors_preset = 0
 script = ExtResource("1_a06q8")
 
 [node name="TextViewport" type="SubViewport" parent="."]
@@ -26,6 +27,7 @@ vertical_alignment = 2
 
 [node name="TextTexture" type="TextureRect" parent="."]
 material = SubResource("ShaderMaterial_a06q8")
+layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
 texture = SubResource("ViewportTexture_2dm3i")

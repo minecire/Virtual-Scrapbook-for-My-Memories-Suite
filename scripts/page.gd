@@ -1,4 +1,4 @@
-extends SubViewport
+extends Control
 
 # This file handles the rendering of a single page
 # This is the heart of the My Memories Suite techical debt jank
@@ -46,12 +46,14 @@ signal reload_text # Used to refresh textboxes
 
 var id;
 
-func _ready():
-	set_canvas_cull_mask_bit(2, false);
-
 
 func load_page(): # Called to reload a page
-	parse_full_page() # Loops through to add elements
+	
+	for n in get_children():
+		remove_child(n)
+		n.free()
+	
+	parse_page() # Loops through to add elements
 	
 	if get_children().size() == 0: 
 		# If page is blank, at least add a background
@@ -59,34 +61,25 @@ func load_page(): # Called to reload a page
 		cbi.size = page_size
 		cbi.color = Color(0.9, 0.83, 0.8)
 		add_child(cbi)
-	
-	for node in get_children(): 
-		# SubViewports don't have a position, so we have to kind-of awkwardly loop through 
-		# and update the position of each child node.
-		for node2 in node.get_children():
-			if(!node2.get_class() == "Node" && !node2.get_class() == "RichTextLabel" && !node2.get_class() == "SubViewport"):
-				node2.position += pos
-		if(!node.get_class() == "Node"):
-			node.position += pos
 func calculate_missing_data():
 	# MMS files do not store the canvas height or aspect ratio
 	# But they do store "max output width" and height variables that have the same ratio
 	# So we can calculate it ourselves
 	aspect_ratio = float(max_output_width) / float(max_output_height)
 	canvas_height = int(canvas_width / aspect_ratio)
-func parse_full_page():
+func parse_page():
 	# Get some global data
 	num_pages = util_Preloader.scrapbookData[section_index]["num_pages"]
 	canvas_width = util_Preloader.scrapbookData[section_index]["canvas_width"]
 	max_output_width = util_Preloader.scrapbookData[section_index]["max_output_width"]
 	max_output_height = util_Preloader.scrapbookData[section_index]["max_output_height"]
+	calculate_missing_data()
 	
 	# Parse the individual page's data
-	if(page_index < util_Preloader.scrapbookData[section_index]["pages"].size()):
-		parse_page(util_Preloader.scrapbookData[section_index]["pages"][page_index])
-func parse_page(data):
-	calculate_missing_data()
-	for object in data["objects"]: # Parse each object one at a time
+	if(page_index >= util_Preloader.scrapbookData[section_index]["pages"].size()):
+		return
+	for object in util_Preloader.scrapbookData[section_index]["pages"][page_index]["objects"]:
+		# Parse each object one at a time
 		parse_page_object(object)
 
 func parse_page_object(object):
@@ -114,9 +107,9 @@ func parse_page_object(object):
 	elif(type == "line"): # A multi-segment spline defined by an SVG path
 		parse_line(data)
 	elif(type == "jWordText"): # Textbox with some fancy formatting
-		parse_text(data)
+		parse_text(data, type)
 	elif(type == "textArt"): # Word art
-		parse_text_art(data)
+		parse_text_art(data, type)
 	elif(type != "spanner"): # Spanners are a special object for any object that spans multiple pages.
 		# They are handled in the initial preload step
 		push_warning("unsupported datatype: " + type) # Otherwise we have an unsupported datatype
@@ -261,80 +254,18 @@ func parse_gradient_background(data):
 func parse_image(data, type):
 	var image_instance = image_scene.instantiate()
 	# Set image data and add to scene, the image scene itself handles the rest
-	image_instance.page_size = page_size
-	image_instance.canvas_width = canvas_width
-	image_instance.canvas_height = canvas_height
-	image_instance.path = path
-	image_instance.data = data
-	image_instance.type = type
+	image_instance.initialize_variables(type, data, path, page_size, page_type, canvas_width, canvas_height, section_index)
 	add_child(image_instance)
-	if(data.has("id")): 
-		# An image with an id means that the image has text attached to it
-		# niche feature where you can combine a 'shape' type image with text
-		# and the text will fill the shape
-		var held_text_instance = util_Preloader.heldTextInstances[data["id"]].duplicate() 
-		# It's possible that the image is being parsed before the text would be
-		# so we simply generate all the text instances beforepaw in the preload step
-		# so they're here when we need them
-		
-		held_text_instance.page_size = page_size # Adding info that wasn't available during preload
-		held_text_instance.canvas_width = canvas_width
-		held_text_instance.canvas_height = canvas_height
-		
-		# Duplicate is not recursive so we need to duplicate the data ourselves
-		held_text_instance.data = util_Preloader.heldTextInstances[data["id"]].data.duplicate()
-		held_text_instance.path = util_Preloader.heldTextInstances[data["id"]].path
-		held_text_instance.shapedata = util_Preloader.heldTextInstances[data["id"]].shapedata
-		add_child(held_text_instance)
-		
-		# We need to tell the text instance to reload now, which requires a whole signal system
-		# because communication between nodes has to be complicated
-		reload_text.connect(held_text_instance.reload)
-		emit_signal("reload_text")
-		reload_text.disconnect(held_text_instance.reload)
 	
-func parse_text(data): 
+func parse_text(data, type): 
 	# Much like with images, parsing text requires just setting some things and letting the object handle itself
-	get_tree().root.get_viewport().set_canvas_cull_mask_bit(2, false);
 	var text_instance = text_scene.instantiate()
-	text_instance.page_size = page_size
-	text_instance.canvas_width = canvas_width
-	text_instance.get_node("TextBox").section_index = section_index
-	if(canvas_width == 0):
-		text_instance.canvas_width = page_size.x
-	text_instance.canvas_height = canvas_height
-	text_instance.path = path
-	text_instance.data = data
+	text_instance.initialize_variables(type, data, path, page_size, page_type, canvas_width, canvas_height, section_index)
 	text_instance.go_to_section.connect(_on_text_go_to_section)
-	if(data.has("id")): 
-		# Loading text with an id also causes problems because it creates duplicate instances
-		text_instance.shapedata = util_Preloader.iddshapes[data["id"]]
-		#util_Preloader.heldTextInstances[data["id"]] = text_instance
-	else:
-		add_child(text_instance)
-	if(text_instance.hasLinks && page_type != util_Enums.page_type.TURNING && page_type != util_Enums.page_type.UNDER):
-		# If we have links, we need to make an invisible copy of the textbox that is clickable
-		# Because subviewports don't like to handle inputs
-		# Unless this page is currently turning or under another page
-		
-		var text_instance_2 = text_scene.instantiate()
-		text_instance_2.page_size = page_size
-		text_instance_2.canvas_width = canvas_width
-		text_instance_2.get_node("TextBox").page_type = page_type
-		
-		if(canvas_width == 0):
-			text_instance_2.canvas_width = page_size.x
-		text_instance_2.canvas_height = canvas_height
-		text_instance_2.path = path
-		text_instance_2.data = data
-		text_instance_2.get_node("TextBox").section_index = section_index
-		text_instance_2.go_to_section.connect(_on_text_go_to_section)
-		text_instance_2.go_to_page.connect(_on_text_go_to_page)
-		text_instance_2.get_node("TextBox").input.connect(get_tree().get_root().get_node("Book/SwipeDetecter")._input)
-		text_instance_2.get_node("TextBox").set_modulate(Color(1., 1., 1., 0.))
-		
-		# Add to the clickables holder node in the book scene
-		get_tree().get_root().get_node("Book/ClickablesHolder").add_child(text_instance_2)
+	if(data.has("id")):
+		# Loading text with an id causes problems because it creates duplicate instances
+		return
+	add_child(text_instance)
 
 func getColorFromNegative(val): 
 	# Convert the silly negative number color representation to something Godot can interpret
@@ -400,24 +331,10 @@ func parse_line(data): # Line is stored as a part of an SVG object
 		reload_text.disconnect(held_text_instance.reload)
 
 
-func parse_text_art(data): # Word art
+func parse_text_art(data, type): # Word art
 	var word_art_instance = word_art_scene.instantiate()
-	word_art_instance.data = data
-	word_art_instance.path = path
-	word_art_instance.page_size = page_size
-	word_art_instance.canvas_width = canvas_width
-	
+	word_art_instance.initialize_variables(type, data, path, page_size, page_type, canvas_width, canvas_height, section_index)
 	add_child(word_art_instance)
-	
-func _on_book_page_update() -> void: # Run on signal from book to reload
-	# Clear out the page
-	for n in get_children():
-		remove_child(n)
-		n.free()
-	
-	# Then reload it
-	load_page()
-
 
 func _on_text_go_to_section(section): # Emitted when a page link is clicked
 	emit_signal("go_to_section", section, 1)

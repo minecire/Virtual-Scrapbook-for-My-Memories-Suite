@@ -16,17 +16,14 @@ extends Control
 # Distance between edge of book and edge of screen
 @export var border_size: int
 
-# Time it takes to turn a page
-@export var turn_time: float
+# amount_page_is_turned it takes to turn a page
+@export var page_turn_time_seconds: float
 
 # Used for the multi-section feature, a list of file paths to each section from the book path
 var sections_list: Array[String]
 
-# Used to check for an ESC double tap, which quits Virtual Scrapbook back to the main menu
-var escape_Timer = 0
-
 # Used to track the page turn animation
-var time: float = 1.0
+var amount_page_is_turned: float = 1.0
 
 # Sent to reload the pages after a page turn
 signal page_update
@@ -42,15 +39,6 @@ signal get_has_background
 # A reference to the image scene, used for access to shader parameters 
 # for more efficient CPU ~ GPU communication
 var image_scene = preload("res://scenes/pageobjects/image.tscn")
-
-# Used to update pages after a short delay when resizing the window
-var update_delay_timer = -1
-
-# Used to handle clicking links
-var cursor_timer = 0
-
-# Timer for displaying tips to assist people who don't intuit the controls
-var display_info_timer = 5.
 
 # Variables to reference scene objects
 var pages_under #Pages visible underneath transparent ones
@@ -74,7 +62,7 @@ var right_page_section
 # (That feature is used for creating entirely web-hosted scrapbooks)
 var cant_exit = false
 
-# Detects whether this is the first time user has turned a page to display another tip
+# Detects whether this is the first amount_page_is_turned user has turned a page to display another tip
 var show_tip_on_next_page_turn = true
 
 # For drag / swipe page turn motions
@@ -85,12 +73,12 @@ var done_dragging = false
 var is_zip
 
 func _ready():
-	show_tip_on_next_page_turn = true # Display skip sections tooltip next time user turns a page
-	display_info_timer = 5. # Display tooltip if user doesn't turn page within five seconds
+	show_tip_on_next_page_turn = true # Display skip sections tooltip next amount_page_is_turned user turns a page
+	util_Timers.set_timer(display_page_turn_info, 5.0, "page_turn_info") # Display tooltip if user doesn't turn page within five seconds
 	
 	#These values get set here instead of in UI because they have a habit of reverting back to defaults
-	$CoverOutside.material.set("shader_parameter/time", 0)
-	$CoverInsideLeft.material.set("shader_parameter/time", 0)
+	$CoverOutside.material.set("shader_parameter/amount_page_is_turned", 0)
+	$CoverInsideLeft.material.set("shader_parameter/amount_page_is_turned", 0)
 	$LeftPage.page_type = util_Enums.page_type.LEFT
 	$RightPage.page_type = util_Enums.page_type.RIGHT
 	$TurningPageLeft.page_type = util_Enums.page_type.TURNING
@@ -108,8 +96,8 @@ func _ready():
 	
 	#Set PageTurn's cover references properly
 	#This cannot be done in page_turn.gd since it is not technically a node in the scene
-	PageTurn.CoverInsideLeft = $CoverInsideLeft
-	PageTurn.CoverOutside = $CoverOutside
+	PageTurn.cover_inside_left = $CoverInsideLeft
+	PageTurn.cover_outside = $CoverOutside
 	
 	#Load the entire scrapbook into memory to cut down on lagspikes due to loading from files
 	util_Preloader.reload_stuff(sections_list, book_path, is_zip)
@@ -118,24 +106,24 @@ func _ready():
 		$CoverInsideLeft.texture = util_Preloader.imagesDict["coverInsideLeft"]
 		$CoverInsideRight.texture = util_Preloader.imagesDict["coverInsideRight"]
 		$CoverOutside.texture = util_Preloader.imagesDict["coverOutside"]
-		PageTurn.hasCover = true #Tell PageTurn about it
-		if(PageTurn.bookOpen): #If the book is open, the inside covers should be visible
+		PageTurn.has_cover = true #Tell PageTurn about it
+		if(PageTurn.book_is_open): #If the book is open, the inside covers should be visible
 			$CoverInsideRight.visible = true
 			$CoverInsideLeft.visible = true
 			$CoverOutside.visible = false
-			$CoverInsideLeft.material.set("shader_parameter/time", 1.0) 
-			$CoverOutside.material.set("shader_parameter/time", 1.0) 
+			$CoverInsideLeft.material.set("shader_parameter/amount_page_is_turned", 1.0) 
+			$CoverOutside.material.set("shader_parameter/amount_page_is_turned", 1.0) 
 			#And the cover shader needs to know the book is fully open
 		else: #Otherwise, only the outside cover should be visible
 			$CoverOutside.visible = true
 			$CoverInsideRight.visible = true
 			$CoverInsideLeft.visible = false
-			$CoverInsideLeft.material.set("shader_parameter/time", 0.0) 
-			$CoverOutside.material.set("shader_parameter/time", 0.0) 
+			$CoverInsideLeft.material.set("shader_parameter/amount_page_is_turned", 0.0) 
+			$CoverOutside.material.set("shader_parameter/amount_page_is_turned", 0.0) 
 			#And set the shader timer appropriately for a closed book
 	else: #If there is no cover
-		PageTurn.bookOpen = true #Make sure PageTurn knows the book is open
-		PageTurn.hasCover = false #And that there is no cover so it doesn't try to close an invisible one
+		PageTurn.book_is_open = true #Make sure PageTurn knows the book is open
+		PageTurn.has_cover = false #And that there is no cover so it doesn't try to close an invisible one
 		$CoverOutside.visible = false #And covers are not visible.
 		$CoverInsideRight.visible = false
 		$CoverInsideLeft.visible = false
@@ -147,10 +135,10 @@ func _ready():
 	#Make sure there's a delayed page update on resize
 	
 	save_page()
-	#Save the program so the scrapbook will be open next time
+	#Save the program so the scrapbook will be open next amount_page_is_turned
 
 func delayed_page_update():
-	update_delay_timer = 0.1
+	util_Timers.set_timer(update_pages, 0.1, "update_pages")
 
 
 func update_pages(): #This sets all the visible pages to the correct values and then reloads them.
@@ -174,19 +162,19 @@ func update_pages(): #This sets all the visible pages to the correct values and 
 		n.free() 
 	if is_inside_tree():
 		$Background.size = get_viewport().get_visible_rect().size
-	if(PageTurn.currentLeftPage == -1): #Set pages invisible if the page number is -1, visible otherwise
+	if(PageTurn.current_left_page == -1): #Set pages invisible if the page number is -1, visible otherwise
 		left_page_texture.visible = false
 	else:
 		left_page_texture.visible = true
-	if(PageTurn.currentRightPage == -1):
+	if(PageTurn.current_right_page == -1):
 		right_page_texture.visible = false
 	else:
 		right_page_texture.visible = true
-	if(PageTurn.currentLeftTurningPage == -1):
+	if(PageTurn.current_left_turning_page == -1):
 		turning_page_left_texture.visible = false
 	else:
 		turning_page_left_texture.visible = true
-	if(PageTurn.currentRightTurningPage == -1):
+	if(PageTurn.current_right_turning_page == -1):
 		turning_page_right_texture.visible = false
 	else:
 		turning_page_right_texture.visible = true
@@ -213,16 +201,16 @@ func update_pages(): #This sets all the visible pages to the correct values and 
 	turning_page_right.path = sectionPathRight if PageTurn.turning_page_right_section_side else sectionPathLeft
 	
 	# Find the name of each page. MMS convention is to name each page Page N for each page, starting at 1
-	left_page.page_name = "Page " + ("%d") % PageTurn.currentLeftPage
-	right_page.page_name = "Page " + ("%d") % PageTurn.currentRightPage
-	turning_page_left.page_name = "Page " + ("%d") % PageTurn.currentLeftTurningPage
-	turning_page_right.page_name = "Page " + ("%d") % PageTurn.currentRightTurningPage
+	left_page.page_name = "Page " + ("%d") % PageTurn.current_left_page
+	right_page.page_name = "Page " + ("%d") % PageTurn.current_right_page
+	turning_page_left.page_name = "Page " + ("%d") % PageTurn.current_left_turning_page
+	turning_page_right.page_name = "Page " + ("%d") % PageTurn.current_right_turning_page
 	
 	# The index needs to start at 0, so we subtract 1
-	left_page.page_index = PageTurn.currentLeftPage - 1
-	right_page.page_index = PageTurn.currentRightPage - 1
-	turning_page_left.page_index = PageTurn.currentLeftTurningPage - 1
-	turning_page_right.page_index = PageTurn.currentRightTurningPage - 1
+	left_page.page_index = PageTurn.current_left_page - 1
+	right_page.page_index = PageTurn.current_right_page - 1
+	turning_page_left.page_index = PageTurn.current_left_turning_page - 1
+	turning_page_right.page_index = PageTurn.current_right_turning_page - 1
 	
 	#Set section indeces
 	left_page.section_index = PageTurn.left_page_section_index
@@ -269,13 +257,16 @@ func update_pages(): #This sets all the visible pages to the correct values and 
 	
 	turning_page_left_texture.size = left_page_texture.size
 	turning_page_right_texture.size = right_page_texture.size
-	turning_page_left_texture.position = left_page_texture.position - Vector2(0, turning_page_left_texture.size.y / 10)
-	turning_page_right_texture.position = right_page_texture.position - Vector2(0, turning_page_left_texture.size.y / 10)
+	
+	var turning_page_pos_offset = Vector2(0, turning_page_left_texture.size.y / 10)
+	
+	turning_page_left_texture.position = left_page_texture.position - turning_page_pos_offset
+	turning_page_right_texture.position = right_page_texture.position - turning_page_pos_offset
 	
 	#Set "pos", a special variable for placing the page within the window
 	#allowing space for the arc of the page turn animation
-	turning_page_left.pos = Vector2(0, turning_page_left_texture.size.y / 10)
-	turning_page_right.pos = Vector2(0, turning_page_left_texture.size.y / 10)
+	turning_page_left.pos = turning_page_pos_offset
+	turning_page_right.pos = turning_page_pos_offset
 	
 	#These are lil blocks of color under the pages, used to fill in the gap to better sell the book texture
 	$UnderLeftPage.position = Vector2(left_page_texture.position.x, left_page_texture.position.y + left_page.page_size.y * 0.99)
@@ -283,8 +274,8 @@ func update_pages(): #This sets all the visible pages to the correct values and 
 	$UnderRightPage.position = Vector2(right_page_texture.position.x, right_page_texture.position.y + right_page.page_size.y * 0.99)
 	$UnderRightPage.size = Vector2(right_page.page_size.x, right_page.page_size.y * 0.05)
 	
-	$UnderLeftPage.visible = !PageTurn.currentLeftPage == -1
-	$UnderRightPage.visible = !PageTurn.currentRightPage == -1
+	$UnderLeftPage.visible = !PageTurn.current_left_page == -1
+	$UnderRightPage.visible = !PageTurn.current_right_page == -1
 	
 	#Set the covers slightly bigger than the pages
 	$CoverInsideLeft.size.y = left_page.page_size.y * 1.067 * 1.1
@@ -308,10 +299,10 @@ func update_pages(): #This sets all the visible pages to the correct values and 
 			node.queue_free()
 	
 	#Add pages below the left and right page as long as we aren't at bookends
-	if(PageTurn.currentRightPage != -1): 
-		emit_signal("add_pages_below", right_page, right_page_texture.position, right_page_texture.size, PageTurn.right_page_section_index, PageTurn.currentRightPage, true)
-	if(PageTurn.currentLeftPage != -1):
-		emit_signal("add_pages_below", left_page, left_page_texture.position, left_page_texture.size, PageTurn.left_page_section_index, PageTurn.currentLeftPage, false)
+	if(PageTurn.current_right_page != -1): 
+		emit_signal("add_pages_below", right_page, right_page_texture.position, right_page_texture.size, PageTurn.right_page_section_index, PageTurn.current_right_page, true)
+	if(PageTurn.current_left_page != -1):
+		emit_signal("add_pages_below", left_page, left_page_texture.position, left_page_texture.size, PageTurn.left_page_section_index, PageTurn.current_left_page, false)
 	
 	var isi = image_scene.instantiate() 
 	# We instantiate an image scene here to access the image shaders globally
@@ -370,10 +361,10 @@ func quit_to_menu():
 # Because otherwise the hand shows up in the wrong place, and there is no way to tell Godot not to use the hand
 # This also requires a custom cursor set as there is no way to set these cursors to different default cursors
 # This is the only way to fix the issue, trust me I tried everything else.
- 
+var time_since_link_hovered_last_frames = 0
 func _on_text_box_meta_hover_started(_meta): 
 	# When we start hovering on a link, set the cursor to "CROSS" (actually hand)
-	cursor_timer = 60
+	time_since_link_hovered_last_frames = 60
 	num_small_mouse_moves = 0
 	for node in $ClickablesHolder.get_children():
 		node.mouse_default_cursor_shape = Control.CURSOR_CROSS
@@ -381,8 +372,8 @@ func _on_text_box_meta_hover_ended(_meta):
 	# When we stop hovering, we-
 	# do the same thing?
 	# Turns out hover ended just doesn't activate when the cursor exits a link
-	# But instead every time the cursor moves after entering it.
-	cursor_timer = 60
+	# But instead every amount_page_is_turned the cursor moves after entering it.
+	time_since_link_hovered_last_frames = 60
 	num_small_mouse_moves = 0
 	for node in $ClickablesHolder.get_children():
 		node.mouse_default_cursor_shape = Control.CURSOR_CROSS
@@ -391,7 +382,7 @@ func _on_text_box_meta_hover_ended(_meta):
 var num_small_mouse_moves = 0 
 	# Tracks a bunch of small mouse movements in a row to signal switching the cursor back
 func _input(event: InputEvent):
-	if(cursor_timer <= 0 && event is InputEventMouseMotion):
+	if(time_since_link_hovered_last_frames <= 0 && event is InputEventMouseMotion):
 		if(event.relative.length_squared() > 5 || num_small_mouse_moves > 5): 
 			#If we have moved the mouse enough times, and enough distance, set the cursor back to arrow
 			for node in $ClickablesHolder.get_children():
@@ -401,37 +392,37 @@ func _input(event: InputEvent):
 		else:
 			num_small_mouse_moves += 1
 	if(event.is_action_pressed("ui_cancel")): # Escape, quits to menu after double tap
-		if(escape_Timer > 0):
+		if(util_Timers.find_timer_by_id("escape_double_tap") != -1):
 			quit_to_menu()
 		else:
-			escape_Timer = 0.3
+			util_Timers.set_timer(null, 0.3, "escape_double_tap")
 	if(event.is_action_pressed("ui_left")): # Left arrow, turn page left
 		# Start a page turn left or cancel if page is already turning
-		display_info_timer = -1
-		if(time < 1 && PageTurn.turningRight):
-			time = 0.001
-			PageTurn.turningRight = false
-		elif(time > 0 && !PageTurn.turningRight):
-			time = 0.001 # Setting the time to a very small amount so it will end the page turn next update
+		util_Timers.cancel_timer("page_turn_info") # They know what theyre doing already
+		if(amount_page_is_turned < 1 && PageTurn.turning_right):
+			amount_page_is_turned = 0.001
+			PageTurn.turning_right = false
+		elif(amount_page_is_turned > 0 && !PageTurn.turning_right):
+			amount_page_is_turned = 0.001 # Setting the amount_page_is_turned to a very small amount so it will end the page turn next update
 		else:
-			time = PageTurn.turn_page_left()
+			amount_page_is_turned = PageTurn.turn_page_left()
 			update_pages() # Remember to update all pages
 			if(show_tip_on_next_page_turn):
-				display_first_page_turn_info() # And display the tip for the first page turn
+				display_section_skip_info() # And display the tip for the first page turn
 				show_tip_on_next_page_turn = false
 	elif(event.is_action_pressed("ui_right")): # Right arrow, turn page right
 		# Much the same but for turning right
-		display_info_timer = -1
-		if(time < 1 && PageTurn.turningRight):
-			time = 0.999
-		elif(time > 0 && !PageTurn.turningRight):
-			time = 0.999
-			PageTurn.turningRight = true
+		util_Timers.cancel_timer("page_turn_info") # They know what theyre doing already
+		if(amount_page_is_turned < 1 && PageTurn.turning_right):
+			amount_page_is_turned = 0.999
+		elif(amount_page_is_turned > 0 && !PageTurn.turning_right):
+			amount_page_is_turned = 0.999
+			PageTurn.turning_right = true
 		else:
-			time = PageTurn.turn_page_right()
+			amount_page_is_turned = PageTurn.turn_page_right()
 			update_pages()
 			if(show_tip_on_next_page_turn):
-				display_first_page_turn_info()
+				display_section_skip_info()
 				show_tip_on_next_page_turn = false
 	elif(event.is_action_pressed("reload_pages")):
 		# "R" button by default, reloads everything for utility when modifying a scrapbook in MMS
@@ -453,63 +444,51 @@ func _input(event: InputEvent):
 		update_pages()
 
 func _process(delta_time):
-	# Update timers and apply effects when applicable
-	cursor_timer -= 1
-	if(escape_Timer > 0.):
-		escape_Timer -= delta_time
-	if(update_delay_timer > 0.):
-		update_delay_timer -= delta_time
-		if(update_delay_timer <= 0.):
-			update_pages()
-	if(display_info_timer > 0):
-		display_info_timer -= delta_time
-		if(display_info_timer <= 0):
-			display_basic_info()
-	if((time < 1 || dragging) && PageTurn.turningRight): 
+	if((amount_page_is_turned < 1 || dragging) && PageTurn.turning_right): 
 		# In the middle of page turn or user is dragging/swiping the page
 		if(!dragging):
-			time += delta_time / turn_time # Increment time if page is turning automatically
+			amount_page_is_turned += delta_time / page_turn_time_seconds # Increment amount_page_is_turned if page is turning automatically
 			
 		 # Set shader parameters to update visual effect
-		if(PageTurn.openingBook):
-			$CoverOutside.material.set("shader_parameter/time", time)
-			$CoverInsideLeft.material.set("shader_parameter/time", time)
+		if(PageTurn.opening_book):
+			$CoverOutside.material.set("shader_parameter/time", amount_page_is_turned)
+			$CoverInsideLeft.material.set("shader_parameter/time", amount_page_is_turned)
 		else:
-			$TurningPageLeftTexture.material.set("shader_parameter/time", time)
-			$TurningPageRightTexture.material.set("shader_parameter/time", time)
-		if(time >= 1): # Page has finished turning, we need to update the pages again
-			time = 1
+			$TurningPageLeftTexture.material.set("shader_parameter/time", amount_page_is_turned)
+			$TurningPageRightTexture.material.set("shader_parameter/time", amount_page_is_turned)
+		if(amount_page_is_turned >= 1): # Page has finished turning, we need to update the pages again
+			amount_page_is_turned = 1
 			PageTurn.finish_turn_right()
 			update_pages()
 			save_page()
 			if(dragging):
 				done_dragging = true
-	elif((time > 0 || dragging) && !PageTurn.turningRight):
+	elif((amount_page_is_turned > 0 || dragging) && !PageTurn.turning_right):
 		if(!dragging):
-			time -= delta_time / turn_time
-		if(PageTurn.openingBook):
-			$CoverOutside.material.set("shader_parameter/time", time)
-			$CoverInsideLeft.material.set("shader_parameter/time", time)
+			amount_page_is_turned -= delta_time / page_turn_time_seconds
+		if(PageTurn.opening_book):
+			$CoverOutside.material.set("shader_parameter/time", amount_page_is_turned)
+			$CoverInsideLeft.material.set("shader_parameter/time", amount_page_is_turned)
 		else:
-			$TurningPageLeftTexture.material.set("shader_parameter/time", time)
-			$TurningPageRightTexture.material.set("shader_parameter/time", time)
-		if(time <= 0):
-			time = 0
+			$TurningPageLeftTexture.material.set("shader_parameter/time", amount_page_is_turned)
+			$TurningPageRightTexture.material.set("shader_parameter/time", amount_page_is_turned)
+		if(amount_page_is_turned <= 0):
+			amount_page_is_turned = 0
 			PageTurn.finish_turn_left()
 			update_pages()
 			save_page()
 			if(dragging):
 				done_dragging = true
 	else:
-		time = round(time) #Make sure time hasn't gotten too far outside its expected range
+		amount_page_is_turned = round(amount_page_is_turned) #Make sure amount_page_is_turned hasn't gotten too far outside its expected range
 
-func display_basic_info():
+func display_page_turn_info():
 	if(OS.has_feature("mobile") || OS.has_feature("web_android") || OS.has_feature("web_ios")):
 		$Info.display_text("Swipe left or right to turn page", 4.)
 	else:
 		$Info.display_text("Press left or right arrow keys to turn page", 4.)
 
-func display_first_page_turn_info():
+func display_section_skip_info():
 	if(OS.has_feature("mobile") || OS.has_feature("web_android") || OS.has_feature("web_ios")):
 		$Info.display_text("Double tap the left or right side of the screen to move between sections", 4.)
 	else:
@@ -522,9 +501,9 @@ func save_page(): # Save some data regularly so users can leave and return where
 		"sections_list": sections_list,
 		"left_page_section_index": PageTurn.left_page_section_index,
 		"right_page_section_index": PageTurn.right_page_section_index,
-		"currentLeftPage": PageTurn.currentLeftPage,
-		"currentRightPage": PageTurn.currentRightPage,
-		"bookOpen": PageTurn.bookOpen,
+		"currentLeftPage": PageTurn.current_left_page,
+		"currentRightPage": PageTurn.current_right_page,
+		"bookOpen": PageTurn.book_is_open,
 		"is_zip": is_zip
 		}
 	var json_string = JSON.stringify(savedata)
@@ -536,6 +515,7 @@ func save_menu(): # Save that the user has returned to the menu
 
 var page_scene = preload("res://scenes/page.tscn") # Preload the page scene to be used by _on_add_pages_below
 
+# Called by the add_pages_below signal
 func _on_add_pages_below(page, page_position, page_size, section_index, page_number, increasing, depth = -2) -> void:
 	# This function will add pages below the left and right page until it hits the end of the book or
 	# a page with a full background that would cover up anything below
@@ -608,10 +588,10 @@ func _on_go_to_section(section, page) -> void: #Turns page to a specific page
 	var section_index = get_section_index_from_name(section)
 	if(section_index > PageTurn.right_page_section_index || # If the section we're turning to is after the current one
 	(section_index == PageTurn.right_page_section_index && 
-		page > PageTurn.currentRightPage)): # Or the're the same and the page is later on
-		time = PageTurn.turn_right_to_section(section, page) # Turn right
+		page > PageTurn.current_right_page)): # Or the're the same and the page is later on
+		amount_page_is_turned = PageTurn.turn_right_to_section(section, page) # Turn right
 	else:
-		time = PageTurn.turn_left_to_section(section, page)
+		amount_page_is_turned = PageTurn.turn_left_to_section(section, page)
 	update_pages()
 
 func get_section_index_from_name(section_name):
@@ -625,13 +605,13 @@ func check_nowhitespace(a):
 	# And removes an initial slash
 	# This leniency helps make use of the program more intuitive
 	var b = currentSectionToCheck
-	var newa = a.replace(" ", "").replace("\n", "").replace("\r", "").replace("\t", "").to_lower()
-	var newb = b.replace(" ", "").replace("\n", "").replace("\r", "").replace("\t", "").to_lower()
-	if(newa.length() > 0 && newa[0] == "/"):
-		newa = newa.substr(1, newa.length())
-	if(newb.length() > 0 && newb[0] == "/"):
-		newb = newb.substr(1, newb.length())
-	return newa == newb
+	var new_a = a.replace(" ", "").replace("\n", "").replace("\r", "").replace("\t", "").to_lower()
+	var new_b = b.replace(" ", "").replace("\n", "").replace("\r", "").replace("\t", "").to_lower()
+	if(new_a.length() > 0 && new_a[0] == "/"):
+		new_a = new_a.substr(1, new_a.length())
+	if(new_b.length() > 0 && new_b[0] == "/"):
+		new_b = new_b.substr(1, new_b.length())
+	return new_a == new_b
 
 func _notification(what):
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
@@ -650,26 +630,26 @@ func _on_swipe_detecter_scroll_ended(_movement = 0) -> void:
 
 func _on_swipe_detecter_next_section() -> void: 
 	#Detect double click and turn to next / previous section
-	if(time < 1 && PageTurn.turningRight):
-		time = 0.999 #Or finish turning page if already turning
-	elif(time > 0 && !PageTurn.turningRight):
-		time = 0.999
-		PageTurn.turningRight = true
+	if(amount_page_is_turned < 1 && PageTurn.turning_right):
+		amount_page_is_turned = 0.999 #Or finish turning page if already turning
+	elif(amount_page_is_turned > 0 && !PageTurn.turning_right):
+		amount_page_is_turned = 0.999
+		PageTurn.turning_right = true
 	else:
-		time = PageTurn.turn_page_right()
+		amount_page_is_turned = PageTurn.turn_page_right()
 		update_pages()
 	PageTurn.turn_to_next_section()
 	update_pages()
 
 
 func _on_swipe_detecter_previous_section() -> void:
-	if(time < 1 && PageTurn.turningRight):
-		time = 0.001
-		PageTurn.turningRight = false
-	elif(time > 0 && !PageTurn.turningRight):
-		time = 0.001
+	if(amount_page_is_turned < 1 && PageTurn.turning_right):
+		amount_page_is_turned = 0.001
+		PageTurn.turning_right = false
+	elif(amount_page_is_turned > 0 && !PageTurn.turning_right):
+		amount_page_is_turned = 0.001
 	else:
-		time = PageTurn.turn_page_left()
+		amount_page_is_turned = PageTurn.turn_page_left()
 		update_pages()
 	PageTurn.turn_to_section_start()
 	update_pages()
@@ -678,14 +658,14 @@ func _on_swipe_detecter_previous_section() -> void:
 func _on_swipe_detecter_scrolling(movement) -> void:
 	# If we are dragging
 	# There are a bunch of failsafes to make sure we don't do something silly and break the program
-	if(time > 0 && time < 1): # Enable dragging immediately if we are mid page turn
+	if(amount_page_is_turned > 0 && amount_page_is_turned < 1): # Enable dragging immediately if we are mid page turn
 		dragging = true
 	if(done_dragging): 
 		# done_dragging is a way of telling the program to stop dragging even if the user hasn't let go
 		# if a page finishes turning, for example
 		return
 	movement = -movement
-	if(movement > 0.01 && (!dragging || PageTurn.turningRight) || (dragging && PageTurn.turningRight)):
+	if(movement > 0.01 && (!dragging || PageTurn.turning_right) || (dragging && PageTurn.turning_right)):
 		# If we've moved a bit to the left (turning page right) and aren't dragging yet, 
 		# or if we are already turning right
 		if(!dragging && movement >= 0.05):
@@ -693,26 +673,26 @@ func _on_swipe_detecter_scrolling(movement) -> void:
 			return
 		if(!dragging): 
 			PageTurn.turn_page_right()
-			PageTurn.turningRight = true
+			PageTurn.turning_right = true
 			update_pages() # Initiate page turn and update
 			dragging = true
-		time = clamp(movement, 0.001, 0.999)
-	elif(movement < -0.01 && (!dragging || !PageTurn.turningRight) || (dragging && !PageTurn.turningRight)):
+		amount_page_is_turned = clamp(movement, 0.001, 0.999)
+	elif(movement < -0.01 && (!dragging || !PageTurn.turning_right) || (dragging && !PageTurn.turning_right)):
 		# Turning left is about the same
 		if(!dragging && movement <= -0.05):
 			return
 		if(!dragging):
 			PageTurn.turn_page_left()
-			PageTurn.turningRight = false
+			PageTurn.turning_right = false
 			update_pages()
 			dragging = true
-		time = clamp(1 + movement, 0.001, 0.999)
+		amount_page_is_turned = clamp(1 + movement, 0.001, 0.999)
 
 
 func _on_swipe_detecter_released() -> void: # When releasing click
-	if(time > 0.6): # Set pageturn if page hasn't been dragged enough
-		PageTurn.turningRight = true
-	elif(time < 0.4):
-		PageTurn.turningRight = false
+	if(amount_page_is_turned > 0.6): # Set pageturn if page hasn't been dragged enough
+		PageTurn.turning_right = true
+	elif(amount_page_is_turned < 0.4):
+		PageTurn.turning_right = false
 	dragging = false
-	done_dragging = false # Reset done dragging so we can initiate a new drag next time
+	done_dragging = false # Reset done dragging so we can initiate a new drag next amount_page_is_turned

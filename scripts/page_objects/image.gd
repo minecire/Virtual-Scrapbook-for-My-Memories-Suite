@@ -1,4 +1,4 @@
-extends Node
+extends PageObject
 
 #todo:
 #(low priority)shadow resize, mask subtexture bullshit, shape rotation
@@ -36,6 +36,42 @@ var imageMatteMaterialWeb = preload("res://shaders/image_matte_material_web.tres
 var imageMaterialWeb = preload("res://shaders/image_material_web.tres") as ShaderMaterial
 var imageMatteMaterial = preload("res://shaders/image_matte_material.tres") as ShaderMaterial
 var imageMaterial = preload("res://shaders/image_material.tres") as ShaderMaterial
+
+signal reload_text
+
+func initialize_variables(type_, data_, path_, page_size_, _page_type, canvas_width_, canvas_height_, _section_index):
+	type = type_
+	data = data_
+	path = path_
+	page_size = page_size_
+	canvas_width = canvas_width_
+	canvas_height = canvas_height_
+
+func check_for_held_text():
+	if(data.has("id")): 
+		# An image with an id means that the image has text attached to it
+		# niche feature where you can combine a 'shape' type image with text
+		# and the text will fill the shape
+		var held_text_instance = util_Preloader.heldTextInstances[data["id"]].duplicate() 
+		# It's possible that the image is being parsed before the text would be
+		# so we simply generate all the text instances beforepaw in the preload step
+		# so they're here when we need them
+		
+		held_text_instance.page_size = page_size # Adding info that wasn't available during preload
+		held_text_instance.canvas_width = canvas_width
+		held_text_instance.canvas_height = canvas_height
+		
+		# Duplicate is not recursive so we need to duplicate the data ourselves
+		held_text_instance.data = util_Preloader.heldTextInstances[data["id"]].data.duplicate()
+		held_text_instance.path = util_Preloader.heldTextInstances[data["id"]].path
+		held_text_instance.shapedata = util_Preloader.heldTextInstances[data["id"]].shapedata
+		add_child(held_text_instance)
+		
+		# We need to tell the text instance to reload now, which requires a whole signal system
+		# because communication between nodes has to be complicated
+		reload_text.connect(held_text_instance.reload)
+		emit_signal("reload_text")
+		reload_text.disconnect(held_text_instance.reload)
 
 func _ready():
 	if(OS.has_feature("web") || RenderingServer.get_current_rendering_method() == "gl_compatibility"):

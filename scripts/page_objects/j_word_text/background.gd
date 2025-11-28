@@ -48,6 +48,8 @@ var page_type : util_Enums.page_type;
 signal go_to_section
 signal go_to_page
 
+var text_scene = preload("res://scenes/pageobjects/j_word_text.tscn")
+
 func _has_point(_point):
 	if(_point.x < get_viewport().get_visible_rect().size.x / 2 && $TextBox.page_type == util_Enums.page_type.LEFT):
 		return true
@@ -58,6 +60,26 @@ func _has_point(_point):
 
 func _ready():
 	reload()
+	add_clickable()
+
+func add_clickable():
+	
+	if(hasLinks && page_type != util_Enums.page_type.TURNING && page_type != util_Enums.page_type.UNDER):
+		# If we have links, we need to make an invisible copy of the textbox that is clickable
+		# Because subviewports don't like to handle inputs
+		# Unless this page is currently turning or under another page
+		
+		var text_instance = text_scene.instantiate()
+		text_instance.initialize_variables(null, data, path, page_size, page_type, canvas_width, canvas_height, $TextBox.section_index)
+		text_instance.go_to_section.connect(_on_text_go_to_section)
+		text_instance.go_to_page.connect(_on_text_go_to_page)
+		
+		# Weird input handling to stop Godot eating them
+		text_instance.get_node("TextBox").input.connect(get_tree().get_root().get_node("Book/SwipeDetecter")._input)
+		text_instance.get_node("TextBox").set_modulate(Color(1., 1., 1., 0.))
+		
+		# Add to the clickables holder node in the book scene
+		get_tree().get_root().get_node("Book/ClickablesHolder").add_child(text_instance)
 
 func reload():
 	$TextBox.page_size = page_size
@@ -476,3 +498,10 @@ func parse_meta_tag(tag):
 
 func _process(deltaTime):
 	clickTimer -= deltaTime / 10.
+
+func _on_text_go_to_section(meta):
+	emit_signal("go_to_page", meta, 1)
+
+func _on_text_go_to_page(section, page):
+	emit_signal("go_to_page", section, page)
+	
