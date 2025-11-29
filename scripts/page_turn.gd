@@ -100,18 +100,18 @@ func turn_page_left():
 		turning_page_left_section_side = false
 		return time
 		
-	if(left_page_section_index <= 0):
+	if(left_page_section_index <= 0): # Start of book, no more left pages
 		current_left_page = -1
 		return time
 		
 	turning_page_left_section_side = true
-	left_page_section_index-=1
+	left_page_section_index-=1 # Previous section
 	
-	if(current_left_page == -1):
+	if(current_left_page == -1): # Last two pages of previous section
 		current_left_page = util_Preloader.scrapbookData[left_page_section_index]["num_pages"]- 1
 		turning_page_right_section_side = false
 		current_right_turning_page = current_left_page + 1
-	else:
+	else: # Last page of previous section, first page of current
 		current_left_page = util_Preloader.scrapbookData[left_page_section_index]["num_pages"]
 		turning_page_right_section_side = true
 		
@@ -120,22 +120,24 @@ func turn_page_left():
 func turn_to_section_start():
 	if(opening_book):
 		return 1
+	# Page one of current section
 	return turn_left_to_section(util_Preloader.sectionsList[left_page_section_index], 1)
 
 func turn_to_next_section():
 	if(opening_book):
 		return 0
 	if(right_page_section_index == util_Preloader.sectionsList.size() - 1):
+		# End of book if in last section
 		return turn_right_to_section(util_Preloader.sectionsList[right_page_section_index], 
 			util_Preloader.scrapbookData[right_page_section_index]["num_pages"] - 1)
+	# Otherwise page one of next section
 	return turn_right_to_section(util_Preloader.sectionsList[right_page_section_index + 1], 1)
 
 func turn_to_start_of_book():
 	if(opening_book):
 		return 1
+	# Section zero, page one
 	var time = turn_left_to_section(util_Preloader.sectionsList[0], 1)
-	print(turning_page_right_section_side)
-	print(left_page_section_index)
 	return time
 
 func turn_to_end_of_book():
@@ -149,62 +151,69 @@ func turn_left_to_section(section, page):
 	turning_page_left_section_side = false
 	turning_page_right_section_side = false
 	
-	if(current_left_page == -1):
-		return
+	if(current_left_page == -1): # No further left to turn
+		return 0
 	
-	var time = turn_page_left()
+	var time = turn_page_left() # Try to turn left to initialize things properly
 	
 	
 	var section_number = find_section_number(section)
 	var total_page_number = page
+	
+	# Overall page number in the entire scrapbook
 	if(section_number > 0):
 		for i in range(section_number):
 			total_page_number = util_Preloader.scrapbookData[i]["num_pages"]
 	
+	# Just to figure out whether the selected page is on the left or right side
 	var side = total_page_number % 2 == 0
 	
-	if(side):
+	if(side): # Page is left side
 		left_page_section_index = section_number
-		current_left_page = page
+		current_left_page = page # so set the left page to it
 		if(page < util_Preloader.scrapbookData[section_number]["num_pages"]):
 			right_page_section_index = section_number
+			# Set turning page instead of page since right page needs to be covered by the turning one
 			current_right_turning_page = page + 1
 			return time
 		
-		if(section_number < util_Preloader.sectionsList.size() - 1):
+		# In between sections
+		if(section_number < util_Preloader.sectionsList.size() - 1): 
+			# There is a section before this
 			current_right_turning_page = 1
 			right_page_section_index = section_number + 1
-			turning_page_right_section_side = true
+			turning_page_right_section_side = true # Right page will be in a different section to left
 			return time
-		
-		return 0
+		# Otherwise we are already at or approaching the start of the book
+		return time
 	
+	# Page is right side
 	right_page_section_index = section_number
-	current_right_turning_page = page
+	current_right_turning_page = page # Set right page
 	if(page > 1):
 		left_page_section_index = section_number
 		current_left_page = page - 1
 		return time
-	
-	if(section_number > 0):
+	# Between sections
+	if(section_number > 0): # Set left page to previous section
 		current_left_page = util_Preloader.scrapbookData[section_number - 1]["num_pages"]
 		left_page_section_index = section_number - 1
-		turning_page_right_section_side = true
+		turning_page_right_section_side = true # Right page will be in a different section to left
 		return time
 	
 	left_page_section_index = section_number
-	current_left_page = -1
+	current_left_page = -1 # Otherwise is beginning of book, no left page
 	return time
 	
 
 func turn_right_to_section(section, page):
-	
+	# Things get slightly swapped around when turning right
 	turning_page_left_section_side = true
 	turning_page_right_section_side = true
-	if(current_right_page == -1):
-		return
+	if(current_right_page == -1): # Already at end of book
+		return 1
 	
-	var time = turn_page_right()
+	var time = turn_page_right() # Try to turn right to initialize things properly
 	
 	
 	var section_number = find_section_number(section)
@@ -212,49 +221,54 @@ func turn_right_to_section(section, page):
 	for i in range(section_number):
 		total_page_number = util_Preloader.scrapbookData[i]["num_pages"]
 	
-	var side = total_page_number % 2 == 0
+	var side = total_page_number % 2 == 0 # Get side of book of page from total page number
 	
-	if(side):
+	if(side): # Page is on left side
 		left_page_section_index = section_number
+		# Set turning page instead of page since left page needs to be covered by the turning one
 		current_left_turning_page = page
 		if(page < util_Preloader.scrapbookData[section_number]["num_pages"]):
 			right_page_section_index = section_number
 			current_right_page = page + 1
 			return time
-		
+		# In between sections
 		if(section_number < util_Preloader.sectionsList.size() - 1):
+			# Right page goes to next section if there is one
 			current_right_page = 1
 			right_page_section_index = section_number + 1
-			turning_page_left_section_side = false
+			turning_page_left_section_side = false # and left page is with the left section
 			return time
-		
+		# Otherwise turn to end of the book
 		right_page_section_index = section_number
 		current_right_page = -1
 		return time
-	
+	# Page is on right side
 	right_page_section_index = section_number
 	current_right_page = page
 	if(page > 1):
 		left_page_section_index = section_number
 		current_left_turning_page = page - 1
 		return time
-	
+	# In between sections
 	if(section_number > 0):
+		# Set left page to end of previous section
 		current_left_turning_page = util_Preloader.scrapbookData[section_number - 1]["num_pages"]
 		left_page_section_index = section_number - 1
-		turning_page_left_section_side = false
+		turning_page_left_section_side = false # And left page will be a different section than right
 		return time
-	
-	return 1
+	# Already at end of book
+	return time
 
 
-func find_section_number(section):
+func find_section_number(section): # Find index of section in the sections list
 	for i in range(util_Preloader.sectionsList.size()):
-		if(check_nowhitespace(section, util_Preloader.sectionsList[i])):
+		if(check_nowhitespace(section, util_Preloader.sectionsList[i])): # Ignoring whitespace / case
 			return i
 	return -1
 
-func check_nowhitespace(a, b):
+func check_nowhitespace(a, b): 
+	# Checks if strings are equal except case and whitespace
+	# To help people manually writing section names
 	var new_a = a.replace(" ", "").replace("\n", "").replace("\r", "").replace("\t", "").to_lower()
 	var new_b = b.replace(" ", "").replace("\n", "").replace("\r", "").replace("\t", "").to_lower()
 	if(new_a.length() > 0 && new_a[0] == "/"):
@@ -263,21 +277,21 @@ func check_nowhitespace(a, b):
 		new_b = new_b.substr(1, new_b.length())
 	return new_a == new_b
 
-func finish_turn_right():
-	if(opening_book):
+func finish_turn_right(): # Called when a page turn animation finishes
+	if(opening_book): # Book is now open, no more outside cover
 		book_is_open = true
 		cover_outside.visible = false
 		opening_book = false
 		return
-	current_left_page = current_left_turning_page
-	if(turning_page_left_section_side == true):
+	current_left_page = current_left_turning_page # Animated turning page becomes left page
+	if(turning_page_left_section_side == true): # Update section if changed
 		left_page_section_index = right_page_section_index
-	current_left_turning_page = -1
+	current_left_turning_page = -1 # Dont need turning pages showing up anymore
 	current_right_turning_page = -1
 	return
 
-func finish_turn_left():
-	if(opening_book):
+func finish_turn_left(): # Same but to the left
+	if(opening_book): # Book is now closed
 		book_is_open = false
 		cover_inside_left.visible = false
 		opening_book = false

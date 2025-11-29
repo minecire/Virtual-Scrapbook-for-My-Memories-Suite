@@ -1,5 +1,8 @@
 extends SubViewport
 
+# Mostly just here to pass data down to the Control node
+# So we can move the page around in the viewport
+
 var page_type
 var page_name
 var page_size
