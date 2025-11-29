@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://c46je55cv4hei"]
 
-[ext_resource type="Script" uid="uid://dr3tfixty73eh" path="res://scripts/page_objects/color_background.gd" id="1_4monv"]
+[ext_resource type="Script" uid="uid://dr3tfixty73eh" path="res://scripts/page_objects/background/color_background.gd" id="1_4monv"]
 
 [node name="ColorBackground" type="Control"]
 layout_mode = 3

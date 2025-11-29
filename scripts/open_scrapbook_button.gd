@@ -42,33 +42,8 @@ func _on_file_dialog_file_selected(path: String, is_export = false) -> Control: 
 	
 	# Otherwise we assume the user has selected a compressed scrapbook folder
 	
-	# Recursively search for valid scrapbooks in the archive
-	var sections_list : Array[String] = get_sections_zip(path)
-	
-	var zip_reader = ZIPReader.new()
-	zip_reader.open(path)
-	if(zip_reader.file_exists("sections.txt")):
-		var final_list : Array[String] = []
-		var fileacc = zip_reader.read_file("sections.txt")
-		var section_content = fileacc.get_string_from_utf8().split("\n")
-		if(sections_list[0] == ""):
-			final_list.append("")
-		var normalized_sections_list = sections_list.duplicate()
-		for i in range(normalized_sections_list.size()): 
-			# Loop through and normalize the discovered sections to maximize likelihood of correcting errors
-			normalized_sections_list[i] = normalized_sections_list[i].to_lower().replace(" ", "").replace("\t", "").replace("_", "")
-			if(normalized_sections_list[i].length() > 0 && normalized_sections_list[i][0] != "/"):
-				normalized_sections_list[i] = "/" + normalized_sections_list[i]
-		for section in section_content: 
-			# And do the same with the sections.txt elements
-			var section_normalized = section.to_lower().replace(" ", "").replace("\t", "").replace("\n", "").replace("\r", "").replace("_", "")
-			if(section_normalized.length() > 0 && section_normalized[0] != "/"):
-				section_normalized = "/" + section_normalized
-			var index = normalized_sections_list.find(section_normalized)
-			if(index != -1 && section_normalized != ""):
-				final_list.append(sections_list[index]) # And add it to the final list if there's a match
-		sections_list = final_list
-		
+	var sections_list : Array[String] = util_Sections.get_file_sections_list(path) # Get a list of sections
+
 	if(sections_list.size() == 0): # Invalid scrapbook
 		return null
 	if(book == null): # Instantiate the book scene if it's not there already
@@ -95,29 +70,7 @@ func _on_file_dialog_dir_selected(dir: String, is_export = false) -> Control:
 	# If a directory was selected it's similar
 	# But using DirAccess rather than a zip archive
 	
-	var sections_list : Array[String] = get_sections_recursive(dir)
-	
-	var diracc = DirAccess.open(dir)
-	if(diracc.file_exists("sections.txt")):
-		var final_list : Array[String] = []
-		var fileacc = FileAccess.open(dir + "/sections.txt", FileAccess.READ)
-		var section_content = fileacc.get_as_text().split("\n")
-		if(sections_list[0] == ""):
-			final_list.append("")
-		var normalized_sections_list = sections_list.duplicate()
-		for i in range(normalized_sections_list.size()):
-			# Loop through and normalize the discovered sections to maximize likelihood of correcting errors
-			normalized_sections_list[i] = normalized_sections_list[i].to_lower().replace(" ", "").replace("\t", "").replace("_", "")
-		for section in section_content:
-			# And do the same with the sections.txt elements
-			var section_normalized = section.to_lower().replace(" ", "").replace("\t", "").replace("\n", "").replace("\r", "").replace("_", "")
-			if(section_normalized.length() > 0 && section_normalized[0] != "/"):
-				section_normalized = "/" + section_normalized
-			var index = normalized_sections_list.find(section_normalized)
-			if(index != -1 && section_normalized != ""):
-				final_list.append(sections_list[index]) # And add it to the final list if there's a match
-		sections_list = final_list
-	
+	var sections_list : Array[String] = util_Sections.get_dir_sections_list(dir) # Get a list of sections
 	
 	if(sections_list.size() == 0): # Invalid scrapbook
 		return null
@@ -142,43 +95,6 @@ func _on_file_dialog_dir_selected(dir: String, is_export = false) -> Control:
 		root.remove_child.call_deferred(root.get_node("Menu"))
 	
 	return book
-
-func get_sections_recursive(dir: String, subdir: String = ""): # Searches for valid sections in a directory
-	var diracc := DirAccess.open(dir + subdir)
-	if diracc == null: printerr("Could not open folder"); return
-	var has_this_section = false
-	for file: String in diracc.get_files(): # Loop through files
-		var extension = file.split(".")[file.split(".").size() - 1]
-		if(extension == "mms"): # Look for an MMS scrapbook file
-			has_this_section = true
-	var sections : Array[String] = []
-	if(has_this_section):
-		sections.append(subdir) # Append if it found one
-	for sub in (diracc.get_directories()): # Loop through directories to check if each one has sections
-		sections.append_array(get_sections_recursive(dir, subdir + "/" + sub))
-	return sections
-
-func get_sections_zip(path: String): 
-	# The zip version of that function works differently 
-	# since zipreaders will just give you every file in the archive
-	var zip_reader = ZIPReader.new()
-	zip_reader.open(path)
-	var zip_files = zip_reader.get_files()
-	var sections : Array[String] = []
-	for file in zip_files: # Loop through and check for mms extensions
-		var extension = file.split(".")[file.split(".").size() - 1]
-		if(extension == "mms"): 
-			var dir
-			if(file.find("[SLASH]") != -1): # Split by / or by [SLASH]
-				# Godot does not allow the creation of subdirectories when making a zip archive
-				# So our compressor immitates them by putting [SLASH] in the filename where a / would go
-				dir = file.split("[SLASH]")
-			else:
-				dir = file.split("/")
-			dir.remove_at(dir.size() - 1) # Remove the file name and rejoin to get just the directory path
-			dir = "/".join(dir)
-			sections.append(dir)
-	return sections
 
 func _ready():
 	# If you open a scrapbook using Virtual Scrapbook, it should open the book immediately

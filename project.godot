@@ -28,10 +28,14 @@ util_Preloader="*res://scripts/util/preloader.gd"
 util_Enums="*res://scripts/util/enums.gd"
 util_ClearTemp="*res://scripts/util/clear_temp.gd"
 PageTurn="*res://scripts/page_turn.gd"
-util_Web="*res://scripts/util/web.gd"
 util_Compressor="*res://scripts/util/compressor.gd"
 util_Timers="*res://scripts/util/timers.gd"
 util_Color="*res://scripts/util/color.gd"
+util_Sections="*res://scripts/util/get_sections.gd"
+util_ExtraXML="*res://scripts/util/extra_xml.gd"
+util_TextShapes="*res://scripts/util/text_shapes.gd"
+util_TextParsing="*res://scripts/util/text_parsing.gd"
+util_DictionaryMappings="*res://scripts/util/dictionary_mappings.gd"
 
 [display]
 

@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://c8bixk4df7l83"]
 
-[ext_resource type="Script" uid="uid://bhecenaqv70xs" path="res://scripts/page_objects/image_background.gd" id="1_equqb"]
+[ext_resource type="Script" uid="uid://bhecenaqv70xs" path="res://scripts/page_objects/background/image_background.gd" id="1_equqb"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_tecwl"]
 

@@ -1,5 +1,8 @@
 extends Node
 
+# Utilities for managing colors and gradients
+# Specifically converting from MMS formats to something useable by Godot
+
 func get_gradient(raw_gradient_data, width, height):
 	# Little utility function to convert the gradient storage format
 	# into a Godot gradient texture

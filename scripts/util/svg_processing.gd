@@ -29,55 +29,6 @@ func combine_polygons(shapePolygons):
 				newMerged.append_array(Geometry2D.merge_polygons(merged[i], merged[i + 1]))
 		merged = newMerged
 	return merged
-	#var polygonProperties = []
-	#for id in shapePolygons:
-		#var polygon = shapePolygons[id]
-		#var points = polygon.polygon
-		#var positiveExtremePoints = []
-		#var negativeExtremePoints = []
-		#var intersectedPolygons = []
-		#var lastPoint
-		#var lastIntersected = false
-		#for point in points:
-			#var intersecting = false
-			#for intersectTestid in shapePolygons:
-				#if(id == intersectTestid):
-					#continue
-				#var intersectTest = shapePolygons[intersectTestid]
-				#if(Geometry2D.is_point_in_polygon(point, intersectTest.polygon)):
-					#if(intersectedPolygons.find(intersectTestid) == null):
-						#intersectedPolygons.append(intersectTestid)
-					#intersecting = true
-					#break
-			#
-			#if(intersecting && !lastIntersected && lastPoint != null):
-				#negativeExtremePoints.append(lastPoint)
-				#lastIntersected = true
-				#points.remove_at(points.find(point))
-			#elif(!intersecting && lastIntersected):
-				#positiveExtremePoints.append(point)
-				#lastIntersected = false
-			#lastPoint = point
-		#var propertiesDict = {}
-		#propertiesDict["id"] = id
-		#propertiesDict["points"] = points
-		#propertiesDict["positiveExtremePoints"] = positiveExtremePoints
-		#propertiesDict["negativeExtremePoints"] = negativeExtremePoints
-		#propertiesDict["intersectedPolygons"] = intersectedPolygons
-		#polygonProperties.append(propertiesDict)
-	#print(polygonProperties)
-	#var alreadyChecked = []
-	#var combinedPolygons = []
-	#for poly in polygonProperties:
-		#if(alreadyChecked.find(poly["id"]) != -1):
-			#continue
-		#var polyglob = get_all_connected_polygons(polygonProperties, poly)
-		#var newPoly = Polygon2D.new()
-		#newPoly.polygon = connect_points(poly, polyglob, 0, true)
-		#combinedPolygons.append(newPoly)
-		#for globpoly in polyglob:
-			#alreadyChecked.append(globpoly["id"])
-	#return combinedPolygons
 
 func connect_points(currentpoly, polyglob, pointIndex, positive, usedPoints = []):
 	var index = pointIndex

@@ -71,16 +71,16 @@ func calculate_missing_data():
 	canvas_height = int(canvas_width / aspect_ratio)
 func parse_page():
 	# Get some global data
-	num_pages = util_Preloader.scrapbookData[section_index]["num_pages"]
-	canvas_width = util_Preloader.scrapbookData[section_index]["canvas_width"]
-	max_output_width = util_Preloader.scrapbookData[section_index]["max_output_width"]
-	max_output_height = util_Preloader.scrapbookData[section_index]["max_output_height"]
+	num_pages = util_Preloader.scrapbook_data[section_index]["num_pages"]
+	canvas_width = util_Preloader.scrapbook_data[section_index]["canvas_width"]
+	max_output_width = util_Preloader.scrapbook_data[section_index]["max_output_width"]
+	max_output_height = util_Preloader.scrapbook_data[section_index]["max_output_height"]
 	calculate_missing_data()
 	
 	# Parse the individual page's data
-	if(page_index >= util_Preloader.scrapbookData[section_index]["pages"].size()):
+	if(page_index >= util_Preloader.scrapbook_data[section_index]["pages"].size()):
 		return
-	for object in util_Preloader.scrapbookData[section_index]["pages"][page_index]["objects"]:
+	for object in util_Preloader.scrapbook_data[section_index]["pages"][page_index]["objects"]:
 		# Parse each object one at a time
 		parse_page_object(object)
 

@@ -266,8 +266,8 @@ func parse_blip(blip, box, scaleFactor, currentFontSize):
 					newfont.font_weight = 200
 				var dictHas = false
 				for fn in fontNames:
-					if(util_Preloader.preloadedFontsDict.has(fn)):
-						systemFontsDict[fontName] = util_Preloader.preloadedFontsDict[fn]
+					if(util_Preloader.preloaded_fonts_dict.has(fn)):
+						systemFontsDict[fontName] = util_Preloader.preloaded_fonts_dict[fn]
 						dictHas = true
 				if(!dictHas):
 					newfont.set_font_names(fontNames)
@@ -293,7 +293,7 @@ func parse_blip(blip, box, scaleFactor, currentFontSize):
 
 func parse_text_content(filepath):
 	var parser = XMLParser.new()
-	parser.open_buffer(util_Preloader.textsDict[filepath].to_utf8_buffer())
+	parser.open_buffer(util_Preloader.texts_dict[filepath].to_utf8_buffer())
 	var textData = {}
 	var text = []
 	while parser.read() != ERR_FILE_EOF:
@@ -485,7 +485,7 @@ func _on_text_box_meta_clicked(meta: Variant) -> void:
 func parse_meta_tag(tag):
 	if(tag.begins_with("WEBLINK")):
 		var weblink = tag.substr(8, tag.length())
-		util_Web.open_link(weblink)
+		OS.shell_open(weblink)
 	elif(tag.begins_with("PAGELINK")):
 		var pagelink = tag.substr(9, tag.length())
 		var splitlink = pagelink.split(" ")

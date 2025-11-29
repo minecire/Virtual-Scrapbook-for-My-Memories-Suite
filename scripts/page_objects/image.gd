@@ -32,12 +32,35 @@ var type
 var region
 var region2
 
-var imageMatteMaterialWeb = preload("res://shaders/image_matte_material_web.tres") as ShaderMaterial
-var imageMaterialWeb = preload("res://shaders/image_material_web.tres") as ShaderMaterial
-var imageMatteMaterial = preload("res://shaders/image_matte_material.tres") as ShaderMaterial
-var imageMaterial = preload("res://shaders/image_material.tres") as ShaderMaterial
+static var imageMatteMaterialWeb = preload("res://shaders/image_matte_material_web.tres") as ShaderMaterial
+static var imageMaterialWeb = preload("res://shaders/image_material_web.tres") as ShaderMaterial
+static var imageMatteMaterial = preload("res://shaders/image_matte_material.tres") as ShaderMaterial
+static var imageMaterial = preload("res://shaders/image_material.tres") as ShaderMaterial
 
 signal reload_text
+
+static func update_shaders_pre():
+	if(OS.has_feature("web") || RenderingServer.get_current_rendering_method() == "gl_compatibility"):
+		# In web mode we barely get any textures to work with, so we clear them out every update
+		shapes = {}
+		shapesarr = []
+		gradients = {}
+		gradientsarr = []
+		
+static func update_shaders_post():
+	if(!(OS.has_feature("web") || RenderingServer.get_current_rendering_method() == "gl_compatibility")
+	 && shapesarr.size() > 30 || gradientsarr.size() > 30):
+		# Otherwise we update the page and only clear the arrays if they're getting too full
+		shapes = {}
+		shapesarr = []
+		gradients = {}
+		gradientsarr = []
+		return true
+	# Finally, set the shader parameters
+	imageMaterial.set("shader_parameter/shape_textures", shapesarr)
+	imageMaterial.set("shader_parameter/gradient_textures", gradientsarr)
+	imageMatteMaterial.set("shader_parameter/gradient_textures", gradientsarr)
+	return false
 
 func initialize_variables(type_, data_, path_, page_size_, _page_type, canvas_width_, canvas_height_, _section_index):
 	type = type_
@@ -164,11 +187,11 @@ func parseRegularMatte():
 func parseShapeMatte():
 	var shapeFile
 	var shapefileContent
-	if(util_Preloader.imagesDict.has(data["customShapeName"])):
+	if(util_Preloader.images_dict.has(data["customShapeName"])):
 		if(data["type"] == "20"):
-			shapefileContent = util_Preloader.imagesDict[data["customShapeName"]]
+			shapefileContent = util_Preloader.images_dict[data["customShapeName"]]
 		else:
-			shapefileContent = util_Preloader.imagesDict[numberedShapesDict[data["type"].to_int()]]
+			shapefileContent = util_Preloader.images_dict[numberedShapesDict[data["type"].to_int()]]
 	else:
 		if(data["type"] == "20"):
 			if(data["customShapeName"].split('.')[0].to_int() > 100):
@@ -264,11 +287,11 @@ func parseShape():
 			shapeFile = "res://Shapes/Basics/" + data["customShapeName"]
 	else:
 		shapeFile = "res://Shapes/Basics/" + numberedShapesDict[data["type"].to_int()]
-	if(util_Preloader.imagesDict.has(data["customShapeName"])):
+	if(util_Preloader.images_dict.has(data["customShapeName"])):
 		if(data["type"] == "20"):
-			shapeImageData = util_Preloader.imagesDict[data["customShapeName"]]
+			shapeImageData = util_Preloader.images_dict[data["customShapeName"]]
 		else:
-			shapeImageData = util_Preloader.imagesDict[numberedShapesDict[data["type"].to_int()]]
+			shapeImageData = util_Preloader.images_dict[numberedShapesDict[data["type"].to_int()]]
 	else:
 		var shapefile = FileAccess.open(shapeFile, FileAccess.READ)
 		shapeImageData = shapefile.get_as_text()
@@ -417,8 +440,8 @@ func parseImage():
 		filename = data["fileName"]
 		imagePath = path+"/objects/"+filename
 		
-		if(util_Preloader.imagesDict.has(filename)):
-			imageTexture = util_Preloader.imagesDict[filename]
+		if(util_Preloader.images_dict.has(filename)):
+			imageTexture = util_Preloader.images_dict[filename]
 		else:
 			if(imagePath.begins_with("res://")):
 				imageTexture = load(imagePath)
@@ -454,8 +477,8 @@ func parseImage():
 		filename = data["imageMaskFill"]
 		imagePath = path+"/objects/"+filename
 		
-		if(util_Preloader.imagesDict.has(filename)):
-			imageTexture = util_Preloader.imagesDict[filename]
+		if(util_Preloader.images_dict.has(filename)):
+			imageTexture = util_Preloader.images_dict[filename]
 		else:
 			if(imagePath.begins_with("res://")):
 				imageTexture = load(imagePath)

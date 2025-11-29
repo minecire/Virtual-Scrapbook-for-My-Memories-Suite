@@ -22,8 +22,8 @@ func _ready():
 	var filename = data["fileName"]
 	var image_path = path+"objects/"+filename
 	var image_texture
-	if(util_Preloader.imagesDict.has(filename)):
-		image_texture = util_Preloader.imagesDict[filename]
+	if(util_Preloader.images_dict.has(filename)):
+		image_texture = util_Preloader.images_dict[filename]
 	else:
 		image_texture = ImageTexture.create_from_image(Image.load_from_file(image_path))
 	var image_atlas : AtlasTexture = AtlasTexture.new() # We need an image atlas to crop the image
