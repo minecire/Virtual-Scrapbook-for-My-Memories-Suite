@@ -3,10 +3,7 @@ extends Node
 func parse_text_shape(shape, data, canvas_width, canvasHeight, path):
 	var shapeFile = path + "/objects/" + shape["customShapeName"]
 	var shapeCurves = util_SvgProcessing.convert_shape_to_curves(shapeFile, shape, Vector2(canvas_width, canvasHeight), canvas_width, canvasHeight)
-	var naivePolygons = util_SvgProcessing.convert_curves_to_polygons_naive(shapeCurves, 60)
-	var shapePolygons = util_SvgProcessing.combine_polygons(naivePolygons)
-	var finalShapePolygons = util_SvgProcessing.convert_to_convex_polygon_shapes_2d(shapePolygons)
-	var shapes = finalShapePolygons
+	var shapes = util_SvgProcessing.convert_curves_to_convex_polygon_shapes_2d(shapeCurves, 10)
 	var boundsPos = Vector2(shape["startX"].to_int(), shape["startY"].to_int())
 	var boundsSize = Vector2(shape["width"].to_int(), shape["height"].to_int())
 	var padding = Vector2.ZERO

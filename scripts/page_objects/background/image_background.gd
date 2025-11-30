@@ -33,7 +33,7 @@ func _ready():
 	# We are baffled by trying to set the image region properly. The numbers don't quite seem to ever line up.
 	# This is as close as we got, and it's a total mess
 	if(aspect_ratio <= float(image_texture.get_width()) / float(image_texture.get_height())): 
-		# Preserve image as unstretched if unscaled
+		# Preserve image as unstretched if unscaled, and center
 		region.size.x = aspect_ratio * image_texture.get_height()
 		region.position.x = (image_texture.get_width() - region.size.x) / 2.0
 	else:
