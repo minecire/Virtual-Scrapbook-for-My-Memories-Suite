@@ -1,5 +1,8 @@
 extends Node
 
+# Used for obtaining a list of section names/paths from a scrapbook, in order
+
+
 func get_file_sections_list(file):
 	var sections_list : Array[String] = get_sections_zip(file)
 	

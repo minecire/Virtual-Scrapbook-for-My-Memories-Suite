@@ -63,19 +63,12 @@ func load_page(): # Called to reload a page
 		cbi.get_node("ColorPanel").size = page_size
 		cbi.get_node("ColorPanel").color = Color(0.9, 0.83, 0.8)
 		add_child(cbi)
-func calculate_missing_data():
-	# MMS files do not store the canvas height or aspect ratio
-	# But they do store "max output width" and height variables that have the same ratio
-	# So we can calculate it ourselves
-	aspect_ratio = float(max_output_width) / float(max_output_height)
-	canvas_height = int(canvas_width / aspect_ratio)
+
 func parse_page():
 	# Get some global data
-	num_pages = util_Preloader.scrapbook_data[section_index]["num_pages"]
-	canvas_width = util_Preloader.scrapbook_data[section_index]["canvas_width"]
-	max_output_width = util_Preloader.scrapbook_data[section_index]["max_output_width"]
-	max_output_height = util_Preloader.scrapbook_data[section_index]["max_output_height"]
-	calculate_missing_data()
+	num_pages = util_Preloader.scrapbook_data[section_index].num_pages
+	canvas_width = util_Preloader.scrapbook_data[section_index].canvas_width
+	canvas_height = util_Preloader.scrapbook_data[section_index].canvas_height
 	
 	# Parse the individual page's data
 	if(page_index >= util_Preloader.scrapbook_data[section_index]["pages"].size()):
@@ -85,8 +78,8 @@ func parse_page():
 		parse_page_object(object)
 
 func parse_page_object(object):
-	var type = object["type"] # Type of object
-	var data = object["data"] # Data direct from the MMS file
+	var type = object.type # Type of object
+	var data = object.xml_data # Data direct from the MMS file
 	
 	# MMS background conventions use an integer "type" variable for each type of background
 	# Get used to these arbitrary numbers, the MMS file has a lot of them

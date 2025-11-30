@@ -2,6 +2,22 @@ extends Node
 
 # We do a lot of work upfront to make sure everything can run smoothly
 
+class ScrapbookSection:
+	var pages : Array[ScrapbookPage]
+	var num_pages : int
+	var canvas_width : float
+	var canvas_height : float
+	var path : String
+
+class ScrapbookPage:
+	var objects : Array[ScrapbookPageObject]
+	var name : String
+	var has_background : bool
+
+class ScrapbookPageObject:
+	var type : String
+	var xml_data : Dictionary
+
 var sections_list # List of sections
 var is_zip # Whether the file is a zip
 var scrapbook_data # Basically the MMS file converted into an object
@@ -86,7 +102,7 @@ func preload_section(path):
 	# And finally do everything else
 	parser = XMLParser.new()
 	parser.open_buffer(content)
-	var pages = []
+	var pages : Array[ScrapbookPage] = []
 	while parser.read() != ERR_FILE_EOF:
 		if parser.get_node_type() != XMLParser.NODE_ELEMENT:
 			continue
@@ -95,8 +111,13 @@ func preload_section(path):
 			var page_name = parser.get_named_attribute_value_safe("name")
 			var page_data = preload_page(parser, page_name)
 			pages.append(page_data)
-	
-	return {"pages" : pages, "canvas_width" : canvas_width, "max_output_width" : max_output_width, "max_output_height" : max_output_height, "num_pages" : num_pages}
+	var section = ScrapbookSection.new()
+	section.pages = pages
+	section.num_pages = num_pages
+	section.path = path
+	section.canvas_width = canvas_width
+	section.canvas_height = canvas_width * max_output_height / max_output_width
+	return section
 
 func preload_page_object_first_pass(parser):
 	
@@ -122,7 +143,7 @@ func preload_page_object_second_pass(parser, canvas_width, max_output_width, max
 		util_TextParsing.parse_text(data, canvas_width, max_output_width, max_output_height, path)
 	
 func preload_page(parser, page_name):
-	var objects = []
+	var objects : Array[ScrapbookPageObject] = []
 	var has_background = false # Used for transparency
 	var has_children = false # We make our own background if theres a blank page
 	while parser.read() != ERR_FILE_EOF:
@@ -132,9 +153,13 @@ func preload_page(parser, page_name):
 			has_children = true # Has objects!
 			var page_object_data = preload_page_object(parser)
 			objects.append(page_object_data)
-			if(page_object_data["type"] == "background" && (!page_object_data["data"].has("imageopacity") || page_object_data["data"]["imageopacity"].to_float() > 0.99)):
+			if(page_object_data.type == "background" && (!page_object_data.xml_data.has("imageopacity") || page_object_data.xml_data["imageopacity"].to_float() > 0.99)):
 				has_background = true # Opaque background, no need to show pages under this one
-	return {"name" : page_name, "objects" : objects, "has_background" : has_background || !has_children}
+	var page = ScrapbookPage.new()
+	page.name = page_name
+	page.objects = objects
+	page.has_background = has_background || !has_children
+	return page
 
 func preload_page_object(parser):
 	var type = parser.get_named_attribute_value_safe("type")
@@ -146,7 +171,10 @@ func preload_page_object(parser):
 			for spanner_object_data in spanners[data["spannerId"]]:
 				if(!data.has(spanner_object_data)):
 					data[spanner_object_data] = spanners[data["spannerId"]][spanner_object_data]
-	return {"type" : type, "data" : data}
+	var object = ScrapbookPageObject.new()
+	object.type = type
+	object.xml_data = data
+	return object
 
 func generate_images_dict(book_path): # Fill dictionary with all images
 	if(FileAccess.file_exists(book_path + "/cover_outside.png")): # Pick up the covers if there are any

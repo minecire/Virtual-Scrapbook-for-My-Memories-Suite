@@ -194,7 +194,7 @@ func update_pages(): #This sets all the visible pages to the correct values and 
 	
 	#Calculate the screen aspect ratio, as well as the book 
 	#to limit size based on width or height
-	var aspect_ratio = float(util_Preloader.scrapbook_data[PageTurn.left_page_section_index]["max_output_width"]) / float(util_Preloader.scrapbook_data[PageTurn.left_page_section_index]["max_output_height"])
+	var aspect_ratio = float(util_Preloader.scrapbook_data[PageTurn.left_page_section_index].canvas_width) / float(util_Preloader.scrapbook_data[PageTurn.left_page_section_index].canvas_height)
 	if(is_inside_tree()):
 		if(aspect_ratio * 2 < get_viewport().get_visible_rect().size.x / get_viewport().get_visible_rect().size.y):
 			$LeftPage.page_size = Vector2(get_viewport().get_visible_rect().size.y * aspect_ratio - border_size * 2, get_viewport().get_visible_rect().size.y - border_size * 2 / aspect_ratio)

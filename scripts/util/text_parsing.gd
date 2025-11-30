@@ -42,7 +42,7 @@ func parse_text(data, canvas_width, max_output_width, max_output_height, path):
 	if(shape["objecttype"] == "shape"):
 		textInstance.data["shapeTextPlacements"] = util_TextShapes.parse_text_shape(shape, data, canvas_width, canvasHeight, path)
 	textInstance.shapedata = shape
-	util_Preloader.heldTextInstances[data["id"]] = textInstance
+	util_Preloader.held_text_instances[data["id"]] = textInstance
 
 func parse_blip(blip, scaleFactor, currentFontSize):
 	var blipData = blip[0]
@@ -61,26 +61,26 @@ func parse_blip(blip, scaleFactor, currentFontSize):
 		if(util_Preloader.specialFontsDict.has(blipData["font"])):
 			font = load("res://fonts/"+util_Preloader.specialFontsDict[blipData["font"]])
 		else:
-			if(!util_Preloader.systemFontsDict.has(fontName)):
+			if(!util_Preloader.system_fonts_dict.has(fontName)):
 				var newfont = SystemFont.new()
 				newfont.font_italic = italics
 				newfont.font_weight = 700 if bold else 400
 				var fontNames = PackedStringArray()
-				if(util_Preloader.systemDefaultFontsDict.has(blipData["font"])):
-					fontNames.append(util_Preloader.systemDefaultFontsDict[blipData["font"]])
+				if(util_DictionaryMappings.system_default_fonts_dict.has(blipData["font"])):
+					fontNames.append(util_DictionaryMappings.system_default_fonts_dict[blipData["font"]])
 				else:
 					
 						fontNames.append(blipData["font"])
 						fontNames.append(fontName)
 				var dictHas = false
 				for fn in fontNames:
-					if(util_Preloader.preloadedFontsDict.has(fn)):
-						util_Preloader.systemFontsDict[fontName] = util_Preloader.preloadedFontsDict[fn]
+					if(util_Preloader.preloaded_fonts_dict.has(fn)):
+						util_Preloader.system_fonts_dict[fontName] = util_Preloader.preloaded_fonts_dict[fn]
 						dictHas = true
 				if(!dictHas):
 					newfont.set_font_names(fontNames)
-					util_Preloader.systemFontsDict[fontName] = newfont
-			font = util_Preloader.systemFontsDict[fontName]
+					util_Preloader.system_fonts_dict[fontName] = newfont
+			font = util_Preloader.system_fonts_dict[fontName]
 		var fv = FontVariation.new()
 		fv.base_font = font
 		if(blipData.has("expnd")):
@@ -114,7 +114,7 @@ func parse_text_content(filepath):
 		blipstyleinfo_subminor_section["fs"] = str(blipstyleinfo["fs"].to_float() * 0.4)
 		text = []
 		text.append([linestyleinfo, [[blipstyleinfo, "Contents:"]]])
-		for section in util_Preloader.sectionsList:
+		for section in util_Preloader.sections_list:
 			if(section != ""):
 				var lsi = linestyleinfo.duplicate()
 				lsi["link"] = section
