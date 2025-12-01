@@ -22,6 +22,7 @@ Create a custom cover by placing pngs titled cover_outside, cover_inside_left, a
 Create multiple sections by placing multiple projects in a single directory. A file in the main directory titled 'sections.txt' can list the sections in order to order them properly. You can move between sections in the editor by pressing Shift + Left or Shift + Right.
 
 You can also create a table of contents by creating a text object in My Memories Suite and writing `[CONTENTS]` (with brackets) in whatever font you would like to use, or create a custom table of contents using pagelinks.
+
 ![Screenshot of a table of contents](https://github.com/minecire/Virtual-Scrapbook-for-My-Memories-Suite/blob/1ad1d939894ffccd9ae05b345f00bfc3cd7296a2/screenshots/contents.png)
 
 ### Links
