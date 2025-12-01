@@ -51,7 +51,7 @@ func load_page(): # Called to reload a page
 	
 	for n in get_children():
 		remove_child(n)
-		n.free()
+		n.free.call_deferred()
 	
 	parse_page() # Loops through to add elements
 	
@@ -136,9 +136,7 @@ func parse_text(data, type):
 	var text_instance = text_scene.instantiate()
 	text_instance.initialize_variables(type, data, path, page_size, page_type, canvas_width, canvas_height, section_index)
 	text_instance.go_to_section.connect(_on_text_go_to_section) # Clickable links need a signal connection
-	if(data.has("id")):
-		# Loading text with an id causes problems because it creates duplicate instances
-		return
+	text_instance.go_to_page.connect(_on_text_go_to_page) # Clickable links need a signal connection
 	add_child(text_instance)
 	
 func parse_line(data, type): # Line is stored as a part of an SVG object
@@ -153,7 +151,7 @@ func parse_text_art(data, type): # Word art
 	add_child(word_art_instance)
 
 # Emitted when a page link is clicked
-func _on_text_go_to_section(section): 
+func _on_text_go_to_section(section):
 	emit_signal("go_to_section", section, 1)
 func _on_text_go_to_page(section, page):
 	emit_signal("go_to_section", section, page)

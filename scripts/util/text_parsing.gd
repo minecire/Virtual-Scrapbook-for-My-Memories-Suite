@@ -5,6 +5,8 @@ extends Node
 var persistent_formatting # Some data storage that needs to persist between functions
 var text_data
 
+var held_text_instances = {}
+
 var text_scene = preload("res://scenes/pageobjects/j_word_text.tscn")
 
 func parse_text(data, canvas_width, canvas_height, path):
@@ -13,12 +15,12 @@ func parse_text(data, canvas_width, canvas_height, path):
 	get_tree().root.get_viewport().set_canvas_cull_mask_bit(2, false);
 	var text_instance = text_scene.instantiate()
 	# This is the preload step but we give it what data we can
-	text_instance.initialize_variables(null, data, path, Vector2(100, 100), null, canvas_width, canvas_height, null)
-	var shape = util_Preloader.iddshapes[data["id"]] # Grab the corresponding shape
+	text_instance.initialize_variables(null, data, path, Vector2(100, 100), util_Enums.page_type.LEFT, canvas_width, canvas_height, null)
+	var shape = util_Preloader.idd_shapes[data["id"]] # Grab the corresponding shape
 	if(shape["objecttype"] == "shape"): # Parse the data for it
-		text_instance.data["shapeTextPlacements"] = util_TextShapes.parse_text_shape(shape, data, canvas_width, canvas_height, path)
-	text_instance.shapedata = shape
-	util_Preloader.held_text_instances[data["id"]] = text_instance
+		text_instance.get_node("Background").data["shape_text_placements"] = util_TextShapes.parse_text_shape(shape, data, canvas_width, canvas_height, path)
+	text_instance.get_node("Background").shapedata = shape
+	held_text_instances[data["id"]] = text_instance
 
 func pregenerate_text_for_shape(filepath, width): # Parse through a text box
 	var parsed_content = parse_text_content(filepath)
@@ -114,9 +116,9 @@ func get_style_from_blip(blip, scale_factor):
 	
 	var font_name = blip_style["font"] + (" Bold" if bold else "") + (" Italic" if italics else "")
 	var font;
-	if(util_DictionaryMappings.specialFontsDict.has(blip_style["font"])):
+	if(util_DictionaryMappings.special_fonts_dict.has(blip_style["font"])):
 		# Check if it's a special font packaged with MMS
-		font = load("res://fonts/"+util_DictionaryMappings.specialFontsDict[blip_style["font"]])
+		font = load("res://fonts/"+util_DictionaryMappings.special_fonts_dict[blip_style["font"]])
 	else:
 		if(!util_Preloader.system_fonts_dict.has(font_name)): 
 			# If we don't have the font loaded already we have to pick it up

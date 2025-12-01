@@ -29,7 +29,7 @@ func get_gradient(raw_gradient_data, width, height):
 	var gradient_colors_data = gradient_data[3].split("`")
 	var gradient_colors = PackedColorArray()
 	for col in gradient_colors_data:
-		gradient_colors.append(getColorFromNegative(col.to_int()))
+		gradient_colors.append(get_color_from_negative(col.to_int()))
 	gradient_texture.gradient = Gradient.new()
 	gradient_texture.gradient.colors = gradient_colors
 	
@@ -50,7 +50,7 @@ func get_gradient(raw_gradient_data, width, height):
 # Convert color from a negative integer to a Godot color
 # It's actually just the RGB value, but written as an unsigned integer rather than a signed one, 
 # and stored in decimal rather than hex, leading to this odd conversion where we subtract it from 2^24
-func getColorFromNegative(val):
+func get_color_from_negative(val):
 	var negative_value = 16777216 + val
 	
 	# Not sure Godot is smart enough to do this with bitshifts

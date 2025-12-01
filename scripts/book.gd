@@ -292,8 +292,8 @@ func update_pages(): #This sets all the visible pages to the correct values and 
 	if($ClickablesHolder.get_children().size() > 0): 
 		# Connect signals for changing cursor when hovering on a link
 		for node in $ClickablesHolder.get_children():
-			node.get_node("TextBox").meta_hover_started.connect(_on_text_box_meta_hover_started)
-			node.get_node("TextBox").meta_hover_ended.connect(_on_text_box_meta_hover_ended)
+			node.get_node("Background/TextBox").meta_hover_started.connect(_on_text_box_meta_hover_started)
+			node.get_node("Background/TextBox").meta_hover_ended.connect(_on_text_box_meta_hover_ended)
 
 
 func quit_to_menu():
@@ -460,9 +460,9 @@ func save_page(): # Save some data regularly so users can leave and return where
 		"sections_list": sections_list,
 		"left_page_section_index": PageTurn.left_page_section_index,
 		"right_page_section_index": PageTurn.right_page_section_index,
-		"currentLeftPage": PageTurn.current_left_page,
-		"currentRightPage": PageTurn.current_right_page,
-		"bookOpen": PageTurn.book_is_open,
+		"current_left_page": PageTurn.current_left_page,
+		"current_right_page": PageTurn.current_right_page,
+		"book_is_open": PageTurn.book_is_open,
 		"is_zip": is_zip
 		}
 	var json_string = JSON.stringify(savedata)
@@ -488,14 +488,14 @@ func _on_add_pages_below(page, page_position, page_size, section_index, page_num
 	var newSectionIndex = section_index
 	if(increasing): # Increment / Decrement page number to get the next one
 		newPageNumber += 2
-		if(newPageNumber > util_Preloader.scrapbook_data[section_index]["numPages"]): 
+		if(newPageNumber > util_Preloader.scrapbook_data[section_index]["num_pages"]): 
 			# Handle cross-section boundaries
 			if(section_index >= sections_list.size() - 1):
 				$UnderRightPage.visible = false
 				return
 			else:
 				newSectionIndex += 1
-				newPageNumber = 2 if newPageNumber % 2 == util_Preloader.scrapbook_data[section_index]["numPages"] % 2 else 1
+				newPageNumber = 2 if newPageNumber % 2 == util_Preloader.scrapbook_data[section_index]["num_pages"] % 2 else 1
 			pass
 	else: # Decrement for left page
 		newPageNumber -= 2
@@ -505,11 +505,11 @@ func _on_add_pages_below(page, page_position, page_size, section_index, page_num
 				return
 			else:
 				newSectionIndex -= 1
-				newPageNumber = util_Preloader.scrapbook_data[newSectionIndex]["numPages"] if newPageNumber == 0 else util_Preloader.scrapbook_data[newSectionIndex]["numPages"] - 1
+				newPageNumber = util_Preloader.scrapbook_data[newSectionIndex]["num_pages"] if newPageNumber == 0 else util_Preloader.scrapbook_data[newSectionIndex]["num_pages"] - 1
 	
 	var newPage = page_scene.instantiate() # Make a new page and set its data
 	
-	newPage.canvasWidth = page.canvasWidth
+	#newPage.canvas_width = page.canvas_width
 	newPage.page_size = page.page_size
 	newPage.size = page.size
 	newPage.pos = page.pos
@@ -544,6 +544,7 @@ func _on_add_pages_below(page, page_position, page_size, section_index, page_num
 			$UnderLeftPage.visible = false
 
 func _on_go_to_section(section, page) -> void: #Turns page to a specific page
+	print("hi?")
 	var section_index = get_section_index_from_name(section)
 	if(section_index > PageTurn.right_page_section_index || # If the section we're turning to is after the current one
 	(section_index == PageTurn.right_page_section_index && 

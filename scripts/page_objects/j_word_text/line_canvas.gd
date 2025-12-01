@@ -19,4 +19,4 @@ func _draw():
 				if(curveAdvance <= curve.get_baked_length()):
 					var transform = curve.sample_baked_with_rotation(curveAdvance)
 					draw_set_transform(shapeCoords * pageScale + transform.get_origin() * Vector2(1., stretchVertical), transform.get_rotation())
-					curveAdvance += font.draw_chr(get_canvas_item(), Vector2.ZERO, chr, currentTextData["fontSize"] * fontSizeFactor, currentTextData["color"]);
+					curveAdvance += font.draw_char(get_canvas_item(), Vector2.ZERO, chr, currentTextData["fontSize"] * fontSizeFactor, currentTextData["color"]);

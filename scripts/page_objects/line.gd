@@ -28,9 +28,9 @@ func _ready():
 	if(data.has("fillColor")):
 		var color_value = data["fillColor"].to_int()
 		if(color_value < 0):
-			col = util_Color.getColorFromNegative(color_value)
+			col = util_Color.get_color_from_negative(color_value)
 		else: # Sometimes the number *is* stored as an unsigned integer when it has alpha, so we gotta do this
-			col = util_Color.getColorFromNegative(-16777216+(color_value % (256 * 256 * 256)))
+			col = util_Color.get_color_from_negative(-16777216+(color_value % (256 * 256 * 256)))
 			col.a = float(color_value) / (256 * 256 * 256 * 256)
 	var new_svg_data = svg_data.replace( # Replace each element in the template with the proper value
 		"{IMAGE_WIDTH}", data["width"]).replace(
@@ -48,17 +48,17 @@ func _ready():
 	$LineTexture.self_modulate.a = col.a
 	
 	if(data.has("id")): # Text can also be attached to line objects, in which case it follows a curve
-		var held_text_instance = util_Preloader.heldTextInstances[data["id"]].duplicate()
+		var held_text_instance = util_TextParsing.held_text_instances[data["id"]].duplicate()
 		# Set held text instance data
-		held_text_instance.page_size = page_size
-		held_text_instance.data = util_Preloader.heldTextInstances[data["id"]].data.duplicate()
-		held_text_instance.canvas_width = canvas_width
-		held_text_instance.canvas_height = canvas_height
-		held_text_instance.path = util_Preloader.heldTextInstances[data["id"]].path
-		held_text_instance.shapedata = util_Preloader.heldTextInstances[data["id"]].shapedata
+		held_text_instance.get_node("Background").page_size = page_size
+		held_text_instance.get_node("Background").data = util_TextParsing.held_text_instances[data["id"]].get_node("Background").data.duplicate()
+		held_text_instance.get_node("Background").canvas_width = canvas_width
+		held_text_instance.get_node("Background").canvas_height = canvas_height
+		held_text_instance.get_node("Background").path = util_TextParsing.held_text_instances[data["id"]].get_node("Background").path
+		held_text_instance.get_node("Background").shapedata = util_TextParsing.held_text_instances[data["id"]].get_node("Background").shapedata
 		add_child(held_text_instance)
 		
 		# Silly signal method to reload the text
-		reload_text.connect(held_text_instance.reload)
+		reload_text.connect(held_text_instance.get_node("Background").reload)
 		emit_signal("reload_text")
-		reload_text.disconnect(held_text_instance.reload)
+		reload_text.disconnect(held_text_instance.get_node("Background").reload)

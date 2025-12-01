@@ -76,6 +76,7 @@ func preload_section(path):
 	# First pass gets some important general data
 	var num_pages = 0
 	var canvas_width
+	var canvas_height
 	var max_output_width
 	var max_output_height
 	while parser.read() != ERR_FILE_EOF:
@@ -90,6 +91,8 @@ func preload_section(path):
 		elif(parser.get_node_name() == "pageObject"):
 			preload_page_object_first_pass(parser)
 	
+	canvas_height = canvas_width * max_output_height / max_output_width
+	
 	# New parser for second pass
 	parser = XMLParser.new()
 	parser.open_buffer(content)
@@ -97,7 +100,7 @@ func preload_section(path):
 		if parser.get_node_type() != XMLParser.NODE_ELEMENT:
 			continue
 		if(parser.get_node_name() == "pageObject"):
-			preload_page_object_second_pass(parser, canvas_width, max_output_width, max_output_height, path)
+			preload_page_object_second_pass(parser, canvas_width, canvas_height, path)
 	
 	# And finally do everything else
 	parser = XMLParser.new()
@@ -116,7 +119,7 @@ func preload_section(path):
 	section.num_pages = num_pages
 	section.path = path
 	section.canvas_width = canvas_width
-	section.canvas_height = canvas_width * max_output_height / max_output_width
+	section.canvas_height = canvas_height
 	return section
 
 func preload_page_object_first_pass(parser):
@@ -134,13 +137,13 @@ func preload_page_object_first_pass(parser):
 		# Gonna be referenced by a text object for text attached to shapes / lines
 		data["objecttype"] = type
 		idd_shapes[data["id"]] = data
-func preload_page_object_second_pass(parser, canvas_width, max_output_width, max_output_height, path):
+func preload_page_object_second_pass(parser, canvas_width, canvas_height, path):
 	var type = parser.get_named_attribute_value_safe("type")
 	var data = util_ExtraXML.get_page_object_data(parser)
 	if(type == "jWordText" && data.has("id") && idd_shapes.has(data["id"])):
 		# Text object referencing a shape
 		# Gotta preload it because calculating in-shape text alignment takes a second
-		util_TextParsing.parse_text(data, canvas_width, max_output_width, max_output_height, path)
+		util_TextParsing.parse_text(data, canvas_width, canvas_height, path)
 	
 func preload_page(parser, page_name):
 	var objects : Array[ScrapbookPageObject] = []

@@ -16,3 +16,5 @@ anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 script = ExtResource("1_kkqxg")
+
+[connection signal="go_to_section" from="PositionedPage" to="." method="_on_positioned_page_go_to_section"]

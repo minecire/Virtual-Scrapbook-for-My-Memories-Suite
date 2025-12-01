@@ -43,6 +43,8 @@ var curveAdvance = 0.
 
 var currentTextData = {}
 
+var is_clickable = false
+
 var page_type : util_Enums.page_type;
 
 signal go_to_section
@@ -64,7 +66,7 @@ func _ready():
 
 func add_clickable():
 	
-	if(hasLinks && page_type != util_Enums.page_type.TURNING && page_type != util_Enums.page_type.UNDER):
+	if(!is_clickable && hasLinks && page_type != util_Enums.page_type.TURNING && page_type != util_Enums.page_type.UNDER):
 		# If we have links, we need to make an invisible copy of the textbox that is clickable
 		# Because subviewports don't like to handle inputs
 		# Unless this page is currently turning or under another page
@@ -75,13 +77,17 @@ func add_clickable():
 		text_instance.go_to_page.connect(_on_text_go_to_page)
 		
 		# Weird input handling to stop Godot eating them
-		text_instance.get_node("TextBox").input.connect(get_tree().get_root().get_node("Book/SwipeDetecter")._input)
-		text_instance.get_node("TextBox").set_modulate(Color(1., 1., 1., 0.))
+		#text_instance.get_node("Background/TextBox").input.connect(get_tree().get_root().get_node("Book/SwipeDetecter")._input)
+		text_instance.get_node("Background/TextBox").set_modulate(Color(1., 1., 1., 0.))
+		
+		text_instance.get_node("Background").is_clickable = true
 		
 		# Add to the clickables holder node in the book scene
 		get_tree().get_root().get_node("Book/ClickablesHolder").add_child(text_instance)
 
 func reload():
+	currentTextData = {}
+	$TextBox.clear()
 	$TextBox.page_size = page_size
 	if(shapedata != null):
 		parse_shape()
@@ -91,12 +97,14 @@ func parse_shape():
 	if(shapedata["objecttype"] == "line"):
 		curve = util_SvgProcessing.parse_path(shapedata["svgPathData"], page_size.x / canvas_width, 1)[0]
 		$LineCanvas.pageScale = page_size.x / canvas_width
+		$LineCanvas.position = -position
 		$LineCanvas.shapeCoords = Vector2(shapedata["startX"].to_int(), shapedata["startY"].to_int())
 		$LineCanvas.curve = curve
 		hasCurve = true
-	elif(data.has("shapeTextPlacements")):
-		$ShapeCanvas.data = data["shapeTextPlacements"]
+	elif(data.has("shape_text_placements")):
+		$ShapeCanvas.data = data["shape_text_placements"]
 		$ShapeCanvas.pageScale = page_size.x / canvas_width
+		$ShapeCanvas.position = -position
 		hasShape = true
 	
 func parse_default_shape(shapename):
@@ -105,6 +113,7 @@ func parse_default_shape(shapename):
 	$LineCanvas.shapeCoords = Vector2(data["startX"].to_int(), data["startY"].to_int())
 	$LineCanvas.fontSizeFactor = float(data["height"].to_int()) / float(data["width"].to_int())
 	$LineCanvas.curve = curve
+	$LineCanvas.position = -position
 	hasCurve = true
 	
 	pass
@@ -180,9 +189,9 @@ func parse_text():
 		var valign = data["verticalAlignment"].to_int()
 		$TextBox.vertical_alignment = valign - 1
 	$LineCanvas.size = page_size
-	$LineCanvas.top_level = true
+	#$LineCanvas.top_level = true
 	$ShapeCanvas.size = page_size
-	$ShapeCanvas.top_level = true
+	#$ShapeCanvas.top_level = true
 	
 	set_text_from_file($TextBox,data["fileName"])
 
@@ -339,7 +348,7 @@ func generate_contents(text):
 	newtext.append([contentslinestyleinfo, [[sillybitsstyleinfo, "❀"], [sillybitsstyleinfo, "🙞"], [sillybitsedgehandlestyleinfo, "⋟"], [blipstyleinfo, "Contents"], [sillybitsstyleinfo, "⋞"], [sillybitsstyleinfo, "🙜"],[sillybitsstyleinfo, "❀"], [undertitlestyle, "\r❧🙘🙙🙛🙚☙"]]])
 	#newtext.append()
 	#newtext.append([contentslinestyleinfo, [[blipstyleinfo, "Contents"]]])
-	for section in util_Preloader.sectionsList:
+	for section in util_Preloader.sections_list:
 		if(section != ""):
 			var lsi = linestyleinfo.duplicate()
 			lsi["link"] = section
@@ -474,6 +483,7 @@ func add_text_to_line(text):
 
 var clickTimer = 0.
 func _on_text_box_meta_clicked(meta: Variant) -> void:
+	print("hello")
 	if(clickTimer <= 0.):
 		clickTimer = 0.2
 		if(meta is String):

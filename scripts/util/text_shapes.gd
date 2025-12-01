@@ -9,11 +9,11 @@ func parse_text_shape(shape, data, canvas_width, canvasHeight, path):
 	var padding = Vector2.ZERO
 	if(data.has("padding")):
 		padding = Vector2(data["padding"].to_int(), data["padding"].to_int()) / 7.
-	util_TextParsing.preparse_text_for_shape(path + "/objects/" + data["fileName"], boundsSize.x)
+	util_TextParsing.pregenerate_text_for_shape(path + "/objects/" + data["fileName"], boundsSize.x)
 	return find_text_placements(shapes, boundsPos, boundsSize, padding)
 
 func find_text_placements(shapes, boundsPos, boundsSize, padding):
-	var words = util_TextParsing.break_data_into_words(util_TextParsing.finalTextData)
+	var words = break_data_into_words(util_TextParsing.text_data)
 	return calculate_positions(words, boundsPos, boundsSize, padding, shapes)
 
 func calculate_positions(wordBrokenData, boundsPos, boundsSize, padding, shapes):
@@ -202,19 +202,19 @@ func find_empty_space(rect, boundsPos, boundsSize, shapes, padding):
 		return null
 	while newRect.position.x + newRect.size.x < boundsPos.x + boundsSize.x:
 		for i in range(shapes.size()):
-			var num_intersects = intersects(shapes[i], rectShape, newRect.position)
-			if(num_intersects == 1):
+			var intersection_point = intersects(shapes[i], rectShape, newRect.position)
+			if(intersection_point == 1):
 				var pos1 = newRect.position.x
-				while(num_intersects == 1):
+				while(intersection_point == 1):
 					newRect.position.x += stepSize
-					num_intersects = intersects(shapes[i], rectShape, newRect.position)
+					intersection_point = intersects(shapes[i], rectShape, newRect.position)
 				newRect.size -= padding * 2
 				newRect.position.y += padding.y
 				newRect.position.x = (pos1 + newRect.position.x) / 2.
 				return newRect
-			elif(num_intersects > 1):
-				if(newRect.position.x < intersects):
-					newRect.position.x = intersects
+			elif(intersection_point > 1):
+				if(newRect.position.x < intersection_point):
+					newRect.position.x = intersection_point
 		newRect.position.x += stepSize
 	return null
 

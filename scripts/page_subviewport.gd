@@ -7,6 +7,8 @@ var page_type
 var page_name
 var page_size
 
+signal go_to_page
+
 var page_index
 var section_index
 var path
@@ -30,3 +32,8 @@ func load_page():
 	$PositionedPage.section_index = section_index
 	
 	$PositionedPage.load_page()
+
+
+func _on_positioned_page_go_to_section(section, page) -> void:
+	print("hello?")
+	emit_signal("go_to_page", section, page)

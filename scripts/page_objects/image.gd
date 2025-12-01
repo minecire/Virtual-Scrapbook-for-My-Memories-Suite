@@ -49,7 +49,7 @@ static func update_shaders_pre():
 		
 static func update_shaders_post():
 	if(!(OS.has_feature("web") || RenderingServer.get_current_rendering_method() == "gl_compatibility")
-	 && shapesarr.size() > 30 || gradientsarr.size() > 30):
+	 && (shapesarr.size() > 30 || gradientsarr.size() > 30)):
 		# Otherwise we update the page and only clear the arrays if they're getting too full
 		shapes = {}
 		shapesarr = []
@@ -60,6 +60,10 @@ static func update_shaders_post():
 	imageMaterial.set("shader_parameter/shape_textures", shapesarr)
 	imageMaterial.set("shader_parameter/gradient_textures", gradientsarr)
 	imageMatteMaterial.set("shader_parameter/gradient_textures", gradientsarr)
+	
+	imageMaterialWeb.set("shader_parameter/shape_textures", shapesarr)
+	imageMaterialWeb.set("shader_parameter/gradient_textures", gradientsarr)
+	imageMatteMaterialWeb.set("shader_parameter/gradient_textures", gradientsarr)
 	return false
 
 func initialize_variables(type_, data_, path_, page_size_, _page_type, canvas_width_, canvas_height_, _section_index):
@@ -75,7 +79,7 @@ func check_for_held_text():
 		# An image with an id means that the image has text attached to it
 		# niche feature where you can combine a 'shape' type image with text
 		# and the text will fill the shape
-		var held_text_instance = util_Preloader.heldTextInstances[data["id"]].duplicate() 
+		var held_text_instance = util_TextParsing.held_text_instances[data["id"]].duplicate() 
 		# It's possible that the image is being parsed before the text would be
 		# so we simply generate all the text instances beforepaw in the preload step
 		# so they're here when we need them
@@ -85,9 +89,9 @@ func check_for_held_text():
 		held_text_instance.canvas_height = canvas_height
 		
 		# Duplicate is not recursive so we need to duplicate the data ourselves
-		held_text_instance.data = util_Preloader.heldTextInstances[data["id"]].data.duplicate()
-		held_text_instance.path = util_Preloader.heldTextInstances[data["id"]].path
-		held_text_instance.shapedata = util_Preloader.heldTextInstances[data["id"]].shapedata
+		held_text_instance.data = util_TextParsing.held_text_instances[data["id"]].data.duplicate()
+		held_text_instance.path = util_TextParsing.held_text_instances[data["id"]].path
+		held_text_instance.shapedata = util_TextParsing.held_text_instances[data["id"]].shapedata
 		get_parent().add_child(held_text_instance)
 		
 		# We need to tell the text instance to reload now, which requires a whole signal system
@@ -166,18 +170,18 @@ func parseRegularMatte():
 		var matte_scale = $Texture.size / page_size
 		var transformationMatrix = Vector4(matte_scale.x * cos(matte_rotation), -matte_scale.y * sin(matte_rotation), matte_scale.x * sin(matte_rotation), matte_scale.y * cos(matte_rotation))
 		var translationVector = Vector2($Texture.position / page_size) + Vector2(matte_scale.x * cos(matte_rotation) - matte_scale.y * sin(matte_rotation), matte_scale.x * sin(matte_rotation) + matte_scale.y * cos(matte_rotation)) / 2
-		$Texture.set_instance_shader_parameter("transformationMatrix", transformationMatrix)
+		$Texture.set_instance_shader_parameter("transformation_matrix", transformationMatrix)
 		$Texture.set_instance_shader_parameter("translation", translationVector)
 		
 		var rawGradientData = data["matteGradient"]
 		if(!gradients.has(rawGradientData)):
 			addGradient(rawGradientData, canvas_width * 2, canvas_height * 2)
-		$Texture.set_instance_shader_parameter("gradientIndex", gradients[rawGradientData])
+		$Texture.set_instance_shader_parameter("gradient_index", gradients[rawGradientData])
 	elif data.has("outlineColor"):
 		matteColor = getColorFromNegative(data["outlineColor"].to_int())
-		$Texture.set_instance_shader_parameter("gradientIndex", -1)
+		$Texture.set_instance_shader_parameter("gradient_index", -1)
 	else:
-		$Texture.set_instance_shader_parameter("gradientIndex", -1)
+		$Texture.set_instance_shader_parameter("gradient_index", -1)
 		matteColor = Color(float(data["mattered"].to_int())/256, float(data["mattegreen"].to_int())/256, float(data["matteblue"].to_int())/256)
 	if(data.has("imageopacity")):
 		matteColor.a = data["imageopacity"].to_float()
@@ -211,20 +215,20 @@ func parseShapeMatte():
 		var transformationMatrix = Vector4(matte_scale.x * cos(matte_rotation), -matte_scale.y * sin(matte_rotation), matte_scale.x * sin(matte_rotation), matte_scale.y * cos(matte_rotation))
 		var translationVector = Vector2($Texture.position / page_size) + Vector2(matte_scale.x * cos(matte_rotation) - matte_scale.y * sin(matte_rotation), matte_scale.x * sin(matte_rotation) - matte_scale.y * cos(matte_rotation)) / 2.
 		if(type != "shape"):
-			$MatteSvgTexture.set_instance_shader_parameter("transformationMatrix", transformationMatrix)
+			$MatteSvgTexture.set_instance_shader_parameter("transformation_matrix", transformationMatrix)
 			$MatteSvgTexture.set_instance_shader_parameter("translation", translationVector)
 		else:
-			$MatteSvgTexture.set_instance_shader_parameter("transformationMatrix", Vector4(4., 0., 0., 4.))
+			$MatteSvgTexture.set_instance_shader_parameter("transformation_matrix", Vector4(4., 0., 0., 4.))
 			$MatteSvgTexture.set_instance_shader_parameter("translation", Vector2(0., 0.))
 		var rawGradientData = data["matteGradient"]
 		if(!gradients.has(rawGradientData)):
 			addGradient(rawGradientData, canvas_width * 2, canvas_height * 2)
-		$MatteSvgTexture.set_instance_shader_parameter("gradientIndex", gradients[rawGradientData])
+		$MatteSvgTexture.set_instance_shader_parameter("gradient_index", gradients[rawGradientData])
 	elif data.has("outlineColor"):
 		matteColor = getColorFromNegative(data["outlineColor"].to_int())
-		$MatteSvgTexture.set_instance_shader_parameter("gradientIndex", -1)
+		$MatteSvgTexture.set_instance_shader_parameter("gradient_index", -1)
 	else:
-		$MatteSvgTexture.set_instance_shader_parameter("gradientIndex", -1)
+		$MatteSvgTexture.set_instance_shader_parameter("gradient_index", -1)
 		matteColor = Color(float(data["mattered"].to_int())/256, float(data["mattegreen"].to_int())/256, float(data["matteblue"].to_int())/256)
 	var shapewidthattr = find_xml_attribute(shapefileContent, "width")
 	var shapeheightattr = find_xml_attribute(shapefileContent, "height")
@@ -270,9 +274,9 @@ func parseShapeMatte():
 	$MatteSvgTexture.texture = shapeTexture
 	$MatteSvgTexture.visible = true
 	if(type == "shape" && data.has("SubImage")):
-		$MatteSvgTexture.set_instance_shader_parameter("matteSize", data["mattewidth"].to_float() / data["width"].to_float())
+		$MatteSvgTexture.set_instance_shader_parameter("matte_size", data["mattewidth"].to_float() / data["width"].to_float())
 	else:
-		$MatteSvgTexture.set_instance_shader_parameter("matteSize", 0.25)
+		$MatteSvgTexture.set_instance_shader_parameter("matte_size", 0.25)
 		
 func parseShape():
 	
@@ -330,7 +334,7 @@ func parseShape():
 		shapes[shapeFile] = shapesarr.size() - 1
 	else:
 		shapesarr[shapes[shapeFile]] = shape
-	$Texture.set_instance_shader_parameter("textureIndex",shapes[shapeFile])
+	$Texture.set_instance_shader_parameter("texture_index",shapes[shapeFile])
 func parseShadow():
 	if(!(data.has("type") && data["type"] != "7" && data["type"] != "4")):
 		parseNormalShadow()
@@ -344,7 +348,7 @@ func parseNormalShadow():
 		sqrt(float(data["shadowgreen"].to_int()) / 256.), 
 		sqrt(float(data["shadowblue"].to_int()) / 256.), 
 		data["shadowopacity"].to_float())
-	$Texture.set_instance_shader_parameter("shadowColor", shadowColor)
+	$Texture.set_instance_shader_parameter("shadow_color", shadowColor)
 	var shadowTransform = Vector2(float(data["offsetx"].to_int()) / float(data["width"].to_int()), float(data["offsety"].to_int()) / float(data["height"].to_int()))
 	var rotatedShadowTransform;
 	if(data.has("rotation")):
@@ -354,17 +358,17 @@ func parseNormalShadow():
 			)
 	else:
 		rotatedShadowTransform = shadowTransform
-	$Texture.set_instance_shader_parameter("shadowTransform", rotatedShadowTransform)
+	$Texture.set_instance_shader_parameter("shadow_transform", rotatedShadowTransform)
 	if(data.has("blur")):
 		assortedShaderData.z = (data["blur"].to_float() - 0.02) / 2.
 	else:
 		assortedShaderData.z = 0.
 func parseSvgShadow():
-	$Texture.set_instance_shader_parameter("shadowColor", Color.TRANSPARENT)
+	$Texture.set_instance_shader_parameter("shadow_color", Color.TRANSPARENT)
 	assortedShaderData.z = 0.
-	$Texture.set_instance_shader_parameter("shadowTransform", Vector2.ZERO)
+	$Texture.set_instance_shader_parameter("shadow_transform", Vector2.ZERO)
 	var shadowColor = Color(sqrt(float(data["shadowred"].to_int()) / 256.), sqrt(float(data["shadowgreen"].to_int()) / 256.), sqrt(float(data["shadowblue"].to_int()) / 256.), data["shadowopacity"].to_float())
-	$MatteSvgTexture.set_instance_shader_parameter("shadowColor", shadowColor)
+	$MatteSvgTexture.set_instance_shader_parameter("shadow_color", shadowColor)
 	var shadowTransform = Vector2(float(data["offsetx"].to_int()) / float(data["width"].to_int()), float(data["offsety"].to_int()) / float(data["height"].to_int()))
 	var rotatedShadowTransform;
 	if(data.has("rotation")):
@@ -375,11 +379,11 @@ func parseSvgShadow():
 	else:
 		rotatedShadowTransform = shadowTransform
 	#rotatedShadowTransform /= 2.
-	$MatteSvgTexture.set_instance_shader_parameter("shadowTransform", rotatedShadowTransform)
+	$MatteSvgTexture.set_instance_shader_parameter("shadow_transform", rotatedShadowTransform)
 	if(data.has("blur")):
-		$MatteSvgTexture.set_instance_shader_parameter("shadowBlur", (data["blur"].to_float() - 0.02) / 4.)
+		$MatteSvgTexture.set_instance_shader_parameter("shadow_blur", (data["blur"].to_float() - 0.02) / 4.)
 	else:
-		$MatteSvgTexture.set_instance_shader_parameter("shadowBlur", 0.)
+		$MatteSvgTexture.set_instance_shader_parameter("shadow_blur", 0.)
 func parseBlur():
 	
 	var edges = data["BlurEdges"].to_int()
@@ -390,7 +394,7 @@ func parseBlur():
 	var blursize = float(data["BlurEdgeValue"].to_int())
 	var blurData = Vector4(right, top, left, bottom) * blursize
 	var scaledBlurData = blurData / 100.# * 1.5
-	$Texture.set_instance_shader_parameter("edgeBlur", scaledBlurData)
+	$Texture.set_instance_shader_parameter("edge_blur", scaledBlurData)
 
 func parseRip(aspectRatio):
 	var edges = data["RipEdges"].to_int()
@@ -405,8 +409,8 @@ func parseRip(aspectRatio):
 		data["ripSetUp"].to_int() if data.has("ripSetUp") else 0, 
 		data["ripSetDown"].to_int() if data.has("ripSetDownt") else 0, 
 			data["ripSetLeft"].to_int() if data.has("ripSetLeft") else 0)
-	$Texture.set_instance_shader_parameter("edgeRip", ripData)
-	$Texture.set_instance_shader_parameter("edgeRipTextures", ripTextures)
+	$Texture.set_instance_shader_parameter("edge_rip", ripData)
+	$Texture.set_instance_shader_parameter("edge_rip_textures", ripTextures)
 func parseRounding():
 	var corners = data["cornersRounded"].to_int()
 	var bottomleft = corners > 7
@@ -416,7 +420,7 @@ func parseRounding():
 	var cornersize = float(data["cornerRounding"].to_int())
 	var cornersData = Vector4(topleft, topright, bottomleft, bottomright) * cornersize
 	var scaledCornersData = cornersData / float(data["height"].to_int())# * 1.5
-	$Texture.set_instance_shader_parameter("cornerType", data["CornerType"].to_int())
+	$Texture.set_instance_shader_parameter("corner_type", data["CornerType"].to_int())
 	$Texture.set_instance_shader_parameter("corner_rounding", scaledCornersData)
 func parseImage():
 	image_size = Vector2(0,0)
@@ -466,7 +470,7 @@ func parseImage():
 		if(!shapes.has(imagePath)):
 			shapesarr.append(imageTexture)
 			shapes[imagePath] = shapesarr.size() - 1
-		$Texture.set_instance_shader_parameter("textureIndex",shapes[imagePath])
+		$Texture.set_instance_shader_parameter("texture_index",shapes[imagePath])
 		var shapeSubtexture = Vector4(
 			region.position.x / imageTexture.get_width(),
 			region.position.y / imageTexture.get_height(),
@@ -567,7 +571,7 @@ func parseImage():
 	if(data.has("cornersRounded")):
 		parseRounding()
 	else:
-		$Texture.set_instance_shader_parameter("cornerType", 0)
+		$Texture.set_instance_shader_parameter("corner_type", 0)
 		$Texture.set_instance_shader_parameter("corner_rounding", Vector4.ZERO)
 		
 		
@@ -575,13 +579,13 @@ func parseImage():
 	if(data.has("RipJagged")):
 		parseRip(imageAspectRatio)
 	else:
-		$Texture.set_instance_shader_parameter("edgeRip", Vector4.ZERO)
+		$Texture.set_instance_shader_parameter("edge_rip", Vector4.ZERO)
 		
 		
 	if(data.has("BlurEdges")):
 		parseBlur()
 	else:
-		$Texture.set_instance_shader_parameter("edgeBlur", Vector4.ZERO)
+		$Texture.set_instance_shader_parameter("edge_blur", Vector4.ZERO)
 	assortedShaderData.x = imageAspectRatio;
 	
 	if(data.has("matte") && data["matte"] || data.has("outlineThickness") && data["outlineThickness"].to_int() > 0):
@@ -593,7 +597,7 @@ func parseImage():
 	if(data.has("type") && data["type"] != "7" && data["type"] != "4"):
 		parseShape();
 	elif(!data.has("imageMaskFill")):
-		$Texture.set_instance_shader_parameter("textureIndex", -1)
+		$Texture.set_instance_shader_parameter("texture_index", -1)
 		$MatteSvgTexture.visible = false
 		
 		
@@ -602,13 +606,13 @@ func parseImage():
 	if(data.has("shadow") && data["shadow"]):
 		parseShadow()
 	else:
-		$Texture.set_instance_shader_parameter("shadowColor", Color.TRANSPARENT)
+		$Texture.set_instance_shader_parameter("shadow_color", Color.TRANSPARENT)
 		assortedShaderData.z = 0.
-		$Texture.set_instance_shader_parameter("shadowTransform", Vector2.ZERO)
+		$Texture.set_instance_shader_parameter("shadow_transform", Vector2.ZERO)
 		
-		$MatteSvgTexture.set_instance_shader_parameter("shadowColor", Color.TRANSPARENT)
-		$MatteSvgTexture.set_instance_shader_parameter("shadowBlur", 0.)
-		$MatteSvgTexture.set_instance_shader_parameter("shadowTransform", Vector2.ZERO)
+		$MatteSvgTexture.set_instance_shader_parameter("shadow_color", Color.TRANSPARENT)
+		$MatteSvgTexture.set_instance_shader_parameter("shadow_blur", 0.)
+		$MatteSvgTexture.set_instance_shader_parameter("shadow_transform", Vector2.ZERO)
 	
 	
 	$Texture.set_instance_shader_parameter("assorted_data", assortedShaderData)

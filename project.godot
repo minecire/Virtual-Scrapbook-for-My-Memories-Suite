@@ -90,6 +90,8 @@ pointing/emulate_touch_from_mouse=true
 [rendering]
 
 rendering_device/staging_buffer/max_size_mb=256
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
 textures/vram_compression/import_etc2_astc=true
 textures/lossless_compression/force_png=true
 textures/webp_compression/compression_method=6

@@ -62,7 +62,7 @@ func turn_page_right():
 		turning_page_left_section_side = true
 		return time
 	
-	if(util_Preloader.sections_list.size() > right_page_section_index):
+	if(right_page_section_index >= util_Preloader.sections_list.size() - 1):
 		current_right_page = -1 # End of book, no more pages
 		return time
 	
@@ -163,7 +163,7 @@ func turn_left_to_section(section, page):
 	# Overall page number in the entire scrapbook
 	if(section_number > 0):
 		for i in range(section_number):
-			total_page_number = util_Preloader.scrapbook_data[i]["num_pages"]
+			total_page_number += util_Preloader.scrapbook_data[i]["num_pages"]
 	
 	# Just to figure out whether the selected page is on the left or right side
 	var side = total_page_number % 2 == 0
@@ -219,7 +219,7 @@ func turn_right_to_section(section, page):
 	var section_number = find_section_number(section)
 	var total_page_number = page
 	for i in range(section_number):
-		total_page_number = util_Preloader.scrapbook_data[i]["num_pages"]
+		total_page_number += util_Preloader.scrapbook_data[i]["num_pages"]
 	
 	var side = total_page_number % 2 == 0 # Get side of book of page from total page number
 	

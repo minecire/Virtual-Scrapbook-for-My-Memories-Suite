@@ -18,6 +18,7 @@ func _ready():
 	
 
 func prepare_texture():
+	$TextTexture.texture.set_viewport_path_in_scene("TextViewport")
 	$TextTexture.size = Vector2(data["width"].to_int(), data["height"].to_int()) * pageSize.x / canvasWidth
 	$TextTexture.position = Vector2(data["startX"].to_int(), data["startY"].to_int()) * pageSize.x / canvasWidth
 
@@ -27,7 +28,7 @@ func parse_text(filepath):
 	var text
 	
 	var parser = XMLParser.new()
-	parser.open_buffer(util_Preloader.textsDict[filepath].to_utf8_buffer())
+	parser.open_buffer(util_Preloader.texts_dict[filepath].to_utf8_buffer())
 	
 	while parser.read() != ERR_FILE_EOF:
 		if(parser.get_node_type() == XMLParser.NODE_ELEMENT && parser.get_node_name() == "content"):

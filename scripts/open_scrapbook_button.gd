@@ -143,7 +143,7 @@ func load_packaged_book():
 
 func load_page(): # Load based on savefile or from export data
 	# # Uncomment to stop VS loading a savefile, useful for debugging
-	DirAccess.open("user://").remove("save")
+	# DirAccess.open("user://").remove("save")
 	if !FileAccess.file_exists("user://save"):
 		# If there is no savefile we check for a packaged book, then exit
 		load_packaged_book()
