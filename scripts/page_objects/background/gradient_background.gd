@@ -19,7 +19,7 @@ func initialize_variables(_type, data_, path_, page_size_, _page_type, canvas_wi
 	aspect_ratio = canvas_height / canvas_width
 
 func _ready():
-	$Texture.texture = util_Color.getGradient(data["GradientDefinition"], canvas_width / 5., canvas_height / 5.)
+	$Texture.texture = util_Color.get_gradient(data["GradientDefinition"], canvas_width / 5., canvas_height / 5.)
 	$Texture.size = page_size
 	
 	if(data.has("imageopacity")):
