@@ -39,7 +39,7 @@ Make sure to include the full path to the section in the link from the base scra
 Although it is quite a bit slower and glitchier due to the limitations of web generally, and godot's web exporter specifically, you can use the web build here:
 https://minecire.github.io/Virtual-Scrapbook-for-My-Memories-Suite/
 
-#### Note: Due to the limitations of web, you must compress your project directory into a .zip file in order to upload.
+#### Note: Due to the limitations of web, you must compress your project directory into a .zip or .vsb file in order to upload.
 
 ## Build Info
 This is a project creating using Godot Engine 4.5, and as such you need to install Godot to make use of the source code.
