@@ -8,7 +8,7 @@ Virtual Scrapbook is a software for creating Virtual Scrapbooks out of My Memori
 https://www.mymemories.com/mms/my_memories_suite (The free trial version also works)
 
 ## How to Use
-In order to use, you can download Virtual Scrapbook [https://github.com/minecire/Virtual-Scrapbook-for-My-Memories-Suite/releases/tag/v0.1.1-beta](here) (or use the web version or download the source and build it yourself, more info on that further down). Then, after installing that *and* My Memories Suite, create a scrapbook using My Memories Suite, and open the directory of the project using Virtual Scrapbook.
+In order to use, you can download Virtual Scrapbook [here](https://github.com/minecire/Virtual-Scrapbook-for-My-Memories-Suite/releases/tag/v0.1.1-beta) (or use the web version, or clone the repo and build it yourself, more info on that further down). Then, after installing that *and* My Memories Suite, create a scrapbook using My Memories Suite, and open the directory of the project using Virtual Scrapbook.
 Push Esc to return to the menu, and left and right arrows to navigate the scrapbook.
 You can also push R to refresh the scrapbook after making changes in MMS.
 
