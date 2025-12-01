@@ -1,6 +1,8 @@
 # Virtual Scrapbook for My Memories Suite
 
-Virtual Scrapbook is a project meant for creating Virtual Scrapbooks out of My Memories Suite projects
+Virtual Scrapbook is a project meant for creating Virtual Scrapbooks out of My Memories Suite projects, to flip through and share with your friends!
+
+![Screenshot of a scrapbook open in Virtual Scrapbook](https://github.com/minecire/Virtual-Scrapbook-for-My-Memories-Suite/blob/1ad1d939894ffccd9ae05b345f00bfc3cd7296a2/screenshots/page.png)
 
 ## Purchase My Memories Suite:
 https://www.mymemories.com/mms/my_memories_suite
@@ -20,6 +22,7 @@ Create a custom cover by placing pngs titled cover_outside, cover_inside_left, a
 Create multiple sections by placing multiple projects in a single directory. A file in the main directory titled 'sections.txt' can list the sections in order to order them properly. You can move between sections in the editor by pressing Shift + Left or Shift + Right.
 
 You can also create a table of contents by creating a text object in My Memories Suite and writing `[CONTENTS]` (with brackets) in whatever font you would like to use, or create a custom table of contents using pagelinks.
+![Screenshot of a table of contents](https://github.com/minecire/Virtual-Scrapbook-for-My-Memories-Suite/blob/1ad1d939894ffccd9ae05b345f00bfc3cd7296a2/screenshots/contents.png)
 
 ### Links
 Add links by placing the following text inside a My Memories Suite text object:
@@ -39,7 +42,8 @@ https://minecire.github.io/Virtual-Scrapbook-for-My-Memories-Suite/
 #### Note: Due to the limitations of web, you must compress your project directory into a .zip file in order to upload.
 
 ## Build Info
-This is a project creating using Godot Engine 4.4, and as such you need to install Godot to build.
+This is a project creating using Godot Engine 4.5, and as such you need to install Godot to make use of the source code.
+It can be run in-engine using the run button in the top right, or exported to a standalone in Project > Export.
 
 Godot can be downloaded here:
-https://godotengine.org/download/archive/4.4-stable/
+https://godotengine.org/download/archive/4.5.1-stable/
