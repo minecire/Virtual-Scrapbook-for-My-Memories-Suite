@@ -2,7 +2,7 @@
 
 Virtual Scrapbook is a project meant for creating Virtual Scrapbooks out of My Memories Suite projects, to flip through and share with your friends!
 
-![Screenshot of a scrapbook open in Virtual Scrapbook](https://github.com/minecire/Virtual-Scrapbook-for-My-Memories-Suite/blob/1ad1d939894ffccd9ae05b345f00bfc3cd7296a2/screenshots/page.png)
+![Screenshot of a scrapbook open in Virtual Scrapbook showing a Celeste mod](https://github.com/minecire/Virtual-Scrapbook-for-My-Memories-Suite/blob/1ad1d939894ffccd9ae05b345f00bfc3cd7296a2/screenshots/page.png)
 
 ## Purchase My Memories Suite:
 https://www.mymemories.com/mms/my_memories_suite
