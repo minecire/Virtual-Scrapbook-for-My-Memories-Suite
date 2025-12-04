@@ -12,6 +12,8 @@ In order to use, you can download Virtual Scrapbook [here](https://github.com/mi
 Push Esc to return to the menu, and left and right arrows to navigate the scrapbook.
 You can also push R to refresh the scrapbook after making changes in MMS.
 
+#### Note: There is currently an issue with the scrapbook not sizing properly on first launch. If you flip between sections with Shift+Left/Right a few times it seems to fix itself. It should work fine on subsequent launches
+
 ## More Options
 Virtual Scrapbook offers a few extra options for those wanting extra customization
 
