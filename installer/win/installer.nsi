@@ -45,9 +45,11 @@ FunctionEnd
 Section "Program files (Required)"
   SectionIn Ro
 
-  MessageBox MB_OKCANCEL "This will install Virtual Scrapbook for all users and create an association for Virtual Scrapbook (.vsb) files. Continue?" IDCANCEL true
+  MessageBox MB_OKCANCEL "This will install Virtual Scrapbook for all users and create an association for Virtual Scrapbook (.vsb) files. Continue?" IDCANCEL true IDOK false
   true:
     Quit
+  
+  false:
 
   SetOutPath $InstDir
 

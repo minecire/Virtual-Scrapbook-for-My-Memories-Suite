@@ -1,5 +1,7 @@
 extends Node
 
+# Some code for placing text within shapes
+
 func parse_text_shape(shape, data, canvas_width, canvasHeight, path):
 	var shapeFile = path + "/objects/" + shape["customShapeName"]
 	var shapeCurves = util_SvgProcessing.convert_shape_to_curves(shapeFile, shape, Vector2(canvas_width, canvasHeight), canvas_width, canvasHeight)

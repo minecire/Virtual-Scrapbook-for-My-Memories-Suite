@@ -1,4 +1,4 @@
-read -p "This will create a MIME type for Virtual Scrapbook (.vsb) files and associate it with Virtual Scrapbook, and will install Virtual Scrapbook globally. Continue? (y/N)" 1 -r
+read -p "This will create a MIME type for Virtual Scrapbook (.vsb) files and associate it with Virtual Scrapbook, and will install Virtual Scrapbook globally. Continue? (y/N)" -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]
 then

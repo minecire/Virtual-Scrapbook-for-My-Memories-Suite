@@ -42,6 +42,8 @@ var image_scene = preload("res://scenes/pageobjects/image.tscn")
 # to the last page of one section and the first of the next
 var left_page_section
 var right_page_section
+var left_turning_page_section
+var right_turning_page_section
 
 # Used to stop people exiting to the main menu when creating a standalone scrapbook with the engine built in
 # (That feature is used for creating entirely web-hosted scrapbooks)
@@ -129,6 +131,8 @@ func delayed_page_update():
 func update_pages(): #This sets all the visible pages to the correct values and then reloads them.
 	left_page_section = sections_list[PageTurn.left_page_section_index]
 	right_page_section = sections_list[PageTurn.right_page_section_index]
+	left_turning_page_section = sections_list[PageTurn.left_turning_page_section_index]
+	right_turning_page_section = sections_list[PageTurn.right_turning_page_section_index]
 	
 	#Remove all pages underneath transparent ones
 	for n in $PagesUnder.get_children():
@@ -153,26 +157,33 @@ func update_pages(): #This sets all the visible pages to the correct values and 
 	else:
 		$TurningPageRightTexture.visible = true
 	
-	var sectionPathLeft
-	var sectionPathRight
+	var section_path_left
+	var section_path_right
+	var section_path_left_turning
+	var section_path_right_turning
 	if(left_page_section != ""): #Set section paths for each page, being careful to just set to the book path 
 		#for a top level section
-		sectionPathLeft = book_path + "\\" +left_page_section + "\\"
+		section_path_left = book_path + "\\" +left_page_section + "\\"
 	else:
-		sectionPathLeft = book_path
+		section_path_left = book_path
 	if(right_page_section != ""):
-		sectionPathRight = book_path + "\\" +right_page_section + "\\"
+		section_path_right = book_path + "\\" +right_page_section + "\\"
 	else:
-		sectionPathRight = book_path
-	$LeftPage.path = sectionPathLeft
-	$RightPage.path = sectionPathRight
-	
-	# Set turning pages based on whether they are in the same section as the left or right page
-	# Note: Sometimes they are neither, such as when a section is only a single page 
-	# or flipping between sections. This glitches the program a little, 
-	# and might be worth reworking at some point.
-	$TurningPageLeft.path = sectionPathRight if PageTurn.turning_page_left_section_side else sectionPathLeft
-	$TurningPageRight.path = sectionPathRight if PageTurn.turning_page_right_section_side else sectionPathLeft
+		section_path_right = book_path
+		
+	if(left_turning_page_section != ""): #Set section paths for each page, being careful to just set to the book path 
+		#for a top level section
+		section_path_left_turning = book_path + "\\" +left_turning_page_section + "\\"
+	else:
+		section_path_left_turning = book_path
+	if(right_turning_page_section != ""):
+		section_path_right_turning = book_path + "\\" +right_turning_page_section + "\\"
+	else:
+		section_path_right_turning = book_path
+	$LeftPage.path = section_path_left
+	$RightPage.path = section_path_right
+	$TurningPageLeft.path = section_path_left_turning
+	$TurningPageRight.path = section_path_right_turning
 	
 	# Find the name of each page. MMS convention is to name each page Page N for each page, starting at 1
 	$LeftPage.page_name = "Page " + ("%d") % PageTurn.current_left_page
@@ -189,8 +200,8 @@ func update_pages(): #This sets all the visible pages to the correct values and 
 	#Set section indeces
 	$LeftPage.section_index = PageTurn.left_page_section_index
 	$RightPage.section_index = PageTurn.right_page_section_index
-	$TurningPageLeft.section_index = PageTurn.right_page_section_index if PageTurn.turning_page_left_section_side else PageTurn.left_page_section_index
-	$TurningPageRight.section_index = PageTurn.right_page_section_index if PageTurn.turning_page_right_section_side else PageTurn.left_page_section_index
+	$TurningPageLeft.section_index = PageTurn.left_turning_page_section_index
+	$TurningPageRight.section_index = PageTurn.right_turning_page_section_index
 	
 	#Calculate the screen aspect ratio, as well as the book 
 	#to limit size based on width or height
@@ -202,7 +213,6 @@ func update_pages(): #This sets all the visible pages to the correct values and 
 		else:
 			$LeftPage.page_size = Vector2(get_viewport().get_visible_rect().size.x / 2.0 - border_size * 2, get_viewport().get_visible_rect().size.x / aspect_ratio / 2.0 - border_size * 2 / aspect_ratio)
 			$RightPage.page_size = Vector2(get_viewport().get_visible_rect().size.x / 2.0 - border_size * 2, get_viewport().get_visible_rect().size.x / aspect_ratio / 2.0 - border_size * 2 / aspect_ratio)
-	
 	#Set page sizes, scaled up slightly in order to be run through a shader to give a curve to the pages 
 	#as well as animating the page turning
 	$LeftPageTexture.size = $LeftPage.page_size
@@ -361,7 +371,7 @@ func _input(event: InputEvent):
 			PageTurn.turning_right = false
 		elif(amount_page_is_turned > 0 && !PageTurn.turning_right):
 			amount_page_is_turned = 0.001 # Setting the amount_page_is_turned to a very small amount so it will end the page turn next update
-		else:
+		elif(!event.is_action_pressed("start_of_section") && !event.is_action_pressed("start_of_book")):
 			amount_page_is_turned = PageTurn.turn_page_left()
 			update_pages() # Remember to update all pages
 			if(show_tip_on_next_page_turn):
@@ -375,7 +385,7 @@ func _input(event: InputEvent):
 		elif(amount_page_is_turned > 0 && !PageTurn.turning_right):
 			amount_page_is_turned = 0.999
 			PageTurn.turning_right = true
-		else:
+		elif(!event.is_action_pressed("next_section") && !event.is_action_pressed("end_of_book")):
 			amount_page_is_turned = PageTurn.turn_page_right()
 			update_pages()
 			if(show_tip_on_next_page_turn):
@@ -387,17 +397,17 @@ func _input(event: InputEvent):
 		util_Preloader.reload_stuff(sections_list, book_path, is_zip)
 		update_pages()
 	
-	if(event.is_action_pressed("start_of_section")): # Shift + Left
-		PageTurn.turn_to_section_start()
+	if(event.is_action_pressed("start_of_section") && (amount_page_is_turned == 0 || amount_page_is_turned == 1)): # Shift + Left
+		amount_page_is_turned = PageTurn.turn_to_section_start()
 		update_pages()
-	elif(event.is_action_pressed("next_section")): # Shift + Right
-		PageTurn.turn_to_next_section()
+	elif(event.is_action_pressed("next_section") && (amount_page_is_turned == 0 || amount_page_is_turned == 1)): # Shift + Right
+		amount_page_is_turned = PageTurn.turn_to_next_section()
 		update_pages()
-	if(event.is_action_pressed("start_of_book")): # Ctrl + Left
-		PageTurn.turn_to_start_of_book()
+	if(event.is_action_pressed("start_of_book") && (amount_page_is_turned == 0 || amount_page_is_turned == 1)): # Ctrl + Left
+		amount_page_is_turned = PageTurn.turn_to_start_of_book()
 		update_pages()
-	if(event.is_action_pressed("end_of_book")): # Ctrl + Right
-		PageTurn.turn_to_end_of_book()
+	if(event.is_action_pressed("end_of_book") && (amount_page_is_turned == 0 || amount_page_is_turned == 1)): # Ctrl + Right
+		amount_page_is_turned = PageTurn.turn_to_end_of_book()
 		update_pages()
 
 func _process(delta_time):
@@ -405,7 +415,10 @@ func _process(delta_time):
 		# In the middle of page turn or user is dragging/swiping the page
 		if(!dragging):
 			amount_page_is_turned += delta_time / page_turn_time_seconds # Increment amount_page_is_turned if page is turning automatically
-			
+		
+		if(amount_page_is_turned >= 1): # Dont push past end
+			amount_page_is_turned = 1
+		
 		 # Set shader parameters to update visual effect
 		if(PageTurn.opening_book):
 			$CoverOutside.material.set("shader_parameter/time", amount_page_is_turned)
@@ -413,29 +426,35 @@ func _process(delta_time):
 		else:
 			$TurningPageLeftTexture.material.set("shader_parameter/time", amount_page_is_turned)
 			$TurningPageRightTexture.material.set("shader_parameter/time", amount_page_is_turned)
+			
 		if(amount_page_is_turned >= 1): # Page has finished turning, we need to update the pages again
-			amount_page_is_turned = 1
 			PageTurn.finish_turn_right()
 			update_pages()
 			save_page()
 			if(dragging):
 				done_dragging = true
+		
 	elif((amount_page_is_turned > 0 || dragging) && !PageTurn.turning_right):
 		if(!dragging):
 			amount_page_is_turned -= delta_time / page_turn_time_seconds
+		
+		if(amount_page_is_turned <= 0):
+			amount_page_is_turned = 0
+			
 		if(PageTurn.opening_book):
 			$CoverOutside.material.set("shader_parameter/time", amount_page_is_turned)
 			$CoverInsideLeft.material.set("shader_parameter/time", amount_page_is_turned)
 		else:
 			$TurningPageLeftTexture.material.set("shader_parameter/time", amount_page_is_turned)
 			$TurningPageRightTexture.material.set("shader_parameter/time", amount_page_is_turned)
+			
 		if(amount_page_is_turned <= 0):
-			amount_page_is_turned = 0
 			PageTurn.finish_turn_left()
 			update_pages()
 			save_page()
 			if(dragging):
 				done_dragging = true
+			
 	else:
 		amount_page_is_turned = round(amount_page_is_turned) #Make sure amount_page_is_turned hasn't gotten too far outside its expected range
 
@@ -631,7 +650,9 @@ func _on_swipe_detecter_scrolling(movement) -> void:
 			# But havent immediately dragged too much because that's probably an error
 			return
 		if(!dragging): 
-			PageTurn.turn_page_right()
+			if(PageTurn.turn_page_right() == 1): # No more pages left to turn
+				done_dragging = true
+				return
 			PageTurn.turning_right = true
 			update_pages() # Initiate page turn and update
 			dragging = true
@@ -641,7 +662,9 @@ func _on_swipe_detecter_scrolling(movement) -> void:
 		if(!dragging && movement <= -0.05):
 			return
 		if(!dragging):
-			PageTurn.turn_page_left()
+			if(PageTurn.turn_page_left() == 0): # No more pages left to turn
+				done_dragging = true
+				return
 			PageTurn.turning_right = false
 			update_pages()
 			dragging = true
